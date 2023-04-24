@@ -1,0 +1,155 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".ForumsActivity">
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/DarkOuter">
+
+            <ImageView
+                android:id="@+id/ForumHeader"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/forumheader" />
+
+            <androidx.appcompat.widget.Toolbar
+                android:id="@+id/PopularThreadsToolbar"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/ForumHeader"
+                android:layout_marginLeft="25dp"
+                android:layout_marginTop="25dp"
+                android:layout_marginRight="25dp"
+                android:background="@color/ToolbarBlue"
+                android:minHeight="?attr/actionBarSize"
+                android:theme="?attr/actionBarTheme"
+                app:title="Popular Threads"
+                app:titleTextColor="@color/white" />
+
+            <ListView
+                android:id="@+id/PopularThreads"
+                android:layout_width="match_parent"
+                android:layout_height="325dp"
+                android:layout_below="@id/PopularThreadsToolbar"
+                android:layout_marginLeft="25dp"
+                android:layout_marginRight="25dp"
+                android:background="@color/DarkInner"
+                android:entries="@array/PopularThreadArray"
+                android:scrollbars="none" />
+
+            <androidx.appcompat.widget.Toolbar
+                android:id="@+id/CommunityThreadsToolbar"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/PopularThreads"
+                android:layout_marginLeft="25dp"
+                android:layout_marginTop="25dp"
+                android:layout_marginRight="25dp"
+                android:background="@color/ToolbarBlue"
+                android:minHeight="?attr/actionBarSize"
+                android:theme="?attr/actionBarTheme"
+                app:title="Community"
+                app:titleTextColor="@color/white" />
+
+            <ListView
+                android:id="@+id/CommunityThreads"
+                android:layout_width="match_parent"
+                android:layout_height="325dp"
+                android:layout_below="@id/CommunityThreadsToolbar"
+                android:layout_marginLeft="25dp"
+                android:layout_marginRight="25dp"
+                android:background="@color/DarkInner"
+                android:entries="@array/CommunityThreadsArray"
+                android:scrollbars="none" />
+
+            <androidx.appcompat.widget.Toolbar
+                android:id="@+id/FictionsThreadsToolbar"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/CommunityThreads"
+                android:layout_marginLeft="25dp"
+                android:layout_marginTop="25dp"
+                android:layout_marginRight="25dp"
+                android:background="@color/ToolbarBlue"
+                android:minHeight="?attr/actionBarSize"
+                android:theme="?attr/actionBarTheme"
+                app:title="Fictions"
+                app:titleTextColor="@color/white" />
+
+            <ListView
+                android:id="@+id/FictionsThreads"
+                android:layout_width="match_parent"
+                android:layout_height="125dp"
+                android:layout_below="@id/FictionsThreadsToolbar"
+                android:layout_marginLeft="25dp"
+                android:layout_marginRight="25dp"
+                android:background="@color/DarkInner"
+                android:entries="@array/FictionsThreadsArray"
+                android:scrollbars="none" />
+
+            <androidx.appcompat.widget.Toolbar
+                android:id="@+id/TipsThreadsToolbar"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/FictionsThreads"
+                android:layout_marginLeft="25dp"
+                android:layout_marginTop="25dp"
+                android:layout_marginRight="25dp"
+                android:background="@color/ToolbarBlue"
+                android:minHeight="?attr/actionBarSize"
+                android:theme="?attr/actionBarTheme"
+                app:title="Writing Tips and Discussions"
+                app:titleTextColor="@color/white" />
+
+            <ListView
+                android:id="@+id/TipsThreads"
+                android:layout_width="match_parent"
+                android:layout_height="250dp"
+                android:layout_below="@id/TipsThreadsToolbar"
+                android:layout_marginLeft="25dp"
+                android:layout_marginRight="25dp"
+                android:background="@color/DarkInner"
+                android:entries="@array/TipsThreadsList"
+                android:scrollbars="none" />
+
+            <androidx.appcompat.widget.Toolbar
+                android:id="@+id/ForumsThreadsToolbar"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/TipsThreads"
+                android:layout_marginLeft="25dp"
+                android:layout_marginTop="25dp"
+                android:layout_marginRight="25dp"
+                android:background="@color/ToolbarBlue"
+                android:minHeight="?attr/actionBarSize"
+                android:theme="?attr/actionBarTheme"
+                app:title="Forums"
+                app:titleTextColor="@color/white" />
+
+            <ListView
+                android:id="@+id/ForumsThreads"
+                android:layout_width="match_parent"
+                android:layout_height="250dp"
+                android:layout_below="@id/ForumsThreadsToolbar"
+                android:layout_marginLeft="25dp"
+                android:layout_marginRight="25dp"
+                android:layout_marginBottom="25dp"
+                android:background="@color/DarkInner"
+                android:entries="@array/ForumsThreadsArray"
+                android:scrollbars="none" />
+
+        </RelativeLayout>
+
+    </ScrollView>
+
+
+</RelativeLayout>

@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="FontArray">
+        <item>Ariel</item>
+        <item>Calibri</item>
+        <item>Times New Roman</item>
+        <item>Century</item>
+    </string-array>
+</resources>

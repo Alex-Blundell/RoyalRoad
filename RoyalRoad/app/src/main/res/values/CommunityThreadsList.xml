@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="CommunityThreadsArray">
+        <item>General</item>
+        <item>Writathon</item>
+        <item>Celebration</item>
+        <item>Introductions</item>
+        <item>Assistance Request</item>
+    </string-array>
+</resources>

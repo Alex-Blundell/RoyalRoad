@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item
+        android:id="@+id/BottomItem1"
+        android:orderInCategory="1"
+        android:title="History"
+        app:showAsAction="always" />
+
+    <item
+        android:id="@+id/BottomItem2"
+        android:orderInCategory="2"
+        android:title="Downloaded"
+        app:showAsAction="always"
+        />
+
+    <item
+        android:id="@+id/BottomItem3"
+        android:orderInCategory="3"
+        android:title="Folders"
+        app:showAsAction="always"
+        />
+</menu>

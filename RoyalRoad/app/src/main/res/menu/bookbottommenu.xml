@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item
+        android:id="@+id/DownloadItem"
+        android:icon="@drawable/download"
+        android:orderInCategory="1"
+        android:title="Download"
+        app:showAsAction="always" />
+
+
+    <item
+        android:id="@+id/ProfileItem"
+        android:orderInCategory="2"
+        android:title="Profile"
+        android:icon="@drawable/profile"
+        app:showAsAction="always"
+        />
+
+    <item
+        android:id="@+id/ReviewItem"
+        android:orderInCategory="3"
+        android:title="Review"
+        android:icon="@drawable/baseline_reviews_24"
+        app:showAsAction="always"
+        />
+
+    <item
+        android:id="@+id/FavouriteItem"
+        android:orderInCategory="4"
+        android:title="Favourite"
+        android:icon="@drawable/favourite"
+        app:showAsAction="always"
+        />
+
+    <item
+        android:id="@+id/FollowItem"
+        android:orderInCategory="5"
+        android:title="Follow"
+        android:icon="@drawable/follow"
+        app:showAsAction="always"
+        />
+
+    <item
+        android:id="@+id/ShareItem"
+        android:orderInCategory="6"
+        android:title="Share"
+        android:icon="@drawable/share"
+        app:showAsAction="always"
+        />
+</menu>

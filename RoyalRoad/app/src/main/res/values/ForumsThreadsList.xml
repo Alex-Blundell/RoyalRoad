@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="ForumsThreadsArray">
+        <item>Art</item>
+        <item>Games</item>
+        <item>Debate</item>
+        <item>Software and Tutorials</item>
+    </string-array>
+</resources>

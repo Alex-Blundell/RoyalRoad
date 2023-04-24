@@ -1,0 +1,217 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".BaseSettingsFragment">
+
+    <View
+        android:id="@+id/TopDivider"
+        android:layout_width="match_parent"
+        android:layout_height="2dp"
+        android:layout_marginTop="45dp"
+        android:background="?android:attr/listDivider"
+        />
+
+    <Button
+        android:id="@+id/AccountInfoBTN"
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:background="@color/Invis"
+        android:layout_below="@id/TopDivider"
+        />
+
+    <TextView
+        android:id="@+id/AccountInfoTXT"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Account Information"
+        android:layout_below="@id/TopDivider"
+        android:layout_marginTop="20dp"
+        android:layout_marginLeft="40dp"
+        />
+
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Account Information"
+        android:layout_below="@id/TopDivider"
+        android:layout_toRightOf="@id/AccountInfoTXT"
+        android:layout_marginTop="18dp"
+        android:layout_marginLeft="200dp"
+        android:src="@drawable/next"
+        />
+
+    <View
+        android:id="@+id/AccountDivider"
+        android:layout_width="match_parent"
+        android:layout_height="2dp"
+        android:background="?android:attr/listDivider"
+        android:layout_below="@id/AccountInfoTXT"
+        android:layout_marginTop="20dp"
+        />
+
+    <TextView
+        android:id="@+id/FontSizeTXT"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Font Size:"
+        android:layout_below="@id/AccountDivider"
+        android:layout_marginTop="20dp"
+        android:layout_marginLeft="40dp"
+        />
+
+    <TextView
+        android:id="@+id/AppThemeTXT"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="App Theme:"
+        android:layout_below="@id/FontSizeTXT"
+        android:layout_marginTop="20dp"
+        android:layout_marginLeft="40dp"
+        />
+
+    <TextView
+        android:id="@+id/ReadingThemeTXT"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Reading Theme:"
+        android:layout_below="@id/AppThemeTXT"
+        android:layout_marginTop="20dp"
+        android:layout_marginLeft="40dp"
+        />
+
+    <TextView
+        android:id="@+id/BrightnessTXT"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Brightness:"
+        android:layout_below="@id/ReadingThemeTXT"
+        android:layout_marginTop="20dp"
+        android:layout_marginLeft="40dp"
+        />
+
+    <TextView
+        android:id="@+id/AppFontTXT"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="App Font:"
+        android:layout_below="@id/BrightnessTXT"
+        android:layout_marginTop="20dp"
+        android:layout_marginLeft="40dp"
+        />
+
+    <TextView
+        android:id="@+id/ReadingFontTXT"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Reading Font:"
+        android:layout_below="@id/AppFontTXT"
+        android:layout_marginTop="20dp"
+        android:layout_marginLeft="40dp"
+        />
+
+    <View
+        android:id="@+id/SettingsDivider"
+        android:layout_width="match_parent"
+        android:layout_height="2dp"
+        android:background="?android:attr/listDivider"
+        android:layout_below="@id/ReadingFontTXT"
+        android:layout_marginTop="20dp"
+        />
+
+    <Button
+        android:id="@+id/ClearHistoryBTN"
+        android:layout_width="300dp"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="20dp"
+        android:layout_below="@id/SettingsDivider"
+        android:text="Clear History" />
+
+    <Button
+        android:id="@+id/ClearCacheBTN"
+        android:layout_width="300dp"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="10dp"
+        android:layout_below="@id/ClearHistoryBTN"
+        android:text="Clear Cache" />
+
+    <Button
+        android:id="@+id/ClearUpdatesBTN"
+        android:layout_width="300dp"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="10dp"
+        android:layout_below="@id/ClearCacheBTN"
+        android:text="Clear Updates" />
+
+    <TextView
+        android:id="@+id/LanguageTXT"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Language:"
+        android:layout_below="@id/ClearUpdatesBTN"
+        android:layout_marginTop="20dp"
+        android:layout_marginLeft="40dp"
+        />
+
+    <SeekBar
+        android:id="@+id/FontSizeSlider"
+        android:layout_width="180dp"
+        android:layout_height="wrap_content"
+        android:layout_toRightOf="@+id/FontSizeTXT"
+        android:layout_below="@id/AccountDivider"
+        android:layout_marginTop="20dp"
+        android:layout_marginLeft="100dp"
+        />
+
+    <Spinner
+        android:id="@+id/AppThemeDropdown"
+        android:layout_width="180dp"
+        android:layout_height="wrap_content"
+        android:layout_toRightOf="@+id/FontSizeTXT"
+        android:layout_below="@id/FontSizeSlider"
+        android:layout_marginTop="20dp"
+        android:layout_marginLeft="100dp"/>
+
+    <Spinner
+        android:id="@+id/ReadingThemeDropdown"
+        android:layout_width="180dp"
+        android:layout_height="wrap_content"
+        android:layout_toRightOf="@+id/FontSizeTXT"
+        android:layout_below="@id/AppThemeDropdown"
+        android:layout_marginTop="20dp"
+        android:layout_marginLeft="100dp"/>
+
+    <SeekBar
+        android:id="@+id/BrightnessSlider"
+        android:layout_width="180dp"
+        android:layout_height="wrap_content"
+        android:layout_toRightOf="@+id/FontSizeTXT"
+        android:layout_below="@id/ReadingThemeDropdown"
+        android:layout_marginTop="20dp"
+        android:layout_marginLeft="100dp"
+        />
+
+    <Spinner
+        android:id="@+id/AppFontDropdown"
+        android:layout_width="180dp"
+        android:layout_height="wrap_content"
+        android:layout_toRightOf="@+id/FontSizeTXT"
+        android:layout_below="@id/BrightnessSlider"
+        android:layout_marginTop="20dp"
+        android:layout_marginLeft="100dp"/>
+
+    <Spinner
+        android:id="@+id/ReadingFontDropdown"
+        android:layout_width="180dp"
+        android:layout_height="wrap_content"
+        android:layout_toRightOf="@+id/FontSizeTXT"
+        android:layout_below="@id/AppFontDropdown"
+        android:layout_marginTop="20dp"
+        android:layout_marginLeft="100dp"/>
+
+</RelativeLayout>
