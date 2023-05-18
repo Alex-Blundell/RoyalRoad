@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".ForumFragment">
+
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            >
+
+            <androidx.appcompat.widget.Toolbar
+                android:id="@+id/SubForumsToolbar"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="25dp"
+                android:layout_marginTop="25dp"
+                android:layout_marginRight="25dp"
+                android:background="@color/ToolbarBlue"
+                android:minHeight="?attr/actionBarSize"
+                android:theme="?attr/actionBarTheme"
+                app:title="Sub-Forums"
+                app:titleTextColor="@color/white"/>
+
+            <ListView
+                android:id="@+id/SubForums"
+                android:layout_width="match_parent"
+                android:layout_height="325dp"
+                android:layout_below="@id/SubForumsToolbar"
+                android:layout_marginLeft="25dp"
+                android:layout_marginRight="25dp"
+                android:background="@color/DarkInner"
+                android:entries="@array/PopularThreadArray"
+                />
+
+            <androidx.appcompat.widget.Toolbar
+                android:id="@+id/ImportantThreadsToolbar"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="25dp"
+                android:layout_marginTop="25dp"
+                android:layout_marginRight="25dp"
+                android:background="@color/ToolbarBlue"
+                android:minHeight="?attr/actionBarSize"
+                android:theme="?attr/actionBarTheme"
+                android:layout_below="@id/SubForums"
+                app:title="Important Threads"
+                app:titleTextColor="@color/white"/>
+
+            <ListView
+                android:id="@+id/ImportantThreads"
+                android:layout_width="match_parent"
+                android:layout_height="325dp"
+                android:layout_marginLeft="25dp"
+                android:layout_marginRight="25dp"
+                android:background="@color/DarkInner"
+                android:entries="@array/PopularThreadArray"
+                android:layout_below="@id/ImportantThreadsToolbar"
+                />
+
+            <androidx.appcompat.widget.Toolbar
+                android:id="@+id/ActiveTopicsToolbar"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="25dp"
+                android:layout_marginTop="25dp"
+                android:layout_marginRight="25dp"
+                android:background="@color/ToolbarBlue"
+                android:minHeight="?attr/actionBarSize"
+                android:theme="?attr/actionBarTheme"
+                android:layout_below="@id/ImportantThreads"
+                app:title="Active Topics"
+                app:titleTextColor="@color/white"/>
+
+            <ListView
+                android:id="@+id/ActiveTopics"
+                android:layout_width="match_parent"
+                android:layout_height="1300dp"
+                android:layout_marginLeft="25dp"
+                android:layout_marginRight="25dp"
+                android:background="@color/DarkInner"
+                android:entries="@array/PopularThreadArray"
+                android:layout_below="@id/ActiveTopicsToolbar"
+                android:layout_marginBottom="45dp"
+                />
+
+        </RelativeLayout>
+    </ScrollView>
+</RelativeLayout>

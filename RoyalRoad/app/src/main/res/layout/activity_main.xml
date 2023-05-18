@@ -1,127 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/LoginRelativeLayout"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".MainActivity">
 
-    <Button
-        android:id="@+id/DiscoverBTN"
-        android:layout_width="150dp"
-        android:layout_height="75dp"
-        android:layout_below="@id/imageView"
-        android:layout_marginLeft="20dp"
-        android:layout_marginTop="175dp"
-        android:backgroundTint="@color/ButtonInner"
-        android:text="Discover" />
-
-    <Button
-        android:id="@+id/LibraryBTN"
-        android:layout_width="150dp"
-        android:layout_height="75dp"
-        android:layout_below="@id/imageView"
-        android:layout_marginLeft="70dp"
-        android:layout_marginTop="175dp"
-        android:layout_toRightOf="@id/DiscoverBTN"
-        android:backgroundTint="@color/ButtonInner"
-        android:text="Library" />
-
-    <Button
-        android:id="@+id/WriteBTN"
-        android:layout_width="150dp"
-        android:layout_height="75dp"
-        android:layout_below="@id/DiscoverBTN"
-        android:layout_marginLeft="20dp"
-        android:layout_marginTop="20dp"
-        android:backgroundTint="@color/ButtonInner"
-        android:text="Write" />
-
-    <Button
-        android:id="@+id/ForumsBTN"
-        android:layout_width="150dp"
-        android:layout_height="75dp"
-        android:layout_below="@id/LibraryBTN"
-        android:layout_marginLeft="70dp"
-        android:layout_marginTop="20dp"
-        android:layout_toRightOf="@id/WriteBTN"
-        android:backgroundTint="@color/ButtonInner"
-        android:text="Forums" />
-
-    <Button
-        android:id="@+id/FriendsBTN"
-        android:layout_width="150dp"
-        android:layout_height="75dp"
-        android:layout_below="@id/WriteBTN"
-        android:layout_marginLeft="20dp"
-        android:layout_marginTop="20dp"
-        android:backgroundTint="@color/ButtonInner"
-        android:text="Friends" />
-
-    <Button
-        android:id="@+id/SettingsBTN"
-        android:layout_width="150dp"
-        android:layout_height="75dp"
-        android:layout_below="@id/ForumsBTN"
-        android:layout_marginLeft="70dp"
-        android:layout_marginTop="20dp"
-        android:layout_toRightOf="@id/FriendsBTN"
-        android:backgroundTint="@color/ButtonInner"
-        android:text="Settings" />
-
-    <Button
-        android:id="@+id/LoginBTN"
-        android:layout_width="200dp"
-        android:layout_height="50dp"
-        android:layout_below="@id/SettingsBTN"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="60dp"
-        android:backgroundTint="@color/ButtonInner"
-        android:text="Login" />
-
-    <TextView
-        android:id="@+id/Username"
+    <ImageView
+        android:id="@+id/Background"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/Username"
-        android:layout_toRightOf="@id/imageView"
-        android:layout_marginTop="75dp"
-        android:layout_marginLeft="25dp"
-        android:textSize="16dp"
+        android:scaleType="centerCrop"
+        android:src="@drawable/base_bg" />
+
+    <FrameLayout
+        android:id="@+id/LoginFragmentFrame"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
         />
-
-    <ImageView
-        android:id="@+id/imageView"
-        android:layout_width="125dp"
-        android:layout_height="125dp"
-        android:layout_marginTop="50dp"
-        android:layout_marginLeft="25dp"
-        android:src="@drawable/default_profile"
-        />
-
-    <ImageButton
-        android:id="@+id/NotificationBTN"
-        android:layout_width="50dp"
-        android:layout_height="50dp"
-        android:layout_marginLeft="360dp"
-        android:layout_marginTop="10dp"
-        android:alpha="0.9"
-        android:background="@color/Invis"
-        android:rotationX="0"
-        android:scaleX="1.5"
-        android:scaleY="1.5"
-        app:srcCompat="@drawable/notifications" />
-
-    <ImageButton
-        android:id="@+id/MailBTN"
-        android:layout_width="50dp"
-        android:layout_height="50dp"
-        android:layout_marginLeft="300dp"
-        android:layout_marginTop="10dp"
-        android:alpha="0.9"
-        android:background="@color/Invis"
-        android:scaleX="1.5"
-        android:scaleY="1.5"
-        app:srcCompat="@drawable/message" />
 
 </RelativeLayout>

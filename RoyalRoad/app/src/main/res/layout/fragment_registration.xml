@@ -1,12 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".LoginActivity">
+    tools:context=".RegistrationFragment">
 
     <ImageView
+        android:id="@+id/BackgroundTwo"
+        android:layout_width="350dp"
+        android:layout_height="450dp"
+        android:layout_below="@id/Logo"
+        android:layout_marginTop="130dp"
+        android:layout_centerHorizontal="true"
+        android:background="@color/LightOuter"
+        />
+
+    <ImageView
+        android:id="@+id/Logo"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:src="@drawable/rrlogo"
@@ -18,28 +28,38 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="225dp"
+        android:layout_above="@id/UsernameField"
+        android:layout_marginBottom="10dp"
         android:text="Username:"
-        />
+        android:textSize="18dp" />
 
     <EditText
         android:id="@+id/UsernameField"
         android:layout_width="300dp"
         android:layout_height="48dp"
+        android:layout_centerVertical="true"
         android:layout_centerHorizontal="true"
-        android:layout_below="@id/UsernameTXT"
-        android:layout_marginTop="25dp"
         />
 
     <TextView
         android:id="@+id/PasswordTXT"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="50dp"
         android:layout_below="@id/UsernameField"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="25dp"
         android:text="Password:"
-        />
+        android:textSize="18sp" />
+
+    <TextView
+        android:id="@+id/ErrorTXT"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@id/UsernameTXT"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="50dp"
+        android:text="ERROR"
+        android:textSize="18sp" />
 
     <EditText
         android:id="@+id/PasswordField"
@@ -47,28 +67,29 @@
         android:layout_height="48dp"
         android:layout_centerHorizontal="true"
         android:layout_below="@id/PasswordTXT"
-        android:layout_marginTop="25dp"
+        android:layout_marginTop="10dp"
         android:inputType="textPassword"
         />
-
-    <Button
-        android:id="@+id/LoginBTN"
-        android:layout_width="240dp"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/PasswordField"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="40dp"
-        android:backgroundTint="@color/ButtonInner"
-        android:text="Login" />
 
     <Button
         android:id="@+id/RegisterBTN"
         android:layout_width="240dp"
         android:layout_height="wrap_content"
-        android:layout_below="@id/LoginBTN"
+        android:layout_below="@id/PasswordField"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="40dp"
+        android:layout_marginTop="20dp"
         android:backgroundTint="@color/ButtonInner"
         android:text="Register"
         />
+
+    <Button
+        android:id="@+id/BackBTN"
+        android:layout_width="200dp"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/RegisterBTN"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="20dp"
+        android:backgroundTint="@color/ButtonInner"
+        android:text="Back" />
+
 </RelativeLayout>

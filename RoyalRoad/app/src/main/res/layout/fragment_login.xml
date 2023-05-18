@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    tools:context=".LoginFragment">
+
+    <com.google.android.material.imageview.ShapeableImageView
+        android:id="@+id/BackgroundTwo"
+        android:layout_width="350dp"
+        android:layout_height="525dp"
+        android:layout_below="@id/Logo"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="50dp"
+        android:layout_marginBottom="40dp"
+        android:background="@color/LightOuter"
+        app:shapeAppearanceOverlay="@style/RoundImageView"
+        app:strokeWidth="5dp"
+        app:strokeColor="#1f000000"
+        />
+
+    <ImageView
+        android:id="@+id/Logo"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/rrlogo"
+        android:layout_marginTop="75dp"
+        />
+
+    <TextView
+        android:id="@+id/UsernameTXT"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="225dp"
+        android:text="Username:"
+        android:textSize="18dp" />
+
+    <EditText
+        android:id="@+id/UsernameField"
+        android:layout_width="300dp"
+        android:layout_height="48dp"
+        android:layout_centerHorizontal="true"
+        android:layout_below="@id/UsernameTXT"
+        android:layout_marginTop="10dp"
+        />
+
+    <TextView
+        android:id="@+id/PasswordTXT"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/UsernameField"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="50dp"
+        android:text="Password:"
+        android:textSize="18sp" />
+
+    <EditText
+        android:id="@+id/PasswordField"
+        android:layout_width="300dp"
+        android:layout_height="48dp"
+        android:layout_centerHorizontal="true"
+        android:layout_below="@id/PasswordTXT"
+        android:layout_marginTop="10dp"
+        android:inputType="textPassword"
+        />
+
+    <Button
+        android:id="@+id/LoginBTN"
+        android:layout_width="240dp"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/PasswordField"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="40dp"
+        android:backgroundTint="@color/ButtonInner"
+        android:text="Login" />
+
+    <Button
+        android:id="@+id/RegisterBTN"
+        android:layout_width="240dp"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/LoginBTN"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="10dp"
+        android:backgroundTint="@color/ButtonInner"
+        android:text="Register"
+        />
+
+    <Button
+        android:id="@+id/SkipLoginBTN"
+        android:layout_width="240dp"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/RegisterBTN"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="40dp"
+        android:backgroundTint="@color/ButtonInner"
+        android:text="Skip Login"
+        />
+
+</RelativeLayout>

@@ -6,14 +6,24 @@
     android:layout_height="match_parent"
     tools:context=".SettingsActivity">
 
-    <Button
+    <com.google.android.material.button.MaterialButton
         android:id="@+id/BackBTN"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:background="@color/Invis"
+        android:insetLeft="5dp"
         android:onClick="BackBTN"
+        android:scaleX="2"
+        android:scaleY="2"
         app:icon="@drawable/back"
-        app:iconTint="@color/black"/>
+        app:iconTint="@color/black" />
+
+    <FrameLayout
+        android:id="@+id/FragmentLayout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@id/BackBTN"
+        />
 
 </RelativeLayout>
 

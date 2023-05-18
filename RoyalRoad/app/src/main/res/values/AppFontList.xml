@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="AppFontArray">
+        <item>Arial</item>
+        <item>Lucida</item>
+        <item>Open Sans</item>
+        <item>Roboto</item>
+    </string-array>
+</resources>

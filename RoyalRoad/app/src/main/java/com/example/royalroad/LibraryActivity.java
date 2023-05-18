@@ -4,6 +4,8 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.content.res.ColorStateList;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
@@ -18,11 +20,14 @@ public class LibraryActivity extends AppCompatActivity {
 
     TabLayout BottomTabs;
     Toolbar TopToolbar;
+    ListView LibraryListView;
 
     private int HistoryCount;
     private int DownloadedCount;
     private int ReadLaterCount;
     private int DownloadManagerCount;
+
+    private boolean IsDarkMode;
 
     private enum Library
     {
@@ -37,6 +42,9 @@ public class LibraryActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_library);
+
+        SharedPreferences Pref = getSharedPreferences("Settings", MODE_PRIVATE);
+        IsDarkMode = Pref.getBoolean("AppTheme", false);
 
         BottomTabs = (TabLayout) findViewById(R.id.TabLayout);
         BottomTabs.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
@@ -119,6 +127,9 @@ public class LibraryActivity extends AppCompatActivity {
             }
         });
 
+        LibraryListView = findViewById(R.id.LibraryListview);
+        SwitchTheme(IsDarkMode);
+
         SwitchLibraries(Library.History);
     }
 
@@ -166,6 +177,22 @@ public class LibraryActivity extends AppCompatActivity {
 
             case Download_Manager:
                 break;
+        }
+    }
+
+    public void SwitchTheme(boolean DarkMode)
+    {
+        if(DarkMode)
+        {
+            LibraryListView.setBackgroundColor(getColor(R.color.DarkOuter));
+            BottomTabs.setTabTextColors(ColorStateList.valueOf(getColor(R.color.ToolbarItem)));
+            BottomTabs.setSelectedTabIndicatorColor(getColor(R.color.ToolbarItem));
+        }
+        else
+        {
+            LibraryListView.setBackgroundColor(getColor(R.color.white));
+            BottomTabs.setTabTextColors(ColorStateList.valueOf(getColor(R.color.black)));
+            BottomTabs.setSelectedTabIndicatorColor(getColor(R.color.black));
         }
     }
 }

@@ -1,9 +1,294 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".DiscoverActivity">
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            >
+
+            <SearchView
+                android:id="@+id/Searchbar"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                />
+
+            <com.google.android.material.tabs.TabLayout
+                android:id="@+id/DiscoverTabs"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/Searchbar"
+                app:tabMode="scrollable">
+
+                <com.google.android.material.tabs.TabItem
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Home" />
+
+                <com.google.android.material.tabs.TabItem
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Best Rated" />
+
+                <com.google.android.material.tabs.TabItem
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Trending" />
+
+                <com.google.android.material.tabs.TabItem
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="On Going Fictions" />
+
+                <com.google.android.material.tabs.TabItem
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Complete"/>
+
+                <com.google.android.material.tabs.TabItem
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="New Releases" />
+            </com.google.android.material.tabs.TabLayout>
+
+            <FrameLayout
+                android:id="@+id/NewsDisplay"
+                android:layout_width="match_parent"
+                android:layout_height="200dp"
+                android:layout_below="@id/DiscoverTabs"
+                android:layout_marginLeft="10dp"
+                android:layout_marginTop="25dp"
+                android:layout_marginRight="10dp"
+                >
+
+            </FrameLayout>
+
+            <TextView
+                android:id="@+id/LatestUpdatesTXT"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/NewsDisplay"
+                android:layout_marginLeft="50dp"
+                android:layout_marginTop="25dp"
+                android:drawableLeft="@drawable/best_completed_icon"
+                android:drawablePadding="@dimen/default_gap"
+                android:text="Latest Updates" />
+
+            <ListView
+                android:id="@+id/LatestUpdatesList"
+                android:layout_width="match_parent"
+                android:layout_height="650dp"
+                android:layout_below="@id/LatestUpdatesTXT"
+                android:layout_marginLeft="25dp"
+                android:layout_marginRight="25dp"
+                android:layout_marginTop="5dp"/>
+
+            <Button
+                android:id="@+id/MoreUpdatesBTN"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/LatestUpdatesList"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="10dp"
+                android:text="More Updates"
+                android:backgroundTint="@color/ButtonInner"
+                />
+
+            <TextView
+                android:id="@+id/RisingStarsTXT"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/MoreUpdatesBTN"
+                android:layout_marginLeft="50dp"
+                android:layout_marginTop="25dp"
+                android:text="Rising Stars"
+                android:textSize="18sp"
+                />
+
+            <ListView
+                android:id="@+id/RisingStartsList"
+                android:layout_width="match_parent"
+                android:layout_height="450dp"
+                android:layout_below="@id/RisingStarsTXT"
+                android:layout_marginLeft="25dp"
+                android:layout_marginRight="25dp"
+                android:layout_marginTop="5dp"/>
+
+            <Button
+                android:id="@+id/MoreRisingBTN"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:layout_centerHorizontal="true"
+                android:layout_below="@id/RisingStartsList"
+                android:text="More Rising Stars"
+                android:backgroundTint="@color/ButtonInner"
+                />
+
+            <TextView
+                android:id="@+id/WeeklyPopularTXT"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Popular This Week"
+                android:layout_marginTop="25dp"
+                android:layout_marginLeft="50dp"
+                android:layout_below="@id/MoreRisingBTN"
+                android:textSize="18sp"
+                />
+
+            <HorizontalScrollView
+                android:id="@+id/WeeklyPopularView"
+                android:layout_width="match_parent"
+                android:layout_height="175dp"
+                android:layout_marginLeft="25dp"
+                android:layout_marginTop="5dp"
+                android:layout_marginRight="25dp"
+                android:layout_marginBottom="25dp"
+                android:layout_below="@id/WeeklyPopularTXT">
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:orientation="horizontal">
+
+                    <ImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:layout_marginLeft="25dp"
+                        android:layout_marginBottom="25dp"
+                        android:adjustViewBounds="true"
+                        android:src="@drawable/default_cover" />
+
+                    <ImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:layout_marginLeft="10dp"
+                        android:layout_marginBottom="25dp"
+                        android:adjustViewBounds="true"
+                        android:src="@drawable/default_cover" />
+
+                    <ImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:layout_marginLeft="10dp"
+                        android:layout_marginBottom="25dp"
+                        android:adjustViewBounds="true"
+                        android:src="@drawable/default_cover" />
+
+                    <ImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:layout_marginLeft="10dp"
+                        android:layout_marginBottom="25dp"
+                        android:adjustViewBounds="true"
+                        android:src="@drawable/default_cover" />
+
+                    <ImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:layout_marginLeft="10dp"
+                        android:layout_marginBottom="25dp"
+                        android:adjustViewBounds="true"
+                        android:src="@drawable/default_cover" />
+
+                    <ImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:layout_marginLeft="10dp"
+                        android:layout_marginBottom="25dp"
+                        android:adjustViewBounds="true"
+                        android:src="@drawable/default_cover" />
+
+                    <ImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:layout_marginLeft="10dp"
+                        android:layout_marginBottom="25dp"
+                        android:adjustViewBounds="true"
+                        android:src="@drawable/default_cover" />
+
+                    <ImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:layout_marginLeft="10dp"
+                        android:layout_marginBottom="25dp"
+                        android:adjustViewBounds="true"
+                        android:src="@drawable/default_cover" />
+                </LinearLayout>
+            </HorizontalScrollView>
+
+            <TextView
+                android:id="@+id/BestCompletedTXT"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/WeeklyPopularView"
+                android:layout_marginLeft="50dp"
+                android:layout_marginTop="25dp"
+                android:text="Best Completed"
+                android:textSize="18sp"
+                />
+
+            <ListView
+                android:id="@+id/BestCompletedList"
+                android:layout_width="match_parent"
+                android:layout_height="650dp"
+                android:layout_below="@id/BestCompletedTXT"
+                android:layout_marginLeft="25dp"
+                android:layout_marginRight="25dp"
+                android:layout_marginTop="5dp"/>
+
+            <Button
+                android:id="@+id/MoreBestCompletedBTN"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:layout_centerHorizontal="true"
+                android:layout_below="@id/BestCompletedList"
+                android:text="More Fictions"
+                android:backgroundTint="@color/ButtonInner"
+                />
+
+            <TextView
+                android:id="@+id/BestOngoingTXT"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/MoreBestCompletedBTN"
+                android:layout_marginLeft="50dp"
+                android:layout_marginTop="25dp"
+                android:text="Best Completed"
+                android:textSize="18sp"
+                />
+
+            <ListView
+                android:id="@+id/BestOngoingList"
+                android:layout_width="match_parent"
+                android:layout_height="650dp"
+                android:layout_below="@id/BestOngoingTXT"
+                android:layout_marginLeft="25dp"
+                android:layout_marginRight="25dp"
+                android:layout_marginTop="5dp"/>
+
+            <Button
+                android:id="@+id/MoreBestOngoingBTN"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:layout_marginBottom="25dp"
+                android:layout_centerHorizontal="true"
+                android:layout_below="@id/BestOngoingList"
+                android:text="More Fictions"
+                android:backgroundTint="@color/ButtonInner"
+                />
+
+        </RelativeLayout>
+    </ScrollView>
+</RelativeLayout>

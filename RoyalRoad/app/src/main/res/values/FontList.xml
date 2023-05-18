@@ -1,9 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string-array name="FontArray">
-        <item>Ariel</item>
-        <item>Calibri</item>
-        <item>Times New Roman</item>
-        <item>Century</item>
+        <item>Arial</item>
+        <item>Atkinson Hyperlegible</item>
+        <item>Caslon</item>
+        <item>Comic Sans</item>
+        <item>Franklin Gothic</item>
+        <item>Garamond</item>
+        <item>Lucida</item>
+        <item>Minion</item>
+        <item>Open Dyslexic</item>
+        <item>Open Sans</item>
+        <item>Roboto</item>
+        <item>Sans Serif</item>
+        <item>Verdana</item>
+        <item>Ubuntu</item>
+        <item>Ubuntu Condensed</item>
     </string-array>
 </resources>

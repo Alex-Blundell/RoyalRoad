@@ -7,16 +7,25 @@
     <color name="teal_700">#FF018786</color>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+
+    <!--Added Colors-->
+
     <color name="Invis">#00FFFFFF</color>
     <color name="ToolbarBlue">#2a3642</color>
     <color name="ToolbarItem">#c2a970</color>
+
+    <!--Dark Theme-->
+
     <color name="DarkInner">#131313</color>
     <color name="DarkOuter">#181818</color>
     <color name="DarkBorder">#2B2B2B</color>
     <color name="DarkText">#CCffffff</color>
 
+    <!--Light Theme-->
+
     <color name="LightOuter">#EFF3F8</color>
     <color name="LightLinks">#2a3642</color>
+    <color name="LightBorder">#1F000000</color>
 
     <color name="ButtonInner">#337ab7</color>
     <color name="ButtonBorder">#2e6da4</color>

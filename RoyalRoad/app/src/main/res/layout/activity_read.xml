@@ -23,60 +23,12 @@
         android:minHeight="?attr/actionBarSize"
         android:theme="?attr/actionBarTheme" />
 
-    <ScrollView
+    <FrameLayout
+        android:id="@+id/ReadFragmentFrame"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
         android:layout_below="@id/BookTopToolbar"
         android:layout_above="@id/BookBottomToolbar"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent">
-
-        <RelativeLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical" >
-
-            <ImageView
-                android:id="@+id/BookCover"
-                android:layout_marginTop="10dp"
-                android:layout_marginLeft="10dp"
-                android:layout_width="100dp"
-                android:layout_height="150dp"
-                app:srcCompat="@drawable/default_cover"
-                />
-
-            <TextView
-                android:id="@+id/BookTitle"
-                android:layout_toRightOf="@id/BookCover"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="30dp"
-                android:textSize="20dp"
-                android:layout_marginLeft="10dp"
-                android:text="BookTitle"
-                />
-
-            <TextView
-                android:id="@+id/BookAuthor"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_below="@id/BookTitle"
-                android:textSize="14dp"
-                android:layout_toRightOf="@id/BookCover"
-                android:layout_marginLeft="20dp"
-                android:text="Author"
-                />
-
-            <TextView
-                android:id="@+id/BookDescription"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_below="@id/BookCover"
-                android:layout_marginTop="20dp"
-                android:layout_marginLeft="20dp"
-                android:layout_marginRight="20dp"
-                android:text=""
-                />
-
-        </RelativeLayout>
-    </ScrollView>
+        />
 
 </RelativeLayout>

@@ -2,6 +2,7 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/BaseSettingsLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".BaseSettingsFragment">
@@ -10,8 +11,8 @@
         android:id="@+id/TopDivider"
         android:layout_width="match_parent"
         android:layout_height="2dp"
-        android:layout_marginTop="45dp"
         android:background="?android:attr/listDivider"
+        android:layout_marginTop="5dp"
         />
 
     <Button
@@ -20,28 +21,32 @@
         android:layout_height="60dp"
         android:background="@color/Invis"
         android:layout_below="@id/TopDivider"
+        >
+    </Button>
+
+    <ImageView
+        android:id="@+id/NextBTN"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/TopDivider"
+        android:layout_alignParentRight="true"
+        android:layout_marginTop="18dp"
+        android:scaleX="2"
+        android:scaleY="2"
+        android:src="@drawable/next"
+        android:text="Account Information"
+        android:layout_marginRight="20dp"
         />
 
     <TextView
         android:id="@+id/AccountInfoTXT"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Account Information"
         android:layout_below="@id/TopDivider"
-        android:layout_marginTop="20dp"
         android:layout_marginLeft="40dp"
-        />
-
-    <ImageView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
         android:text="Account Information"
-        android:layout_below="@id/TopDivider"
-        android:layout_toRightOf="@id/AccountInfoTXT"
-        android:layout_marginTop="18dp"
-        android:layout_marginLeft="200dp"
-        android:src="@drawable/next"
-        />
+        android:textSize="14sp" />
 
     <View
         android:id="@+id/AccountDivider"
@@ -52,23 +57,76 @@
         android:layout_marginTop="20dp"
         />
 
+    <Button
+        android:id="@+id/NotificationBTN"
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:background="@color/Invis"
+        android:layout_below="@id/AccountDivider"
+        >
+    </Button>
+
+    <ImageView
+        android:id="@+id/NextNotificationsBTN"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/AccountDivider"
+        android:layout_alignParentRight="true"
+        android:layout_marginTop="18dp"
+        android:scaleX="2"
+        android:scaleY="2"
+        android:src="@drawable/next"
+        android:text="Notifications"
+        android:layout_marginRight="20dp"
+        />
+
+    <TextView
+        android:id="@+id/NotificationInfoTXT"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/AccountDivider"
+        android:layout_marginLeft="40dp"
+        android:layout_marginTop="20dp"
+        android:text="Notifications"
+        android:textSize="14sp" />
+
+    <View
+        android:id="@+id/NotificationDivider"
+        android:layout_width="match_parent"
+        android:layout_height="2dp"
+        android:background="?android:attr/listDivider"
+        android:layout_below="@id/NotificationInfoTXT"
+        android:layout_marginTop="20dp"
+        />
+
     <TextView
         android:id="@+id/FontSizeTXT"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Font Size:"
-        android:layout_below="@id/AccountDivider"
-        android:layout_marginTop="20dp"
+        android:layout_below="@id/ReadingThemeTXT"
         android:layout_marginLeft="40dp"
-        />
+        android:layout_marginTop="20dp"
+        android:fontFamily="@font/open_sans"
+        android:text="Font Size:"
+        android:textSize="14sp" />
+
+    <TextView
+        android:id="@+id/AppFontSizeTXT"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="40dp"
+        android:layout_marginTop="22dp"
+        android:text="App Font Size:"
+        android:layout_below="@id/AppFontTXT"
+        android:textSize="14dp" />
 
     <TextView
         android:id="@+id/AppThemeTXT"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="App Theme:"
-        android:layout_below="@id/FontSizeTXT"
-        android:layout_marginTop="20dp"
+        android:layout_below="@id/AppSettingsDivider"
+        android:layout_marginTop="23dp"
         android:layout_marginLeft="40dp"
         />
 
@@ -77,8 +135,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Reading Theme:"
-        android:layout_below="@id/AppThemeTXT"
-        android:layout_marginTop="20dp"
+        android:layout_below="@id/NotificationDivider"
+        android:layout_marginTop="23dp"
         android:layout_marginLeft="40dp"
         />
 
@@ -87,8 +145,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Brightness:"
-        android:layout_below="@id/ReadingThemeTXT"
-        android:layout_marginTop="20dp"
+        android:layout_below="@id/AppThemeTXT"
+        android:layout_marginTop="22dp"
         android:layout_marginLeft="40dp"
         />
 
@@ -97,8 +155,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="App Font:"
-        android:layout_below="@id/BrightnessTXT"
-        android:layout_marginTop="20dp"
+        android:layout_below="@id/LanguageTXT"
+        android:layout_marginTop="25dp"
         android:layout_marginLeft="40dp"
         />
 
@@ -106,10 +164,18 @@
         android:id="@+id/ReadingFontTXT"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Reading Font:"
-        android:layout_below="@id/AppFontTXT"
-        android:layout_marginTop="20dp"
+        android:layout_below="@id/FontSizeTXT"
         android:layout_marginLeft="40dp"
+        android:layout_marginTop="23dp"
+        android:text="Reading Font:" />
+
+    <View
+        android:id="@+id/AppSettingsDivider"
+        android:layout_width="match_parent"
+        android:layout_height="2dp"
+        android:background="?android:attr/listDivider"
+        android:layout_below="@id/ReadingFontTXT"
+        android:layout_marginTop="20dp"
         />
 
     <View
@@ -117,7 +183,7 @@
         android:layout_width="match_parent"
         android:layout_height="2dp"
         android:background="?android:attr/listDivider"
-        android:layout_below="@id/ReadingFontTXT"
+        android:layout_below="@id/AppFontSizeTXT"
         android:layout_marginTop="20dp"
         />
 
@@ -128,7 +194,8 @@
         android:layout_centerHorizontal="true"
         android:layout_marginTop="20dp"
         android:layout_below="@id/SettingsDivider"
-        android:text="Clear History" />
+        android:text="Clear History"
+        android:backgroundTint="@color/ButtonInner"/>
 
     <Button
         android:id="@+id/ClearCacheBTN"
@@ -137,7 +204,8 @@
         android:layout_centerHorizontal="true"
         android:layout_marginTop="10dp"
         android:layout_below="@id/ClearHistoryBTN"
-        android:text="Clear Cache" />
+        android:text="Clear Cache"
+        android:backgroundTint="@color/ButtonInner"/>
 
     <Button
         android:id="@+id/ClearUpdatesBTN"
@@ -146,15 +214,16 @@
         android:layout_centerHorizontal="true"
         android:layout_marginTop="10dp"
         android:layout_below="@id/ClearCacheBTN"
-        android:text="Clear Updates" />
+        android:text="Clear Offline Updates"
+        android:backgroundTint="@color/ButtonInner"/>
 
     <TextView
         android:id="@+id/LanguageTXT"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Language:"
-        android:layout_below="@id/ClearUpdatesBTN"
-        android:layout_marginTop="20dp"
+        android:layout_below="@id/BrightnessTXT"
+        android:layout_marginTop="19dp"
         android:layout_marginLeft="40dp"
         />
 
@@ -162,10 +231,24 @@
         android:id="@+id/FontSizeSlider"
         android:layout_width="180dp"
         android:layout_height="wrap_content"
-        android:layout_toRightOf="@+id/FontSizeTXT"
-        android:layout_below="@id/AccountDivider"
-        android:layout_marginTop="20dp"
+        android:layout_below="@id/ReadingThemeDropdown"
         android:layout_marginLeft="100dp"
+        android:layout_marginTop="20dp"
+        android:layout_toRightOf="@+id/FontSizeTXT"
+        android:max="22"
+        android:layout_marginRight="10dp"
+        />
+
+    <SeekBar
+        android:id="@+id/AppFontSizeSlider"
+        android:layout_width="180dp"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/AppFontDropdown"
+        android:layout_marginLeft="100dp"
+        android:layout_marginTop="20dp"
+        android:layout_toRightOf="@+id/FontSizeTXT"
+        android:max="10"
+        android:layout_marginRight="10dp"
         />
 
     <Spinner
@@ -173,27 +256,41 @@
         android:layout_width="180dp"
         android:layout_height="wrap_content"
         android:layout_toRightOf="@+id/FontSizeTXT"
-        android:layout_below="@id/FontSizeSlider"
+        android:layout_below="@id/AppSettingsDivider"
         android:layout_marginTop="20dp"
-        android:layout_marginLeft="100dp"/>
+        android:layout_marginLeft="100dp"
+        android:layout_marginRight="10dp"/>
+
+    <Spinner
+        android:id="@+id/LanguageDropdown"
+        android:layout_width="180dp"
+        android:layout_height="wrap_content"
+        android:layout_toRightOf="@+id/FontSizeTXT"
+        android:layout_below="@id/BrightnessSlider"
+        android:layout_marginTop="20dp"
+        android:layout_marginLeft="100dp"
+        android:layout_marginRight="10dp"/>
 
     <Spinner
         android:id="@+id/ReadingThemeDropdown"
         android:layout_width="180dp"
         android:layout_height="wrap_content"
         android:layout_toRightOf="@+id/FontSizeTXT"
-        android:layout_below="@id/AppThemeDropdown"
+        android:layout_below="@id/NotificationDivider"
         android:layout_marginTop="20dp"
-        android:layout_marginLeft="100dp"/>
+        android:layout_marginLeft="100dp"
+        android:layout_marginRight="10dp"
+        />
 
     <SeekBar
         android:id="@+id/BrightnessSlider"
         android:layout_width="180dp"
         android:layout_height="wrap_content"
         android:layout_toRightOf="@+id/FontSizeTXT"
-        android:layout_below="@id/ReadingThemeDropdown"
+        android:layout_below="@id/AppThemeDropdown"
         android:layout_marginTop="20dp"
         android:layout_marginLeft="100dp"
+        android:layout_marginRight="10dp"
         />
 
     <Spinner
@@ -201,17 +298,19 @@
         android:layout_width="180dp"
         android:layout_height="wrap_content"
         android:layout_toRightOf="@+id/FontSizeTXT"
-        android:layout_below="@id/BrightnessSlider"
+        android:layout_below="@id/LanguageDropdown"
         android:layout_marginTop="20dp"
-        android:layout_marginLeft="100dp"/>
+        android:layout_marginLeft="100dp"
+        android:layout_marginRight="10dp"/>
 
     <Spinner
         android:id="@+id/ReadingFontDropdown"
         android:layout_width="180dp"
         android:layout_height="wrap_content"
         android:layout_toRightOf="@+id/FontSizeTXT"
-        android:layout_below="@id/AppFontDropdown"
+        android:layout_below="@id/FontSizeSlider"
         android:layout_marginTop="20dp"
-        android:layout_marginLeft="100dp"/>
+        android:layout_marginLeft="100dp"
+        android:layout_marginRight="10dp"/>
 
 </RelativeLayout>

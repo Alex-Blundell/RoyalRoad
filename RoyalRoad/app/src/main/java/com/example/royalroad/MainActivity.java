@@ -1,9 +1,20 @@
 package com.example.royalroad;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.TintInfo;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 
+import android.annotation.SuppressLint;
 import android.app.ActionBar;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.content.res.ColorStateList;
+import android.graphics.Color;
+import android.graphics.ColorSpace;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
@@ -13,89 +24,35 @@ import android.view.WindowInsets;
 import android.view.WindowInsetsController;
 import android.view.WindowManager;
 import android.widget.Button;
+import android.widget.EditText;
+import android.widget.FrameLayout;
+import android.widget.ImageButton;
+import android.widget.ImageView;
+import android.widget.RelativeLayout;
+import android.widget.TextView;
+
+import org.w3c.dom.Text;
 
 public class MainActivity extends AppCompatActivity {
 
-    Button LoginBTN;
-    Button DiscoverBTN;
-    Button LibraryBTN;
-    Button WriteBTN;
-    Button ForumsBTN;
-    Button FriendsBTN;
-    Button SettingsBTN;
+    FrameLayout FragmentFrame;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
         setContentView(R.layout.activity_main);
 
-        // Check if IsLoggedIn, if IsLoggedIn then Change LoginBTN Text to Logout.
-        LoginBTN = findViewById(R.id.LoginBTN);
+        FragmentFrame = findViewById(R.id.LoginFragmentFrame);
 
-        DiscoverBTN = findViewById(R.id.DiscoverBTN);
-        LibraryBTN = findViewById(R.id.LibraryBTN);
-        WriteBTN = findViewById(R.id.WriteBTN);
-        ForumsBTN = findViewById(R.id.ForumsBTN);
-        FriendsBTN = findViewById(R.id.FriendsBTN);
-        SettingsBTN = findViewById(R.id.SettingsBTN);
+        ReplaceFragment(new LoginFragment());
+    }
 
-        LoginBTN.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                // If IsLoggedIn then On Click should Log you out instead.
-                // If Not IsLoggedIn Then:
-                Intent LoginIntent = new Intent(MainActivity.this, LoginActivity.class);
-                startActivity(LoginIntent);
-            }
-        });
+    public void ReplaceFragment(Fragment fragment)
+    {
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
 
-        DiscoverBTN.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent DiscoverIntent = new Intent(MainActivity.this, DiscoverActivity.class);
-                startActivity(DiscoverIntent);
-            }
-        });
-
-        LibraryBTN.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent LibraryIntent = new Intent(MainActivity.this, LibraryActivity.class);
-                startActivity(LibraryIntent);
-            }
-        });
-
-        WriteBTN.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent WriteIntent = new Intent(MainActivity.this, WriteActivity.class);
-                startActivity(WriteIntent);
-            }
-        });
-
-        ForumsBTN.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent ForumsIntent = new Intent(MainActivity.this, ForumsActivity.class);
-                startActivity(ForumsIntent);
-            }
-        });
-
-        FriendsBTN.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent FriendsIntent = new Intent(MainActivity.this, FriendsActivity.class);
-                startActivity(FriendsIntent);
-            }
-        });
-
-        SettingsBTN.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent SettingsIntent = new Intent(MainActivity.this, SettingsActivity.class);
-                startActivity(SettingsIntent);
-            }
-        });
+        fragmentTransaction.replace(R.id.LoginFragmentFrame, fragment);
+        fragmentTransaction.commit();
     }
 }

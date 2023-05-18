@@ -3,8 +3,17 @@
     <string-array name="CommunityThreadsArray">
         <item>General</item>
         <item>Writathon</item>
-        <item>Celebration</item>
-        <item>Introductions</item>
-        <item>Assistance Request</item>
+        <item>
+            <Item>Celebration</Item>
+            <Item>\n\nSomething great just happened to you on Royal Road and you want to share it? do it here! YAY!</Item>
+        </item>
+        <item>
+            <item>Introductions</item>
+            <item>\n\nIntroduce yourself, or welcome new people. Remember to give +rep when you like a post, in order to encourage positivity.</item>
+        </item>
+        <item>
+            <item>Assistance Request</item>
+            <item>\n\nDo you need help with something? Ask the community!</item>
+        </item>
     </string-array>
 </resources>
