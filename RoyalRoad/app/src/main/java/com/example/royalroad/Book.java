@@ -9,8 +9,8 @@ public class Book
 {
     public enum BookType
     {
-        Fanfiction,
-        Original
+        Original,
+        Fanfiction
     }
 
     public enum Genres
@@ -102,6 +102,7 @@ public class Book
     public int ExternalID;
     public BookType Type;
     public String Title;
+    public String Author;
     public String Description;
     public ArrayList<Genres> SelectedGenres;
     public int PageCount;

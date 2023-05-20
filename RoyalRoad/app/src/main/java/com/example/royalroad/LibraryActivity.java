@@ -2,11 +2,14 @@ package com.example.royalroad;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.ColorStateList;
 import android.os.Bundle;
+import android.os.Debug;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -15,12 +18,15 @@ import android.widget.ListView;
 
 import com.google.android.material.tabs.TabLayout;
 
+import java.util.ArrayList;
+import java.util.List;
+
 
 public class LibraryActivity extends AppCompatActivity {
 
     TabLayout BottomTabs;
     Toolbar TopToolbar;
-    ListView LibraryListView;
+    RecyclerView LibraryRecyclerview;
 
     private int HistoryCount;
     private int DownloadedCount;
@@ -28,6 +34,9 @@ public class LibraryActivity extends AppCompatActivity {
     private int DownloadManagerCount;
 
     private boolean IsDarkMode;
+
+    private BookAdapter bookAdapter;
+    private List<Book> BookList;
 
     private enum Library
     {
@@ -83,18 +92,6 @@ public class LibraryActivity extends AppCompatActivity {
             }
         });
 
-        if(HistoryCount > 0)
-            BottomTabs.getTabAt(0).setText(BottomTabs.getTabAt(0).getText() + " ( " + HistoryCount + " )");
-
-        if(DownloadedCount > 0)
-            BottomTabs.getTabAt(1).setText(BottomTabs.getTabAt(1).getText() + " ( " + DownloadedCount + " )");
-
-        if(ReadLaterCount > 0)
-            BottomTabs.getTabAt(2).setText(BottomTabs.getTabAt(2).getText() + " ( " + ReadLaterCount + " )");
-
-        if(DownloadManagerCount > 0)
-            BottomTabs.getTabAt(4).setText(BottomTabs.getTabAt(4).getText() + " ( " + DownloadManagerCount + " )");
-
         TopToolbar = (Toolbar) findViewById(R.id.TopToolbar);
         TopToolbar.inflateMenu(R.menu.librarytoptoolbar);
         TopToolbar.setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener() {
@@ -127,10 +124,53 @@ public class LibraryActivity extends AppCompatActivity {
             }
         });
 
-        LibraryListView = findViewById(R.id.LibraryListview);
+        LibraryRecyclerview = findViewById(R.id.LibraryRecyclerview);
         SwitchTheme(IsDarkMode);
 
+        InitializeLibrary();
+
         SwitchLibraries(Library.History);
+    }
+
+    private void InitializeLibrary()
+    {
+        BookList = new ArrayList<>();
+
+        LibraryRecyclerview.setLayoutManager(new LinearLayoutManager(this));
+        LibraryRecyclerview.setHasFixedSize(true);
+
+        Book DebugBook = new Book(1, 1, Book.BookType.Original);
+        DebugBook.Title = "Hello";
+        DebugBook.Description = "How Are You?";
+        DebugBook.Author = "Greetings!";
+
+        for(int i = 0; i < 150; i++)
+        {
+            // Randomize Cover Image.
+
+            BookList.add(DebugBook);
+        }
+
+        bookAdapter = new BookAdapter(BookList);
+        LibraryRecyclerview.setAdapter(bookAdapter);
+
+        //Check Which Library we are on.
+        HistoryCount = BookList.size();
+        DownloadedCount = BookList.size();
+        ReadLaterCount = BookList.size();
+        DownloadManagerCount = BookList.size();
+
+        if(HistoryCount > 0)
+            BottomTabs.getTabAt(0).setText(BottomTabs.getTabAt(0).getText() + " ( " + HistoryCount + " )");
+
+        if(DownloadedCount > 0)
+            BottomTabs.getTabAt(1).setText(BottomTabs.getTabAt(1).getText() + " ( " + DownloadedCount + " )");
+
+        if(ReadLaterCount > 0)
+            BottomTabs.getTabAt(2).setText(BottomTabs.getTabAt(2).getText() + " ( " + ReadLaterCount + " )");
+
+        if(DownloadManagerCount > 0)
+            BottomTabs.getTabAt(4).setText(BottomTabs.getTabAt(4).getText() + " ( " + DownloadManagerCount + " )");
     }
 
     public void SyncLibrary()
@@ -184,13 +224,13 @@ public class LibraryActivity extends AppCompatActivity {
     {
         if(DarkMode)
         {
-            LibraryListView.setBackgroundColor(getColor(R.color.DarkOuter));
+            LibraryRecyclerview.setBackgroundColor(getColor(R.color.DarkOuter));
             BottomTabs.setTabTextColors(ColorStateList.valueOf(getColor(R.color.ToolbarItem)));
             BottomTabs.setSelectedTabIndicatorColor(getColor(R.color.ToolbarItem));
         }
         else
         {
-            LibraryListView.setBackgroundColor(getColor(R.color.white));
+            LibraryRecyclerview.setBackgroundColor(getColor(R.color.white));
             BottomTabs.setTabTextColors(ColorStateList.valueOf(getColor(R.color.black)));
             BottomTabs.setSelectedTabIndicatorColor(getColor(R.color.black));
         }

@@ -11,6 +11,8 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.ColorStateList;
 import android.database.Cursor;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.os.Debug;
 import android.provider.MediaStore;
@@ -23,6 +25,7 @@ import android.widget.RelativeLayout;
 import android.widget.SearchView;
 import android.widget.TextView;
 import android.net.Uri;
+import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -39,6 +42,7 @@ import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
 import java.io.File;
+import java.util.ArrayList;
 
 public class HomeActivity extends AppCompatActivity {
     Button LoginBTN;
@@ -277,6 +281,61 @@ public class HomeActivity extends AppCompatActivity {
                 finish();
             }
         });
+
+        CheckUpdates();
+    }
+
+    private void CheckUpdates()
+    {
+        final ArrayList<Integer>[] ExternalIDs = new ArrayList[]{new ArrayList<Integer>()};
+
+        ConnectivityManager connectivityManager = (ConnectivityManager)getSystemService(Context.CONNECTIVITY_SERVICE);
+
+        // Check if Online.
+        boolean IsOnline = (connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_MOBILE).getState() == NetworkInfo.State.CONNECTED ||
+                connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI).getState() == NetworkInfo.State.CONNECTED);
+
+        if(IsOnline)
+        {
+            SharedPreferences Pref = getSharedPreferences("Settings", MODE_PRIVATE);
+            int UserID = Pref.getInt("UserID", 1);
+
+            boolean HasUpdated = false;
+
+            db.collection("User_Books")
+                    .whereEqualTo("UserID", UserID)
+                    .get()
+                    .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                        @Override
+                        public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                            if(task.getResult().size() == 1)
+                            {
+                                DocumentSnapshot BooksDocument = task.getResult().getDocuments().get(0);
+                                ExternalIDs[0] = (ArrayList<Integer>) BooksDocument.get("ExternalIDs");
+
+                                // Check if any of these ID's are new ExternalID's that do NOT exist in the SQLite Database.
+                                // IF: NewID's
+                                    // Add Those ID's to The SQLite DB.
+                            }
+                            else
+                            {
+
+                            }
+                        }
+                    });
+
+            // Run through the SQLite Database ExternalIDs and Check if any have Updated.
+
+            if(HasUpdated)
+            {
+                // Update SQLite Database Entry.
+                // Send Update Notification.
+            }
+        }
+        else
+        {
+            Toast.makeText(this, "Offline", Toast.LENGTH_SHORT).show();
+        }
     }
 
     public void SwitchThemes(boolean DarkMode) {
