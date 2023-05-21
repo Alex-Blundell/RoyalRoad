@@ -91,11 +91,19 @@ public class Book
         Traumatising_Content
     }
 
-    public class Chapter
+    public static class ChapterLine
+    {
+        public int ID;
+        public String Line;
+        public String Style;
+    }
+
+    public static class Chapter
     {
         public int ID;
         public String Name;
-        public String Content;
+        public String URL;
+        public ArrayList<ChapterLine> ContentLines;
     }
 
     public int InternalID;
@@ -104,6 +112,7 @@ public class Book
     public String Title;
     public String Author;
     public String Description;
+    public String CoverURL;
     public ArrayList<Genres> SelectedGenres;
     public int PageCount;
     public int Followers;
@@ -115,12 +124,19 @@ public class Book
     public ArrayList<Chapter> Chapters;
     public ArrayList<Tags> TagsList;
     public ArrayList<Warnings> ContentWarnings;
+    public boolean HasRead;
+    public int LastReadChapter;
 
     public Book(int internalID, int externalID, BookType type)
     {
         this.InternalID = internalID;
         this.ExternalID = externalID;
         this.Type = type;
+    }
+
+    public Book()
+    {
+
     }
 
     public void getAllChapters()

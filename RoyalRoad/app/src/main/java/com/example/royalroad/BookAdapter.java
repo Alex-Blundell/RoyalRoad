@@ -22,20 +22,7 @@ import java.util.List;
 
 public class BookAdapter extends RecyclerView.Adapter<BookAdapter.bookviewholder>
 {
-    ArrayList<String> Titles = new ArrayList<String>(Arrays.asList(
-            "Hello",
-            "Greetings",
-            "Jello",
-            "These",
-            "Are",
-            "Debug",
-            "Titles",
-            "Please",
-            "Enjoy"
-    ));
-
     List<Book> Data;
-    private int TitleIndex = 0;
 
     public BookAdapter (List<Book> ThisData)
     {
@@ -82,16 +69,7 @@ public class BookAdapter extends RecyclerView.Adapter<BookAdapter.bookviewholder
             holder.Warnings.setTextColor(holder.itemView.getResources().getColor(R.color.black));
         }
 
-        holder.Title.setText(Titles.get(TitleIndex));
-
-        if(TitleIndex == 8)
-        {
-            TitleIndex = 0;
-        }
-        else
-        {
-            TitleIndex++;
-        }
+        holder.Title.setText("");
 
         holder.OpenBookBTN.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -104,7 +82,8 @@ public class BookAdapter extends RecyclerView.Adapter<BookAdapter.bookviewholder
     }
 
     @Override
-    public int getItemCount() {
+    public int getItemCount()
+    {
         return Data.size();
     }
 

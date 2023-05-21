@@ -139,16 +139,21 @@ public class LibraryActivity extends AppCompatActivity {
         LibraryRecyclerview.setLayoutManager(new LinearLayoutManager(this));
         LibraryRecyclerview.setHasFixedSize(true);
 
-        Book DebugBook = new Book(1, 1, Book.BookType.Original);
-        DebugBook.Title = "Hello";
-        DebugBook.Description = "How Are You?";
-        DebugBook.Author = "Greetings!";
+        DBHandler SQLiteDB = new DBHandler(this);
 
-        for(int i = 0; i < 150; i++)
+        int LibraryCount = SQLiteDB.GetLibraryCount();
+
+        if(LibraryCount > 0)
         {
-            // Randomize Cover Image.
-
-            BookList.add(DebugBook);
+            for(int i = 0; i < LibraryCount; i++)
+            {
+                Book NewBook = SQLiteDB.GetBook(i);
+                BookList.add(NewBook);
+            }
+        }
+        else
+        {
+            // Display Library Empty Message.
         }
 
         bookAdapter = new BookAdapter(BookList);
