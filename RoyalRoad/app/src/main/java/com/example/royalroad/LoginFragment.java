@@ -96,8 +96,11 @@ public class LoginFragment extends Fragment {
         if(LoggedIn || HasSkipped)
         {
             Intent ThisIntent = new Intent(getActivity(), HomeActivity.class);
-            startActivity(ThisIntent);
+
+            Log.println(Log.INFO, "Hi", "In Login");
+
             getActivity().finish();
+            startActivity(ThisIntent);
         }
 
         db = FirebaseFirestore.getInstance();

@@ -1,11 +1,12 @@
 package com.example.royalroad;
 
+import java.io.Serializable;
 import java.sql.Time;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.GregorianCalendar;
 
-public class Book
+public class Book implements Serializable
 {
     public enum BookType
     {
@@ -91,14 +92,14 @@ public class Book
         Traumatising_Content
     }
 
-    public static class ChapterLine
+    public static class ChapterLine implements Serializable
     {
         public int ID;
         public String Line;
-        public String Style;
+        public int Style;
     }
 
-    public static class Chapter
+    public static class Chapter implements Serializable
     {
         public int ID;
         public String Name;
@@ -126,13 +127,6 @@ public class Book
     public ArrayList<Warnings> ContentWarnings;
     public boolean HasRead;
     public int LastReadChapter;
-
-    public Book(int internalID, int externalID, BookType type)
-    {
-        this.InternalID = internalID;
-        this.ExternalID = externalID;
-        this.Type = type;
-    }
 
     public Book()
     {

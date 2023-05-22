@@ -17,57 +17,62 @@ public class ReadActivity extends AppCompatActivity {
     Toolbar TopToolbar;
 
     boolean ToolbarAppeared;
+    public Book ReadBook;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_read);
 
-        Intent ReadIntent = getIntent();
+        Intent ThisIntent = getIntent();
+        ReadBook = (Book)ThisIntent.getExtras().getSerializable("Book");
+        boolean HasDownloaded = ThisIntent.getBooleanExtra("HasDownloaded", false);
 
         ToolbarAppeared = true;
 
         BottomToolbar = (Toolbar) findViewById(R.id.BookBottomToolbar);
-        BottomToolbar.inflateMenu(R.menu.bookbottommenu);
+
+        if(HasDownloaded)
+        {
+            BottomToolbar.inflateMenu(R.menu.bookbottommenudownloaded);
+        }
+        else
+        {
+            BottomToolbar.inflateMenu(R.menu.bookbottommenu);
+        }
 
         TopToolbar = (Toolbar) findViewById(R.id.BookTopToolbar);
         TopToolbar.inflateMenu(R.menu.booktoptoolbar);
 
         FrameLayout FragmentFrame = findViewById(R.id.ReadFragmentFrame);
 
-        boolean HasRead = ReadIntent.getBooleanExtra("HasRead", false);
-        int CurrentChapter = 0;
-
-        if(HasRead)
-        {
-            CurrentChapter = ReadIntent.getIntExtra("LastReadChapter", 0);
-        }
-
-        int finalCurrentChapter = CurrentChapter;
-
         FragmentFrame.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(ToolbarAppeared && finalCurrentChapter != 0)
+                if(ToolbarAppeared && ReadBook.HasRead)
                 {
                     BottomToolbar.setVisibility(View.GONE);
                     TopToolbar.setVisibility(View.GONE);
+
+                    ToolbarAppeared = false;
                 }
                 else
                 {
                     BottomToolbar.setVisibility(View.VISIBLE);
                     TopToolbar.setVisibility(View.VISIBLE);
+
+                    ToolbarAppeared = true;
                 }
             }
         });
 
-        if(CurrentChapter == 0) // Chapter 0 is BookHome.
-        {
-            ReplaceFragment(new BookHomeFragment());
-        }
-        else // Show Chapter.
+        if(ReadBook.HasRead)
         {
             ReplaceFragment(new ChapterFragment());
+        }
+        else
+        {
+            ReplaceFragment(new BookHomeFragment());
         }
     }
 

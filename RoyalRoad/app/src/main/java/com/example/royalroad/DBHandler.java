@@ -25,7 +25,7 @@ public class DBHandler extends SQLiteOpenHelper
     // Database Variables.
     public static final String DB_NAME = "BookLibrary";
     Context context;
-    public static final int DB_VERSION = 5;
+    public static final int DB_VERSION = 15;
 
     // Tables.
     public static final String LIBRARY_TABLE_NAME = "Library";
@@ -81,9 +81,9 @@ public class DBHandler extends SQLiteOpenHelper
     public static final String LINE_STYLE = "LineStyle";
 
     NotificationManager NotifyManager;
-    int NotificationID = 0;
 
     public static final String DOWNLOAD_CHANNEL = "downloadchannel";
+    String GROUP_KEY_STORY_NOTIFICATION = "com.android.example.STORY_NOTIFICATION";
 
     public DBHandler(@Nullable Context context) {
         super(context, DB_NAME, null, DB_VERSION);
@@ -201,15 +201,15 @@ public class DBHandler extends SQLiteOpenHelper
 
     public void AddBook(Book NewBook)
     {
-        /*
+        Log.println(Log.INFO, "Hi", "Adding New Book to DB");
+
         NotifyManager = context.getSystemService(NotificationManager.class);
 
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O)
         {
-            NotificationChannel DownloadChannel = new NotificationChannel(DOWNLOAD_CHANNEL, "Download Channel", NotificationManager.IMPORTANCE_HIGH);
+            NotificationChannel DownloadChannel = new NotificationChannel(DOWNLOAD_CHANNEL, "Download Channel", NotificationManager.IMPORTANCE_DEFAULT);
             NotifyManager.createNotificationChannel(DownloadChannel);
         }
-        */
 
         SQLiteDatabase db = this.getWritableDatabase();
         long Result;
@@ -247,6 +247,7 @@ public class DBHandler extends SQLiteOpenHelper
         LibraryCV.put(LAST_READ_CHAPTER, NewBook.LastReadChapter);
 
         Result = db.insert(LIBRARY_TABLE_NAME, null, LibraryCV);
+        LibraryCV.clear();
 
         if(Result == -1)
         {
@@ -265,6 +266,7 @@ public class DBHandler extends SQLiteOpenHelper
                     TagsCV.put(TAG_ID, NewBook.TagsList.get(i).ordinal());
 
                     Result = db.insert(TAGS_TABLE_NAME, null, TagsCV);
+                    TagsCV.clear();
 
                     if (Result == -1) {
                         Toast.makeText(context, "Failed to Add Book Tags.", Toast.LENGTH_SHORT).show();
@@ -276,13 +278,36 @@ public class DBHandler extends SQLiteOpenHelper
             if (NewBook.SelectedGenres.size() > 0) {
                 ContentValues GenresCV = new ContentValues();
 
-                GenresCV.put(BOOK_ID, BookID);
-                GenresCV.put(GENRE_ONE, NewBook.SelectedGenres.get(0).ordinal());
-                GenresCV.put(GENRE_TWO, NewBook.SelectedGenres.get(1).ordinal());
-                GenresCV.put(GENRE_THREE, NewBook.SelectedGenres.get(2).ordinal());
-                GenresCV.put(GENRE_FOUR, NewBook.SelectedGenres.get(3).ordinal());
+                int GenresSize = NewBook.SelectedGenres.size();
+
+                if(GenresSize > 0)
+                {
+                    GenresCV.put(BOOK_ID, BookID);
+                    GenresCV.put(GENRE_ONE, NewBook.SelectedGenres.get(0).ordinal());
+
+                    if(GenresSize > 1)
+                    {
+                        GenresCV.put(GENRE_TWO, NewBook.SelectedGenres.get(1).ordinal());
+
+                        if(GenresSize > 2)
+                        {
+                            GenresCV.put(GENRE_THREE, NewBook.SelectedGenres.get(2).ordinal());
+
+                            if(GenresSize > 3)
+                            {
+                                GenresCV.put(GENRE_FOUR, NewBook.SelectedGenres.get(3).ordinal());
+                            }
+                        }
+                    }
+                }
+                if(GenresSize > 1)
+                {
+
+                }
+
 
                 Result = db.insert(GENRE_TABLE_NAME, null, GenresCV);
+                GenresCV.clear();
 
                 if (Result == -1) {
                     Toast.makeText(context, "Failed to Add Book Genres.", Toast.LENGTH_SHORT).show();
@@ -319,6 +344,8 @@ public class DBHandler extends SQLiteOpenHelper
 
                 Result = db.insert(WARNINGS_TABLE_NAME, null, WarningsCV);
 
+                WarningsCV.clear();
+
                 if (Result == -1) {
                     Toast.makeText(context, "Failed to Add Book Warnings", Toast.LENGTH_SHORT).show();
                 }
@@ -335,6 +362,8 @@ public class DBHandler extends SQLiteOpenHelper
 
                 Result = db.insert(CHAPTERS_TABLE_NAME, null, ChapterCV);
 
+                ChapterCV.clear();
+
                 if (Result == -1) {
                     Toast.makeText(context, "Failed to Add Book Chapter: " + NewBook.Chapters.get(i).ID, Toast.LENGTH_SHORT).show();
                 }
@@ -350,6 +379,8 @@ public class DBHandler extends SQLiteOpenHelper
 
                     Result = db.insert(CHAPTER_CONTENT_TABLE_NAME, null, ChapterLinesCV);
 
+                    ChapterLinesCV.clear();
+
                     if (Result == -1) {
                         Toast.makeText(context, "Failed to Add Book Chapter Line: " + NewBook.Chapters.get(i).ContentLines.get(j).Line + " For Chapter: " + NewBook.Chapters.get(i).ID, Toast.LENGTH_SHORT).show();
                     }
@@ -357,20 +388,19 @@ public class DBHandler extends SQLiteOpenHelper
             }
         }
 
-        Log.println(Log.INFO, "Hi", "Added Book " + NewBook.Title + "To DB");
-        // Send Download Notification to Phone. ( CURRENTLY DOES NOT WORK, GETTING thread signal catcher reacting to signal 3 ).
-        /*
+        Log.println(Log.INFO, "Hi", "Added Book " + NewBook.Title + " To DB");
+
+        // Send Download Notification to Phone. ( CURRENTLY DOES NOT WORK WITH MULTIPLE UPDATES ).
         Notification DownloadedNotification = new NotificationCompat.Builder(context, DOWNLOAD_CHANNEL)
                 .setSmallIcon(R.mipmap.icon)
                 .setContentTitle(NewBook.Title)
                 .setContentText("Story Downloaded")
-                .setPriority(Notification.PRIORITY_HIGH)
+                .setPriority(Notification.PRIORITY_DEFAULT)
                 .setCategory(Notification.CATEGORY_MESSAGE)
+                .setGroup(GROUP_KEY_STORY_NOTIFICATION)
                 .build();
 
-        NotifyManager.notify(0, DownloadedNotification);
-        */
-
+        NotifyManager.notify(NewBook.ExternalID, DownloadedNotification);
     }
 
     public Book GetBook(int InternalID)
@@ -388,11 +418,82 @@ public class DBHandler extends SQLiteOpenHelper
 
         cursor.moveToFirst();
 
-        for(int i = 0; i < cursor.getColumnCount(); i++)
+        NewBook.InternalID = Integer.parseInt(cursor.getString(0));
+        NewBook.ExternalID = Integer.parseInt(cursor.getString(1));
+
+        int TypeCaster = Integer.parseInt(cursor.getString(2));
+
+        if(TypeCaster == 0)
         {
-            Log.println(Log.INFO, "Hi", cursor.getString(i));
+            NewBook.Type = Book.BookType.Original;
+        }
+        else if(TypeCaster == 1)
+        {
+            NewBook.Type = Book.BookType.Fanfiction;
         }
 
+        NewBook.Title = cursor.getString(3);
+        NewBook.Author = cursor.getString(4);
+        NewBook.Description = cursor.getString(5);
+
+        NewBook.CoverURL = cursor.getString(6);
+
+        int ChapterCount = Integer.parseInt(cursor.getString(7));
+
+        NewBook.Chapters = new ArrayList<>();
+
+        String ChapterQuery = "SELECT * FROM " + CHAPTERS_TABLE_NAME + " WHERE " + BOOK_ID + " = " + NewBook.InternalID;
+
+        Cursor ChapterCursor = db.rawQuery(ChapterQuery, null);
+        ChapterCursor.moveToFirst();
+
+        for(int i = 0; i < ChapterCount; i++)
+        {
+            Book.Chapter NewChapter = new Book.Chapter();
+
+            NewChapter.ID = Integer.parseInt(ChapterCursor.getString(1));
+            NewChapter.Name = ChapterCursor.getString(2);
+            NewChapter.URL = ChapterCursor.getString(3);
+
+            NewChapter.ContentLines = new ArrayList<>();
+
+            /*String ChapterLineQuery = "SELECT * FROM " + CHAPTER_CONTENT_TABLE_NAME + " WHERE " + CHAPTER_ID + " = " + NewChapter.ID;
+            Cursor ChapterLineCursor = db.rawQuery(ChapterLineQuery, null);
+
+            ChapterLineCursor.moveToFirst();
+            for(int j = 0; j < ChapterLineCursor.getCount(); j++)
+            {
+                Book.ChapterLine NewChapterLine = new Book.ChapterLine();
+
+                NewChapterLine.ID = Integer.parseInt(ChapterLineCursor.getString(1));
+                NewChapterLine.Line = ChapterLineCursor.getString(2);
+                NewChapterLine.Style = Integer.parseInt(ChapterLineCursor.getString(3));
+
+                NewChapter.ContentLines.add(NewChapterLine);
+
+                ChapterLineCursor.moveToNext();
+            }
+            */
+
+
+            NewBook.Chapters.add(NewChapter);
+
+            //ChapterLineCursor.close();
+            ChapterCursor.moveToNext();
+        }
+
+        ChapterCursor.close();
+
+        NewBook.PageCount = Integer.parseInt(cursor.getString(8));
+        NewBook.Followers = Integer.parseInt(cursor.getString(9));
+        NewBook.Favourites = Integer.parseInt(cursor.getString(10));
+        NewBook.Rating = Double.parseDouble(cursor.getString(11));
+
+        //NewBook.CreatedDatetime = cursor.getString(12);
+        //NewBook.LastUpdatedDatetime = Double.parseDouble(cursor.getString(11));
+        //NewBook.DownloadedDatetime = Double.parseDouble(cursor.getString(11));
+
+        cursor.close();
         return NewBook;
     }
 
@@ -402,12 +503,16 @@ public class DBHandler extends SQLiteOpenHelper
         SQLiteDatabase db = this.getReadableDatabase();
 
         Cursor cursor = null;
+
         if(db != null)
         {
             cursor = db.rawQuery(Query, null);
         }
 
-        return cursor.getCount();
+        int LibraryCount = cursor.getCount();
+        cursor.close();
+
+        return LibraryCount;
     }
 
     public boolean GetLibraryBook(long ExternalID)
@@ -423,10 +528,12 @@ public class DBHandler extends SQLiteOpenHelper
 
         if(cursor.getCount() >= 1)
         {
+            cursor.close();
             return true;
         }
         else
         {
+            cursor.close();
             return false;
         }
     }
@@ -443,6 +550,10 @@ public class DBHandler extends SQLiteOpenHelper
         }
 
         cursor.moveToFirst();
-        return cursor.getInt(0);
+
+        int CursorNum = cursor.getInt(0);
+        cursor.close();
+
+        return CursorNum;
     }
 }

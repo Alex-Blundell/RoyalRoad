@@ -15,6 +15,8 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ListView;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.android.material.tabs.TabLayout;
 
@@ -27,6 +29,7 @@ public class LibraryActivity extends AppCompatActivity {
     TabLayout BottomTabs;
     Toolbar TopToolbar;
     RecyclerView LibraryRecyclerview;
+    TextView NoBookTXT;
 
     private int HistoryCount;
     private int DownloadedCount;
@@ -54,6 +57,8 @@ public class LibraryActivity extends AppCompatActivity {
 
         SharedPreferences Pref = getSharedPreferences("Settings", MODE_PRIVATE);
         IsDarkMode = Pref.getBoolean("AppTheme", false);
+
+        NoBookTXT = findViewById(R.id.NoBooksTXT);
 
         BottomTabs = (TabLayout) findViewById(R.id.TabLayout);
         BottomTabs.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
@@ -145,14 +150,17 @@ public class LibraryActivity extends AppCompatActivity {
 
         if(LibraryCount > 0)
         {
+            NoBookTXT.setVisibility(View.GONE);
+
             for(int i = 0; i < LibraryCount; i++)
             {
-                Book NewBook = SQLiteDB.GetBook(i);
+                Book NewBook = SQLiteDB.GetBook(i + 1);
                 BookList.add(NewBook);
             }
         }
         else
         {
+            NoBookTXT.setVisibility(View.VISIBLE);
             // Display Library Empty Message.
         }
 
@@ -180,7 +188,11 @@ public class LibraryActivity extends AppCompatActivity {
 
     public void SyncLibrary()
     {
-        Log.println(Log.INFO, "LG", "Sync");
+        Toast.makeText(this, "Syncing ...", Toast.LENGTH_SHORT).show();
+
+        DBHandler SQLiteDB = new DBHandler(this);
+
+        SQLiteDB.close();
     }
 
     public void Sort()
@@ -232,12 +244,16 @@ public class LibraryActivity extends AppCompatActivity {
             LibraryRecyclerview.setBackgroundColor(getColor(R.color.DarkOuter));
             BottomTabs.setTabTextColors(ColorStateList.valueOf(getColor(R.color.ToolbarItem)));
             BottomTabs.setSelectedTabIndicatorColor(getColor(R.color.ToolbarItem));
+
+            NoBookTXT.setTextColor(getColor(R.color.ToolbarItem));
         }
         else
         {
             LibraryRecyclerview.setBackgroundColor(getColor(R.color.white));
             BottomTabs.setTabTextColors(ColorStateList.valueOf(getColor(R.color.black)));
             BottomTabs.setSelectedTabIndicatorColor(getColor(R.color.black));
+
+            NoBookTXT.setTextColor(getColor(R.color.black));
         }
     }
 }
