@@ -3,16 +3,20 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context=".RegistrationFragment">
 
-    <ImageView
-        android:id="@+id/BackgroundTwo"
+    <com.google.android.material.imageview.ShapeableImageView
+        android:id="@+id/BackgroundThree"
         android:layout_width="350dp"
         android:layout_height="450dp"
         android:layout_below="@id/Logo"
-        android:layout_marginTop="130dp"
+        android:layout_marginTop="120dp"
         android:layout_centerHorizontal="true"
         android:background="@color/LightOuter"
+        app:shapeAppearanceOverlay="@style/RoundImageView"
+        app:strokeWidth="5dp"
+        app:strokeColor="#1f000000"
         />
 
     <ImageView
@@ -24,7 +28,7 @@
         />
 
     <TextView
-        android:id="@+id/UsernameTXT"
+        android:id="@+id/UsernameTXTReg"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerHorizontal="true"
@@ -42,7 +46,7 @@
         />
 
     <TextView
-        android:id="@+id/PasswordTXT"
+        android:id="@+id/PasswordTXTReg"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@id/UsernameField"
@@ -55,18 +59,19 @@
         android:id="@+id/ErrorTXT"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_above="@id/UsernameTXT"
+        android:layout_above="@id/UsernameTXTReg"
         android:layout_centerHorizontal="true"
         android:layout_marginBottom="50dp"
         android:text="ERROR"
-        android:textSize="18sp" />
+        android:textSize="18sp"
+        android:visibility="gone"/>
 
     <EditText
         android:id="@+id/PasswordField"
         android:layout_width="300dp"
         android:layout_height="48dp"
         android:layout_centerHorizontal="true"
-        android:layout_below="@id/PasswordTXT"
+        android:layout_below="@id/PasswordTXTReg"
         android:layout_marginTop="10dp"
         android:inputType="textPassword"
         />

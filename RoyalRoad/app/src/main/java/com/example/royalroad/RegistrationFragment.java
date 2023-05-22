@@ -1,6 +1,9 @@
 package com.example.royalroad;
 
 import android.annotation.SuppressLint;
+import android.content.Context;
+import android.content.SharedPreferences;
+import android.content.res.ColorStateList;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -21,6 +24,7 @@ import android.widget.TextView;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
+import com.google.android.material.imageview.ShapeableImageView;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QuerySnapshot;
@@ -36,6 +40,7 @@ public class RegistrationFragment extends Fragment {
     Button BackBTN;
 
     int NewUserID;
+    TextView ErrorText;
 
     FirebaseFirestore db;
 
@@ -66,6 +71,14 @@ public class RegistrationFragment extends Fragment {
 
         RegisterBTN = view.findViewById(R.id.RegisterBTN);
 
+        ErrorText = view.findViewById(R.id.ErrorTXT);
+        ErrorText.setVisibility(View.GONE);
+
+        SharedPreferences Pref = getActivity().getSharedPreferences("Settings", Context.MODE_PRIVATE);
+        boolean IsDarkMode = Pref.getBoolean("AppTheme", false);
+
+        SwitchTheme(IsDarkMode);
+
         RegisterBTN.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -88,6 +101,8 @@ public class RegistrationFragment extends Fragment {
 
     public void ValidateUsername()
     {
+        ErrorText.setVisibility(View.GONE);
+
         String Username = UsernameField.getText().toString();
         String Password = PasswordField.getText().toString();
 
@@ -95,12 +110,17 @@ public class RegistrationFragment extends Fragment {
         {
             // Send Username Is Empty Error Message.
             Log.println(Log.INFO, "Register", String.valueOf(NewUserID));
+
+            ErrorText.setText("Username is Empty.");
+            ErrorText.setVisibility(View.VISIBLE);
         }
         else
         {
             if(Password.isEmpty())
             {
                 // Send Password is Empty Error Message.
+                ErrorText.setText("Password is Empty.");
+                ErrorText.setVisibility(View.VISIBLE);
             }
             else
             {
@@ -119,6 +139,9 @@ public class RegistrationFragment extends Fragment {
                                         PasswordField.setText("");
 
                                         Log.println(Log.INFO, "Login", "Username already Exists.");
+
+                                        ErrorText.setText("Username already Exists.");
+                                        ErrorText.setVisibility(View.VISIBLE);
                                     }
                                     else if (task.getResult().size() == 0)
                                     {
@@ -175,13 +198,20 @@ public class RegistrationFragment extends Fragment {
     @SuppressLint("ResourceAsColor")
     void SwitchTheme(boolean DarkTheme)
     {
-        TextView UsernameTXT = getActivity().findViewById(R.id.UsernameTXT);
-        TextView PasswordTXT = getActivity().findViewById(R.id.PasswordTXT);
-        ImageView Background = getActivity().findViewById(R.id.BackgroundTwo);
+        TextView UsernameTXT = getActivity().findViewById(R.id.UsernameTXTReg);
+        TextView PasswordTXT = getActivity().findViewById(R.id.PasswordTXTReg);
+
+        ShapeableImageView Background = getActivity().findViewById(R.id.BackgroundThree);
 
         if(DarkTheme)
         {
+            ErrorText.setTextColor(getResources().getColor(R.color.white));
+
             Background.setBackgroundColor(getResources().getColor(R.color.DarkOuter));
+            Background.setStrokeColor(ColorStateList.valueOf(getResources().getColor(R.color.DarkBorder)));
+
+            UsernameTXT.setTextColor(getResources().getColor(R.color.white));
+            PasswordTXT.setTextColor(getResources().getColor(R.color.white));
 
             UsernameField.setBackgroundColor(getResources().getColor(R.color.DarkInner));
             UsernameField.setTextColor(getResources().getColor(R.color.white));
@@ -192,6 +222,9 @@ public class RegistrationFragment extends Fragment {
         else
         {
             Background.setBackgroundColor(getResources().getColor(R.color.LightOuter));
+
+            UsernameTXT.setTextColor(getResources().getColor(R.color.black));
+            PasswordTXT.setTextColor(getResources().getColor(R.color.black));
 
             UsernameField.setBackgroundColor(getResources().getColor(R.color.white));
             UsernameField.setTextColor(getResources().getColor(R.color.black));

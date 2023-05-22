@@ -37,6 +37,16 @@
         android:text="Username:"
         android:textSize="18dp" />
 
+    <TextView
+        android:id="@+id/ErrorTextLogin"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="150dp"
+        android:text="ERROR"
+        android:textSize="18dp"
+        android:visibility="gone"/>
+
     <EditText
         android:id="@+id/UsernameField"
         android:layout_width="300dp"

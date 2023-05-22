@@ -70,6 +70,8 @@ public class LoginFragment extends Fragment {
     Button RegisterBTN;
     Button SkipLoginBTN;
 
+    TextView ErrorText;
+
     FirebaseFirestore db;
 
     @Override
@@ -111,6 +113,9 @@ public class LoginFragment extends Fragment {
         LoginBTN = view.findViewById(R.id.LoginBTN);
         RegisterBTN = view.findViewById(R.id.RegisterBTN);
         SkipLoginBTN = view.findViewById(R.id.SkipLoginBTN);
+
+        ErrorText = view.findViewById(R.id.ErrorTextLogin);
+        ErrorText.setVisibility(View.GONE);
 
         LoginBTN.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -155,6 +160,8 @@ public class LoginFragment extends Fragment {
         {
             // Show Username Is Empty Error.
             Log.println(Log.INFO, "Login", "Username Field is Empty.");
+            ErrorText.setVisibility(View.VISIBLE);
+            ErrorText.setText("Username Field is Empty");
         }
         else
         {
@@ -162,6 +169,8 @@ public class LoginFragment extends Fragment {
             {
                 // Show Password is Empty Error
                 Log.println(Log.INFO, "Login", "Password Field is Empty.");
+                ErrorText.setVisibility(View.VISIBLE);
+                ErrorText.setText("Password Field is Empty");
             }
             else
             {
@@ -185,6 +194,9 @@ public class LoginFragment extends Fragment {
                                         // Show Incorrect Username Error Message.
                                         PasswordField.setText("");
                                         Log.println(Log.INFO, "Login", "Username was Incorrect, try again.");
+
+                                        ErrorText.setVisibility(View.VISIBLE);
+                                        ErrorText.setText("Username was Incorrect, try again.");
                                     }
                                 }
                             }
@@ -231,6 +243,8 @@ public class LoginFragment extends Fragment {
                             {
                                 // Show Incorrect Password Error Message.
                                 Log.println(Log.INFO, "Login", "Password was Incorrect.");
+                                ErrorText.setVisibility(View.VISIBLE);
+                                ErrorText.setText("Password was Incorrect");
                             }
                         }
                     }

@@ -35,6 +35,8 @@ import android.widget.TextView;
 import android.net.Uri;
 import android.widget.Toast;
 
+import androidx.appcompat.app.AppCompatActivity;
+
 import com.bumptech.glide.Glide;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -84,6 +86,8 @@ public class HomeActivity extends AppCompatActivity {
 
     ShapeableImageView SelectBTN;
     ShapeableImageView CloseBTN;
+
+    SearchView Searchbar;
 
     Boolean IsDarkMode;
     String FilePath = "";
@@ -143,16 +147,22 @@ public class HomeActivity extends AppCompatActivity {
         SelectBTN.setVisibility(View.GONE);
         CloseBTN.setVisibility(View.GONE);
 
-        SearchView Searchbar = findViewById(R.id.HomeSearchbar);
+        Searchbar = findViewById(R.id.HomeSearchbar);
         Searchbar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Searchbar.setIconified(false);
                 DarkBackground.setVisibility(View.VISIBLE);
 
+                if(IsDarkMode)
+                {
+                    Searchbar.setBackgroundColor(getColor(R.color.white));
+                }
+
                 DarkBackground.setOnClickListener(new View.OnClickListener() {
                     @Override
-                    public void onClick(View view) {
+                    public void onClick(View view)
+                    {
                         Searchbar.setIconified(true);
                     }
                 });
@@ -161,7 +171,13 @@ public class HomeActivity extends AppCompatActivity {
 
         Searchbar.setOnCloseListener(new SearchView.OnCloseListener() {
             @Override
-            public boolean onClose() {
+            public boolean onClose()
+            {
+                if(IsDarkMode)
+                {
+                    Searchbar.setBackgroundColor(getColor(R.color.DarkOuter));
+                }
+
                 DarkBackground.setVisibility(View.GONE);
                 return false;
             }
@@ -387,9 +403,9 @@ public class HomeActivity extends AppCompatActivity {
         }
     }
 
+    @SuppressLint("ResourceAsColor")
     public void SwitchThemes(boolean DarkMode) {
         Log.println(Log.INFO, "Hi", "In Switch Theme");
-
 
         if (DarkMode)
         {
@@ -398,12 +414,16 @@ public class HomeActivity extends AppCompatActivity {
 
             MailBTN.setImageTintList(ColorStateList.valueOf(getColor(R.color.white)));
             NotificationsBTN.setImageTintList(ColorStateList.valueOf(getColor(R.color.white)));
-        } else {
+            Searchbar.setBackgroundColor(getColor(R.color.DarkOuter));
+        }
+        else
+        {
             getWindow().getDecorView().setBackgroundColor(getColor(R.color.white));
             UsernameTXT.setTextColor(getColor(R.color.black));
 
             MailBTN.setImageTintList(ColorStateList.valueOf(getColor(R.color.black)));
             NotificationsBTN.setImageTintList(ColorStateList.valueOf(getColor(R.color.black)));
+            Searchbar.setBackgroundColor(getColor(R.color.white));
         }
     }
 
