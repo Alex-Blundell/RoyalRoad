@@ -35,16 +35,16 @@
                 android:layout_marginLeft="25dp"
                 android:layout_marginTop="25dp"
                 android:layout_marginRight="25dp"
-                android:background="@color/ToolbarBlue"
+                android:background="@color/ForumToolbar"
                 android:minHeight="?attr/actionBarSize"
                 android:theme="?attr/actionBarTheme"
                 app:title="Popular Threads"
                 app:titleTextColor="@color/white" />
 
-            <ListView
+            <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/PopularThreads"
                 android:layout_width="match_parent"
-                android:layout_height="325dp"
+                android:layout_height="wrap_content"
                 android:layout_below="@id/PopularThreadsToolbar"
                 android:layout_marginLeft="25dp"
                 android:layout_marginRight="25dp"
@@ -60,16 +60,16 @@
                 android:layout_marginLeft="25dp"
                 android:layout_marginTop="25dp"
                 android:layout_marginRight="25dp"
-                android:background="@color/ToolbarBlue"
+                android:background="@color/ForumToolbar"
                 android:minHeight="?attr/actionBarSize"
                 android:theme="?attr/actionBarTheme"
                 app:title="Community"
                 app:titleTextColor="@color/white" />
 
-            <ListView
+            <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/CommunityForums"
                 android:layout_width="match_parent"
-                android:layout_height="325dp"
+                android:layout_height="wrap_content"
                 android:layout_below="@id/CommunityForumsToolbar"
                 android:layout_marginLeft="25dp"
                 android:layout_marginRight="25dp"
@@ -85,16 +85,16 @@
                 android:layout_marginLeft="25dp"
                 android:layout_marginTop="25dp"
                 android:layout_marginRight="25dp"
-                android:background="@color/ToolbarBlue"
+                android:background="@color/ForumToolbar"
                 android:minHeight="?attr/actionBarSize"
                 android:theme="?attr/actionBarTheme"
                 app:title="Fictions"
                 app:titleTextColor="@color/white" />
 
-            <ListView
+            <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/FictionsForums"
                 android:layout_width="match_parent"
-                android:layout_height="125dp"
+                android:layout_height="wrap_content"
                 android:layout_below="@id/FictionsForumsToolbar"
                 android:layout_marginLeft="25dp"
                 android:layout_marginRight="25dp"
@@ -110,16 +110,16 @@
                 android:layout_marginLeft="25dp"
                 android:layout_marginTop="25dp"
                 android:layout_marginRight="25dp"
-                android:background="@color/ToolbarBlue"
+                android:background="@color/ForumToolbar"
                 android:minHeight="?attr/actionBarSize"
                 android:theme="?attr/actionBarTheme"
                 app:title="Writing Tips and Discussions"
                 app:titleTextColor="@color/white" />
 
-            <ListView
+            <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/TipsForums"
                 android:layout_width="match_parent"
-                android:layout_height="250dp"
+                android:layout_height="wrap_content"
                 android:layout_below="@id/TipsForumsToolbar"
                 android:layout_marginLeft="25dp"
                 android:layout_marginRight="25dp"
@@ -135,16 +135,16 @@
                 android:layout_marginLeft="25dp"
                 android:layout_marginTop="25dp"
                 android:layout_marginRight="25dp"
-                android:background="@color/ToolbarBlue"
+                android:background="@color/ForumToolbar"
                 android:minHeight="?attr/actionBarSize"
                 android:theme="?attr/actionBarTheme"
                 app:title="Forums"
                 app:titleTextColor="@color/white" />
 
-            <ListView
+            <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/ForumsForums"
                 android:layout_width="match_parent"
-                android:layout_height="250dp"
+                android:layout_height="wrap_content"
                 android:layout_below="@id/ForumsForumsToolbar"
                 android:layout_marginLeft="25dp"
                 android:layout_marginRight="25dp"

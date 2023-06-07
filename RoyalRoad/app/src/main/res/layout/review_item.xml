@@ -1,0 +1,185 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <ImageView
+        android:id="@+id/ProfileImage"
+        android:layout_width="75dp"
+        android:layout_height="100dp"
+        android:layout_margin="10dp"
+        />
+
+    <TextView
+        android:id="@+id/ReviewTitle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:layout_toRightOf="@id/ProfileImage"
+        android:text="Review Title"
+        android:textSize="16dp"
+        android:textStyle="bold" />
+
+    <TextView
+        android:id="@+id/ReviewedAtChapter"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toRightOf="@id/ProfileImage"
+        android:layout_toLeftOf="@id/ReviewDate"
+        android:layout_below="@id/ReviewTitle"
+        android:layout_marginTop="5dp"
+        android:text="Reviewed At ..."
+        />
+
+    <TextView
+        android:id="@+id/ReviewAuthor"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toRightOf="@id/ProfileImage"
+        android:layout_toLeftOf="@id/ReviewDate"
+        android:layout_below="@id/ReviewedAtChapter"
+        android:layout_marginTop="5dp"
+        android:text="by ReviewAuthor"
+        />
+
+    <TextView
+        android:id="@+id/ReviewDate"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/ReviewedAtChapter"
+        android:layout_alignParentRight="true"
+        android:text="DateTime"
+        android:layout_marginTop="5dp"
+        />
+
+    <TextView
+        android:id="@+id/ReviewDescription"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/ProfileImage"
+        android:text="Review Description"
+        android:layout_marginLeft="20dp"
+        android:layout_marginRight="20dp"
+        android:layout_marginBottom="10dp"
+        />
+
+    <TextView
+        android:id="@+id/OverallRatingTXT"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/ReviewDescription"
+        android:layout_centerHorizontal="true"
+        android:text="Overall Score"
+        android:textSize="16dp"
+        android:textStyle="bold"
+        android:layout_marginTop="-5dp"
+        />
+
+    <RatingBar
+        android:id="@+id/OverallRating"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:scaleX="0.85"
+        android:scaleY="0.85"
+        android:layout_centerHorizontal="true"
+        android:layout_below="@id/ReviewDescription"
+        android:layout_marginTop="10dp"
+        />
+
+    <TextView
+        android:id="@+id/StyleRatingTXT"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/OverallRating"
+        android:layout_centerHorizontal="true"
+        android:text="Style Score"
+        android:textSize="16dp"
+        android:textStyle="bold"
+        android:layout_marginTop="-15dp"
+        />
+
+    <RatingBar
+        android:id="@+id/StyleRating"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:scaleX="0.85"
+        android:scaleY="0.85"
+        android:layout_centerHorizontal="true"
+        android:layout_below="@id/OverallRating"
+        />
+
+    <TextView
+        android:id="@+id/StoryRatingTXT"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/StyleRating"
+        android:layout_centerHorizontal="true"
+        android:text="Story Score"
+        android:textSize="16dp"
+        android:textStyle="bold"
+        android:layout_marginTop="-15dp"
+        />
+
+    <RatingBar
+        android:id="@+id/StoryRating"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:scaleX="0.85"
+        android:scaleY="0.85"
+        android:layout_centerHorizontal="true"
+        android:layout_below="@id/StyleRating"
+        />
+
+    <TextView
+        android:id="@+id/GrammerRatingTXT"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/StoryRating"
+        android:layout_centerHorizontal="true"
+        android:text="Grammer Score"
+        android:textSize="16dp"
+        android:textStyle="bold"
+        android:layout_marginTop="-15dp"
+        />
+
+    <RatingBar
+        android:id="@+id/GrammerRating"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:scaleX="0.85"
+        android:scaleY="0.85"
+        android:layout_centerHorizontal="true"
+        android:layout_below="@id/StoryRating"
+        />
+
+    <TextView
+        android:id="@+id/CharacterRatingTXT"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/GrammerRating"
+        android:layout_centerHorizontal="true"
+        android:text="Character Score"
+        android:textSize="16dp"
+        android:textStyle="bold"
+        android:layout_marginTop="-15dp"
+        />
+
+    <RatingBar
+        android:id="@+id/CharacterRating"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:scaleX="0.85"
+        android:scaleY="0.85"
+        android:layout_centerHorizontal="true"
+        android:layout_below="@id/GrammerRating"
+        />
+
+    <com.google.android.material.divider.MaterialDivider
+        android:id="@+id/Divider"
+        android:layout_width="match_parent"
+        android:layout_height="2dp"
+        android:layout_below="@id/CharacterRating"
+        android:layout_marginTop="5dp"
+        />
+    
+</RelativeLayout>

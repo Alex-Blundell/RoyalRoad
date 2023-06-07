@@ -23,12 +23,35 @@
         android:minHeight="?attr/actionBarSize"
         android:theme="?attr/actionBarTheme" />
 
-    <FrameLayout
-        android:id="@+id/ReadFragmentFrame"
+    <androidx.viewpager2.widget.ViewPager2
+        android:id="@+id/ReadPager"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_below="@id/BookTopToolbar"
         android:layout_above="@id/BookBottomToolbar"
+        />
+
+    <Button
+        android:id="@+id/BackBTN"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignTop="@id/BookTopToolbar"
+        android:layout_alignBottom="@id/BookTopToolbar"
+        android:background="@color/Invis"
+        android:scaleX="1"
+        android:scaleY="1"
+        app:icon="@drawable/back"
+        android:text=""
+        />
+
+    <Button
+        android:id="@+id/ChapterCount"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@id/BookBottomToolbar"
+        android:layout_alignTop="@id/BookBottomToolbar"
+        android:background="@color/Invis"
+        android:text=""
         />
 
 </RelativeLayout>
