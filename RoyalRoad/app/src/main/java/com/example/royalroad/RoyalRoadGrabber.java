@@ -1,13 +1,10 @@
 package com.example.royalroad;
 
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.content.Context;
-import android.nfc.Tag;
 import android.os.AsyncTask;
-import android.os.Bundle;
 import android.util.Log;
-import android.widget.TextView;
+
+import com.google.firebase.annotations.concurrent.Background;
 
 import org.jsoup.Connection;
 import org.jsoup.Jsoup;
@@ -15,97 +12,94 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.GregorianCalendar;
-public class LibraryTasks extends AsyncTask<Void, Void, Book> {
-    public long ExternalID;
-    public Context context;
 
-    private Book AddBook;
-
+public class RoyalRoadGrabber extends AsyncTask<Void, Void, Book>
+{
+    private Context ActivityContext;
     private Document StoryDoc;
-    boolean GetChapterContent;
 
-    public LibraryTasks(Context thisContext, long ID, boolean getChapterContent)
+    private Book NewBook;
+    private String URL;
+    private int ExternalID;
+
+    private static final String HOME_URL = "https://www.royalroad.com/home";
+    private static final String BASE_URL = "https://www.royalroad.com";
+
+    public RoyalRoadGrabber(Context context, String url, int ID)
     {
-        this.context = thisContext;
-        this.ExternalID = ID;
-        this.GetChapterContent = getChapterContent;
-    }
+        this.NewBook = new Book();
+        this.ActivityContext = context;
 
+        this.URL = url;
+        this.ExternalID = ID;
+    }
     @Override
     protected Book doInBackground(Void... voids)
     {
-        Log.println(Log.INFO, "Hi", "Adding New Book");
+        Log.println(Log.INFO, "Hi", "Adding Book: " + URL);
 
         try
         {
-            String URL = "https://www.royalroad.com/fiction/" + ExternalID + "/";
-            Connection.Response response = null;
+            DBHandler SQLiteDB = new DBHandler(this.ActivityContext);
+            boolean ExistsInDB = SQLiteDB.GetLibraryBook(this.ExternalID);
 
-            response = Jsoup.connect(URL).followRedirects(true).execute();
-
-            String RealURL = String.valueOf(response.url());
-            this.StoryDoc = Jsoup.connect(RealURL).get();
-
-            DBHandler SQLiteDB = new DBHandler(this.context);
-
-            this.AddBook = new Book();
-            AddBook.ExternalID = (int)ExternalID;
-
-            Elements elementsThree = StoryDoc.getElementsByAttribute("href");
-
-            AddBook.Type = GetBookType();
-
-            String[] TitleAuthor = GetTitleAuthor();
-
-            AddBook.Title = TitleAuthor[0];
-            AddBook.Author = TitleAuthor[1];
-
-            AddBook.Description = GetDescription();
-
-            AddBook.CoverURL = GetCoverURL();
-
-            AddBook.ContentWarnings = GetWarnings();
-            AddBook.SelectedGenres = GetGenres();
-            AddBook.TagsList = GetTags();
-
-            int[] Counts = GetCounts();
-
-            AddBook.Followers = Counts[0];
-            AddBook.Favourites = Counts[1];
-            AddBook.PageCount = Counts[2];
-
-            AddBook.Rating = GetRating();
-
-            // DateTimes.
-            AddBook.CreatedDatetime = new GregorianCalendar();
-            AddBook.LastUpdatedDatetime = new GregorianCalendar();
-            AddBook.DownloadedDatetime = new GregorianCalendar();
-
-            if (GetChapterContent)
+            if(ExistsInDB) // Get Book from SQLite DB.
             {
-                AddBook.Chapters = GetChapters();
+                this.NewBook = SQLiteDB.GetBook(ExternalID);
             }
-            else
+            else // Create Book from URL.
             {
-                AddBook.Chapters = new ArrayList<>();
+                Connection.Response response = null;
+                response = Jsoup.connect(this.URL).followRedirects(true).execute();
+
+                String RealURL = String.valueOf(response.url());
+
+                this.StoryDoc = Jsoup.connect(RealURL).get();
+
+                Elements ChapterLinks = StoryDoc.select("a[href]");
+
+                this.NewBook.ExternalID = ExternalID;
+
+                this.NewBook.Type = GetBookType();
+
+                String[] TitleAuthor = GetTitleAuthor();
+
+                this.NewBook.Title = TitleAuthor[0];
+                this.NewBook.Author = TitleAuthor[1];
+
+                this.NewBook.Description = GetDescription();
+
+                this.NewBook.CoverURL = GetCoverURL();
+
+                this.NewBook.ContentWarnings = GetWarnings();
+                this.NewBook.SelectedGenres = GetGenres();
+                this.NewBook.TagsList = GetTags();
+
+                int[] Counts = GetCounts();
+
+                this.NewBook.Followers = Counts[0];
+                this.NewBook.Favourites = Counts[1];
+                this.NewBook.PageCount = Counts[2];
+
+                this.NewBook.Rating = GetRating();
+
+                // DateTimes.
+                this.NewBook.CreatedDatetime = new GregorianCalendar();
+                this.NewBook.LastUpdatedDatetime = new GregorianCalendar();
+                this.NewBook.DownloadedDatetime = new GregorianCalendar();
+
+                this.NewBook.SetAllChapters(GetAllChapters());
+
+                this.NewBook.HasRead = false;
+                this.NewBook.LastReadChapter = 0;
+
+                ChapterLinks.clear();
             }
 
-            Log.println(Log.INFO, "Hi", "Setting HasRead and LastReadChapter to 0");
-            AddBook.HasRead = false;
-            AddBook.LastReadChapter = 0;
-
-            //elementNew.clear();
-            elementsThree.clear();
-
-            StoryDoc = null;
-
-            Log.println(Log.INFO, "Hi", "New Book: " + AddBook.Title);
+            this.StoryDoc = null;
             SQLiteDB.close();
         }
         catch (IOException e)
@@ -113,21 +107,21 @@ public class LibraryTasks extends AsyncTask<Void, Void, Book> {
             throw new RuntimeException(e);
         }
 
-        return this.AddBook;
+        return this.NewBook;
     }
 
-    private double GetRating() {
-        Log.println(Log.INFO, "Hi", "Getting Rating");
-        Elements RatingElements = StoryDoc.getElementsByClass("list-item");
+    private double GetRating()
+    {
+        Elements RatingElements = this.StoryDoc.getElementsByClass("list-item");
         double Rating = 0.0;
 
-        for (int i = 0; i < RatingElements.size(); i++)
+        for(int i = 0; i < RatingElements.size(); i++)
         {
-            if (RatingElements.get(i).childrenSize() > 0)
+            if(RatingElements.get(i).childrenSize() > 0)
             {
                 String RatingTitle = RatingElements.get(i).child(0).attr("data-original-title");
 
-                if (RatingTitle.equals("Overall Score"))
+                if(RatingTitle.equals("Overall Score"))
                 {
                     String RatingString = RatingElements.get(i).child(0).attr("data-content");
                     RatingString = RatingString.substring(0, RatingString.length() - 4);
@@ -137,81 +131,73 @@ public class LibraryTasks extends AsyncTask<Void, Void, Book> {
             }
         }
 
-        RatingElements.clear();
         return Rating;
     }
 
-    public String GetDescription() {
-        Log.println(Log.INFO, "Hi", "Getting Description");
-
+    public String GetDescription(){
         Element DescriptionElement = this.StoryDoc.selectFirst(".description");
         return DescriptionElement.text();
     }
 
-    public String[] GetTitleAuthor() {
-        Log.println(Log.INFO, "Hi", "Getting Title and Author");
-
+    public String[] GetTitleAuthor()
+    {
         String[] TitleAuthor = new String[2];
 
         Element Title = this.StoryDoc.selectFirst("h1.font-white");
         Element Author = this.StoryDoc.selectFirst("h4.font-white");
 
-        String AuthorTXT = Author.text();
-        AuthorTXT = AuthorTXT.substring(3);
-
         TitleAuthor[0] = Title.text();
-        TitleAuthor[1] = AuthorTXT;
+        TitleAuthor[1] = Author.text();
 
         return TitleAuthor;
     }
 
-    public ArrayList<Book.Chapter> GetChapters() throws IOException {
-        Log.println(Log.INFO, "Hi", "Getting Chapters");
-
+    public ArrayList<Book.Chapter> GetAllChapters()
+    {
         ArrayList<Book.Chapter> AllChapters = new ArrayList<>();
-        Elements ChapterLinks = StoryDoc.select("td:not([class]) a");
+        Elements ChapterLinks = this.StoryDoc.select("td:not([class]) a");
 
         int ChapterIndex = 0;
 
-        for (Element Link : ChapterLinks) {
+        for(Element ChapterLink : ChapterLinks)
+        {
             Book.Chapter NewChapter = new Book.Chapter();
 
             NewChapter.ID = ChapterIndex;
-            NewChapter.Name = Link.text();
-            NewChapter.URL = Link.attr("abs:href");
-
-            Document ChapterContent = Jsoup.connect(Link.attr("abs:href")).get();
-            //NewChapter.Content = ChapterContent.select(".chapter-content").first().text();
-
-            int ChapterID = ChapterIndex + 1;
-
-            Log.println(Log.INFO, "Hi", "Got Chapter " + ChapterID + " / " + ChapterLinks.size());
-            ChapterContent = null;
-
+            NewChapter.Name = ChapterLink.text();
+            NewChapter.URL = ChapterLink.attr("abs:href");
+            //NewChapter.ContentLines = GetChapterContent();
 
             AllChapters.add(NewChapter);
             ChapterIndex++;
         }
 
-        ChapterLinks.clear();
-
-        Log.println(Log.INFO, "Hi", "Finished Getting Chapters");
         return AllChapters;
     }
 
-    public ArrayList<Book.Warnings> GetWarnings() {
-        Log.println(Log.INFO, "Hi", "Getting Warnings");
+    public Book.Chapter GetChapter(String URL)
+    {
+        Book.Chapter NewChapter = new Book.Chapter();
 
-        Elements WarningElements = StoryDoc.getElementsByClass("text-center font-red-sunglo");
+        return NewChapter;
+    }
+
+    public ArrayList<Book.Warnings> GetWarnings()
+    {
+        Elements WarningElements = this.StoryDoc.getElementsByClass("text-center font-red-sunglo");
         ArrayList<Book.Warnings> BookWarnings = new ArrayList<>();
 
-        if (WarningElements.size() > 0) {
-            if (WarningElements.get(0).getElementsByClass("list-inline").get(0).childrenSize() > 1) {
-                for (int i = 0; i < WarningElements.get(0).getElementsByClass("list-inline").get(0).childrenSize(); i++) {
+        if(WarningElements.size() > 0)
+        {
+            if(WarningElements.get(0).getElementsByClass("list-inline").get(0).childrenSize() > 1)
+            {
+                for(int i = 0; i < WarningElements.get(0).getElementsByClass("list-inline").get(0).childrenSize(); i++)
+                {
                     String Warning = WarningElements.get(0).getElementsByClass("list-inline").get(0).child(i).toString();
                     Warning = Warning.substring(4, Warning.length() - 5);
 
-                    switch (Warning) {
+                    switch (Warning)
+                    {
                         case "Gore":
                             BookWarnings.add(Book.Warnings.Gore);
                             break;
@@ -232,19 +218,19 @@ public class LibraryTasks extends AsyncTask<Void, Void, Book> {
             }
         }
 
-        WarningElements.clear();
         return BookWarnings;
     }
 
-    public ArrayList<Book.Genres> GetGenres() {
-        Log.println(Log.INFO, "Hi", "Getting Genres");
-
-        Elements GenreElements = StoryDoc.getElementsByClass("label label-default label-sm bg-blue-dark fiction-tag");
+    public ArrayList<Book.Genres> GetGenres()
+    {
+        Elements GenreElements = this.StoryDoc.select(".tags span");
         ArrayList<Book.Genres> SelectedGenres = new ArrayList<>();
 
         // Add Tags and Genres.
-        for (int i = 0; i < GenreElements.size(); i++) {
-            switch (GenreElements.get(i).text()) {
+        for(Element Genre : GenreElements)
+        {
+            switch (Genre.text())
+            {
                 // Genres.
                 case "Action":
                     SelectedGenres.add(Book.Genres.Action);
@@ -308,18 +294,19 @@ public class LibraryTasks extends AsyncTask<Void, Void, Book> {
             }
         }
 
-        GenreElements.clear();
-
         return SelectedGenres;
     }
 
-    public ArrayList<Book.Tags> GetTags() {
+    public ArrayList<Book.Tags> GetTags()
+    {
         ArrayList<Book.Tags> BookTags = new ArrayList<>();
 
         Elements SelectedTags = this.StoryDoc.select(".tags span");
 
-        for (Element Tag : SelectedTags) {
-            switch (Tag.text()) {
+        for(Element Tag : SelectedTags)
+        {
+            switch (Tag.text())
+            {
                 case "Anti-Hero Lead":
                     BookTags.add(Book.Tags.Anti_Hero_Lead);
                     break;
@@ -510,43 +497,46 @@ public class LibraryTasks extends AsyncTask<Void, Void, Book> {
             }
         }
 
-        SelectedTags.clear();
         return BookTags;
     }
 
-    public Book.BookType GetBookType() {
-        Log.println(Log.INFO, "Hi", "Getting Book Type.");
-
-        Elements BookTypeElements = StoryDoc.getElementsByClass("label label-default label-sm bg-blue-hoki");
+    public Book.BookType GetBookType()
+    {
+        Elements BookTypeElements = this.StoryDoc.getElementsByClass("label label-default label-sm bg-blue-hoki");
         Book.BookType SelectedBookType = Book.BookType.Original;
 
-        for (int i = 0; i < BookTypeElements.size(); i++) {
-            if (BookTypeElements.get(i).text().equals("Original") || BookTypeElements.get(i).text().equals("Fan Fiction")) {
-                if (BookTypeElements.get(i).text().equals("Original")) {
+        for(int i = 0; i < BookTypeElements.size(); i++)
+        {
+            if(BookTypeElements.get(i).text().equals("Original") || BookTypeElements.get(i).text().equals("Fan Fiction"))
+            {
+                if(BookTypeElements.get(i).text().equals("Original"))
+                {
                     SelectedBookType = Book.BookType.Original;
-                } else if (BookTypeElements.get(i).text().equals("Fan Fiction")) {
+                }
+                else if(BookTypeElements.get(i).text().equals("Fan Fiction"))
+                {
                     SelectedBookType = Book.BookType.Fanfiction;
                 }
             }
 
-            if (BookTypeElements.get(i).text().equals("ONGOING") || BookTypeElements.get(i).text().equals("COMPLETED")) {
+            if(BookTypeElements.get(i).text().equals("ONGOING") || BookTypeElements.get(i).text().equals("COMPLETED"))
+            {
 
             }
         }
 
-        BookTypeElements.clear();
         return SelectedBookType;
     }
 
-    public String GetCoverURL() {
+    public String GetCoverURL()
+    {
         return this.StoryDoc.select("img.thumbnail").attr("abs:src");
     }
 
-    public int[] GetCounts() {
-        Log.println(Log.INFO, "Hi", "Getting Counts");
-
+    public int[] GetCounts()
+    {
         int[] Counts = new int[3];
-        Elements CountElements = StoryDoc.getElementsByClass("bold uppercase font-red-sunglo");
+        Elements CountElements = this.StoryDoc.getElementsByClass("bold uppercase font-red-sunglo");
 
         String Followers = CountElements.get(2).text();
         Followers = Followers.replace(",", "");
@@ -560,7 +550,16 @@ public class LibraryTasks extends AsyncTask<Void, Void, Book> {
         PageCount = PageCount.replace(",", "");
         Counts[2] = Integer.parseInt(PageCount);
 
-        CountElements.clear();
         return Counts;
+    }
+
+    public void GetChapter()
+    {
+
+    }
+
+    public void GetSearchResults()
+    {
+
     }
 }

@@ -15,17 +15,19 @@ import android.widget.Toast;
 import androidx.annotation.Nullable;
 import androidx.core.app.NotificationCompat;
 
+import org.checkerframework.common.returnsreceiver.qual.This;
 import org.jsoup.select.Evaluator;
 
 import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.GregorianCalendar;
 
 public class DBHandler extends SQLiteOpenHelper
 {
     // Database Variables.
     public static final String DB_NAME = "BookLibrary";
     Context context;
-    public static final int DB_VERSION = 15;
+    public static final int DB_VERSION = 31;
 
     // Tables.
     public static final String LIBRARY_TABLE_NAME = "Library";
@@ -33,7 +35,7 @@ public class DBHandler extends SQLiteOpenHelper
     public static final String GENRE_TABLE_NAME = "Genres";
     public static final String WARNINGS_TABLE_NAME = "Warnings";
     public static final String CHAPTERS_TABLE_NAME = "Chapters";
-    public static final String CHAPTER_CONTENT_TABLE_NAME = "Chapters_Content";
+    public static final String CHAPTER_PARAGRAPHS_TABLE_NAME = "Chapters_Paragraphs";
 
     // Library Columns.
     public static final String ID = "ID";
@@ -75,10 +77,9 @@ public class DBHandler extends SQLiteOpenHelper
     public static final String CHAPTER_NAME = "ChapterName";
     public static final String CHAPTER_URL = "ChapterURL";
 
-    //Chapter_Content Columns.
-    public static final String CHAPTER_LINE_ID = "LineID";
-    public static final String CHAPTER_LINE = "ChapterLine";
-    public static final String LINE_STYLE = "LineStyle";
+    // Chapter_Paragraphs Columns.
+    public static final String CHAPTER_PARAGRAPH_ID = "ParagraphID";
+    public static final String CHAPTER_PARAGRAPH_CONTENT = "ParagraphContent";
 
     NotificationManager NotifyManager;
 
@@ -95,75 +96,76 @@ public class DBHandler extends SQLiteOpenHelper
     {
         // Library Database.
         String CreateLibrary = "CREATE TABLE " + LIBRARY_TABLE_NAME +
-                               " (" + ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
-                               EXTERNAL_ID + " INTEGER NOT NULL, " +
-                               TYPE + " INTEGER NOT NULL, " +
-                               TITLE + " TEXT NOT NULL, " +
-                               AUTHOR + " TEXT NOT NULL, " +
-                               DESCRIPTION + " TEXT NOT NULL, " +
-                               COVER_URL + " TEXT DEFAULT ''," +
-                               CHAPTER_COUNT + " INTEGER NOT NULL, " +
-                               PAGE_COUNT + " INTEGER NOT NULL, " +
-                               FOLLOWERS + " NOT NULL, " +
-                               FAVOURITES + " INTEGER NOT NULL, " +
-                               RATING + " NUMERIC DEFAULT 0 NOT NULL, " +
-                               CREATED_DATE_TIME + " TEXT NOT NULL, " +
-                               UPDATED_DATE_TIME + " TEXT, " +
-                               DOWNLOADED_DATE_TIME + " TEXT NOT NULL, " +
-                               HAS_READ + " INTEGER DEFAULT 0, " +
-                               LAST_READ_CHAPTER + " INTEGER DEFAULT 0);";
+                " (" + ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                EXTERNAL_ID + " INTEGER NOT NULL, " +
+                TYPE + " INTEGER NOT NULL, " +
+                TITLE + " TEXT NOT NULL, " +
+                AUTHOR + " TEXT NOT NULL, " +
+                DESCRIPTION + " TEXT NOT NULL, " +
+                COVER_URL + " TEXT DEFAULT ''," +
+                CHAPTER_COUNT + " INTEGER NOT NULL, " +
+                PAGE_COUNT + " INTEGER NOT NULL, " +
+                FOLLOWERS + " NOT NULL, " +
+                FAVOURITES + " INTEGER NOT NULL, " +
+                RATING + " NUMERIC DEFAULT 0 NOT NULL, " +
+                CREATED_DATE_TIME + " TEXT NOT NULL, " +
+                UPDATED_DATE_TIME + " TEXT, " +
+                DOWNLOADED_DATE_TIME + " TEXT NOT NULL, " +
+                HAS_READ + " INTEGER DEFAULT 0, " +
+                LAST_READ_CHAPTER + " INTEGER DEFAULT 0);";
 
         SQLiteDB.execSQL(CreateLibrary);
 
         // Tag Database.
         String CreateTags = "CREATE TABLE " + TAGS_TABLE_NAME +
-                            " (" + BOOK_ID + " INTEGER, " +
-                            TAG_ID + " INTEGER, " +
-                            "FOREIGN KEY (" + BOOK_ID + ") REFERENCES " + LIBRARY_TABLE_NAME +"("+ ID +"));";
+                " (" + BOOK_ID + " INTEGER, " +
+                TAG_ID + " INTEGER, " +
+                "FOREIGN KEY (" + BOOK_ID + ") REFERENCES " + LIBRARY_TABLE_NAME +"("+ ID +"));";
 
         SQLiteDB.execSQL(CreateTags);
 
         // Genres Database.
         String CreateGenres = "CREATE TABLE " + GENRE_TABLE_NAME +
-                              " (" + BOOK_ID + " INTEGER PRIMARY KEY, " +
-                              GENRE_ONE + " INTEGER, " +
-                              GENRE_TWO + " INTEGER, " +
-                              GENRE_THREE + " INTEGER, " +
-                              GENRE_FOUR + " INTEGER, " +
-                              "FOREIGN KEY (" + BOOK_ID + ") REFERENCES " + LIBRARY_TABLE_NAME +"("+ ID +"));";
+                " (" + BOOK_ID + " INTEGER PRIMARY KEY, " +
+                GENRE_ONE + " INTEGER, " +
+                GENRE_TWO + " INTEGER, " +
+                GENRE_THREE + " INTEGER, " +
+                GENRE_FOUR + " INTEGER, " +
+                "FOREIGN KEY (" + BOOK_ID + ") REFERENCES " + LIBRARY_TABLE_NAME +"("+ ID +"));";
 
         SQLiteDB.execSQL(CreateGenres);
 
         // Warnings Database.
         String CreateWarnings = "CREATE TABLE " + WARNINGS_TABLE_NAME +
-                                " (" + BOOK_ID + " INTEGER PRIMARY KEY, " +
-                                WARNING_PROFANITY + " INTEGER DEFAULT 0, " +
-                                WARNING_SEXUAL_CONTENT + " INTEGER DEFAULT 0, " +
-                                WARNING_GORE + " INTEGER DEFAULT 0, " +
-                                WARNING_TRAUMATISING + " INTEGER DEFAULT 0, " +
-                                "FOREIGN KEY (" + BOOK_ID + ") REFERENCES " + LIBRARY_TABLE_NAME +"("+ ID +"));";
+                " (" + BOOK_ID + " INTEGER PRIMARY KEY, " +
+                WARNING_PROFANITY + " INTEGER DEFAULT 0, " +
+                WARNING_SEXUAL_CONTENT + " INTEGER DEFAULT 0, " +
+                WARNING_GORE + " INTEGER DEFAULT 0, " +
+                WARNING_TRAUMATISING + " INTEGER DEFAULT 0, " +
+                "FOREIGN KEY (" + BOOK_ID + ") REFERENCES " + LIBRARY_TABLE_NAME +"("+ ID +"));";
 
         SQLiteDB.execSQL(CreateWarnings);
 
         // Chapters Database.
         String CreateChapters = "CREATE TABLE " + CHAPTERS_TABLE_NAME +
-                                " (" + BOOK_ID + " INTEGER, " +
-                                CHAPTER_ID + " INTEGER, " +
-                                CHAPTER_NAME + " TEXT, " +
-                                CHAPTER_URL + " TEXT, " +
-                                "FOREIGN KEY (" + BOOK_ID + ") REFERENCES " + LIBRARY_TABLE_NAME +"("+ ID +"));";
+                " (" + BOOK_ID + " INTEGER, " +
+                CHAPTER_ID + " INTEGER, " +
+                CHAPTER_NAME + " TEXT, " +
+                CHAPTER_URL + " TEXT, " +
+                "FOREIGN KEY (" + BOOK_ID + ") REFERENCES " + LIBRARY_TABLE_NAME +"("+ ID +"));";
 
         SQLiteDB.execSQL(CreateChapters);
 
-        // Chapter_Content Database. - For Each Paragraph of the Chapter Content.
-        String CreateChapterContent = "CREATE TABLE " + CHAPTER_CONTENT_TABLE_NAME +
-                                      " (" + CHAPTER_ID + " INTEGER, " +
-                                      CHAPTER_LINE_ID + " INTEGER, " +
-                                      CHAPTER_LINE + " TEXT, " +
-                                      LINE_STYLE + " INTEGER, " +
-                                      "FOREIGN KEY (" + CHAPTER_ID + ") REFERENCES " + CHAPTERS_TABLE_NAME +"("+ CHAPTER_ID +"));";
+        // Chapter_Paragraphs Database. - For Each Paragraph of the Chapter Content.
+        String CreateChapterParagraph = "CREATE TABLE " + CHAPTER_PARAGRAPHS_TABLE_NAME +
+                " (" + BOOK_ID + " INTEGER, " +
+                CHAPTER_ID + " INTEGER, " +
+                CHAPTER_PARAGRAPH_ID + " INTEGER, " +
+                CHAPTER_PARAGRAPH_CONTENT + " TEXT, " +
+                "FOREIGN KEY (" + BOOK_ID + ") REFERENCES " + LIBRARY_TABLE_NAME +"("+ ID +"), " +
+                "FOREIGN KEY (" + CHAPTER_ID + ") REFERENCES " + CHAPTERS_TABLE_NAME +"("+ CHAPTER_ID +"));";
 
-        SQLiteDB.execSQL(CreateChapterContent);
+        SQLiteDB.execSQL(CreateChapterParagraph);
     }
 
     @Override
@@ -191,9 +193,9 @@ public class DBHandler extends SQLiteOpenHelper
         String DropChapterQuery = "DROP TABLE IF EXISTS " + CHAPTERS_TABLE_NAME;
         SQLiteDB.execSQL(DropChapterQuery);
 
-        // Drop Chapters Table.
-        String DropChapterContentQuery = "DROP TABLE IF EXISTS " + CHAPTER_CONTENT_TABLE_NAME;
-        SQLiteDB.execSQL(DropChapterContentQuery);
+        // Drop Chapters_Paragraphs Table.
+        String DropChapterParagraphQuery = "DROP TABLE IF EXISTS " + CHAPTER_PARAGRAPHS_TABLE_NAME;
+        SQLiteDB.execSQL(DropChapterParagraphQuery);
 
         // Recreate Tables.
         onCreate(SQLiteDB);
@@ -201,8 +203,7 @@ public class DBHandler extends SQLiteOpenHelper
 
     public void AddBook(Book NewBook)
     {
-        Log.println(Log.INFO, "Hi", "Adding New Book to DB");
-
+        Log.println(Log.INFO, "Hi", "Adding " + NewBook.Title + " To DB.");
         NotifyManager = context.getSystemService(NotificationManager.class);
 
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O)
@@ -211,111 +212,133 @@ public class DBHandler extends SQLiteOpenHelper
             NotifyManager.createNotificationChannel(DownloadChannel);
         }
 
-        SQLiteDatabase db = this.getWritableDatabase();
+        SQLiteDatabase db = DBHandler.this.getWritableDatabase();
         long Result;
 
         // Add Library Data.
-        ContentValues LibraryCV = new ContentValues();
-
-        LibraryCV.put(EXTERNAL_ID, NewBook.ExternalID);
-        LibraryCV.put(TYPE, NewBook.Type.ordinal());
-
-        LibraryCV.put(TITLE, NewBook.Title);
-        LibraryCV.put(AUTHOR, NewBook.Author);
-        LibraryCV.put(DESCRIPTION, NewBook.Description);
-        LibraryCV.put(COVER_URL, NewBook.CoverURL);
-
-        LibraryCV.put(CHAPTER_COUNT, NewBook.Chapters.size());
-        LibraryCV.put(PAGE_COUNT, NewBook.PageCount);
-        LibraryCV.put(FOLLOWERS, NewBook.Followers);
-        LibraryCV.put(FAVOURITES, NewBook.Favourites);
-        LibraryCV.put(RATING, NewBook.Rating);
-
-        LibraryCV.put(CREATED_DATE_TIME, NewBook.CreatedDatetime.toString());
-        LibraryCV.put(UPDATED_DATE_TIME, NewBook.LastUpdatedDatetime.toString());
-        LibraryCV.put(DOWNLOADED_DATE_TIME, NewBook.DownloadedDatetime.toString());
-
-        if(NewBook.HasRead)
+        db.beginTransaction();
+        try
         {
-            LibraryCV.put(HAS_READ, 1);
+            ContentValues LibraryCV = new ContentValues();
+
+            LibraryCV.put(EXTERNAL_ID, NewBook.ExternalID);
+            LibraryCV.put(TYPE, NewBook.Type.ordinal());
+
+            LibraryCV.put(TITLE, NewBook.Title);
+            LibraryCV.put(AUTHOR, NewBook.Author);
+            LibraryCV.put(DESCRIPTION, NewBook.Description);
+            LibraryCV.put(COVER_URL, NewBook.CoverURL);
+
+            LibraryCV.put(CHAPTER_COUNT, NewBook.Chapters.size());
+            LibraryCV.put(PAGE_COUNT, NewBook.PageCount);
+            LibraryCV.put(FOLLOWERS, NewBook.Followers);
+            LibraryCV.put(FAVOURITES, NewBook.Favourites);
+            LibraryCV.put(RATING, NewBook.Rating);
+
+            LibraryCV.put(CREATED_DATE_TIME, NewBook.CreatedDatetime.toString());
+            LibraryCV.put(UPDATED_DATE_TIME, NewBook.LastUpdatedDatetime.toString());
+            LibraryCV.put(DOWNLOADED_DATE_TIME, NewBook.DownloadedDatetime.toString());
+
+            if(NewBook.HasRead)
+            {
+                LibraryCV.put(HAS_READ, 1);
+            }
+            else
+            {
+                LibraryCV.put(HAS_READ, 0);
+            }
+
+            LibraryCV.put(LAST_READ_CHAPTER, NewBook.LastReadChapter);
+
+            Result = db.insertOrThrow(LIBRARY_TABLE_NAME, null, LibraryCV);
+            LibraryCV.clear();
+
+            db.setTransactionSuccessful();
         }
-        else
+        finally
         {
-            LibraryCV.put(HAS_READ, 0);
+            db.endTransaction();
         }
+        // Continue On.
+        int BookID = GetBookID(NewBook.ExternalID);
 
-        LibraryCV.put(LAST_READ_CHAPTER, NewBook.LastReadChapter);
-
-        Result = db.insert(LIBRARY_TABLE_NAME, null, LibraryCV);
-        LibraryCV.clear();
-
-        if(Result == -1)
+        // Add Tags.
+        if (NewBook.TagsList.size() > 0)
         {
-            Toast.makeText(context, "Failed to Add Book", Toast.LENGTH_SHORT).show();
-        }
-        else {
-            // Continue On.
-            int BookID = GetBookID(NewBook.ExternalID);
-
-            // Add Tags.
-            if (NewBook.TagsList.size() > 0) {
-                for (int i = 0; i < NewBook.TagsList.size(); i++) {
+            for (int i = 0; i < NewBook.TagsList.size(); i++)
+            {
+                db.beginTransaction();
+                try
+                {
                     ContentValues TagsCV = new ContentValues();
 
                     TagsCV.put(BOOK_ID, BookID);
                     TagsCV.put(TAG_ID, NewBook.TagsList.get(i).ordinal());
 
-                    Result = db.insert(TAGS_TABLE_NAME, null, TagsCV);
+                    Result = db.insertOrThrow(TAGS_TABLE_NAME, null, TagsCV);
                     TagsCV.clear();
 
-                    if (Result == -1) {
+                    if (Result == -1)
+                    {
                         Toast.makeText(context, "Failed to Add Book Tags.", Toast.LENGTH_SHORT).show();
                     }
+
+                    db.setTransactionSuccessful();
+                }
+                finally
+                {
+                    db.endTransaction();
                 }
             }
+        }
 
-            // Add Genres.
-            if (NewBook.SelectedGenres.size() > 0) {
+        // Add Genres.
+        if (NewBook.SelectedGenres.size() > 0)
+        {
+            db.beginTransaction();
+            try {
                 ContentValues GenresCV = new ContentValues();
 
                 int GenresSize = NewBook.SelectedGenres.size();
 
-                if(GenresSize > 0)
-                {
+                if (GenresSize > 0) {
                     GenresCV.put(BOOK_ID, BookID);
                     GenresCV.put(GENRE_ONE, NewBook.SelectedGenres.get(0).ordinal());
 
-                    if(GenresSize > 1)
-                    {
+                    if (GenresSize > 1) {
                         GenresCV.put(GENRE_TWO, NewBook.SelectedGenres.get(1).ordinal());
 
-                        if(GenresSize > 2)
-                        {
+                        if (GenresSize > 2) {
                             GenresCV.put(GENRE_THREE, NewBook.SelectedGenres.get(2).ordinal());
 
-                            if(GenresSize > 3)
-                            {
+                            if (GenresSize > 3) {
                                 GenresCV.put(GENRE_FOUR, NewBook.SelectedGenres.get(3).ordinal());
                             }
                         }
                     }
-                }
-                if(GenresSize > 1)
-                {
-
-                }
 
 
-                Result = db.insert(GENRE_TABLE_NAME, null, GenresCV);
-                GenresCV.clear();
+                    Result = db.insertOrThrow(GENRE_TABLE_NAME, null, GenresCV);
+                    GenresCV.clear();
 
-                if (Result == -1) {
-                    Toast.makeText(context, "Failed to Add Book Genres.", Toast.LENGTH_SHORT).show();
+                    if (Result == -1) {
+                        Toast.makeText(context, "Failed to Add Book Genres.", Toast.LENGTH_SHORT).show();
+                    }
+                    db.setTransactionSuccessful();
                 }
             }
+            finally
+            {
+                db.endTransaction();
+            }
+        }
 
-            // Add Warnings Data if they Exist.
-            if (NewBook.ContentWarnings.size() > 0) {
+        // Add Warnings Data if they Exist.
+        if (NewBook.ContentWarnings.size() > 0)
+        {
+            db.beginTransaction();
+            try
+            {
                 ContentValues WarningsCV = new ContentValues();
 
                 WarningsCV.put(BOOK_ID, BookID);
@@ -342,55 +365,81 @@ public class DBHandler extends SQLiteOpenHelper
                     }
                 }
 
-                Result = db.insert(WARNINGS_TABLE_NAME, null, WarningsCV);
+                Result = db.insertOrThrow(WARNINGS_TABLE_NAME, null, WarningsCV);
 
                 WarningsCV.clear();
 
-                if (Result == -1) {
+                if (Result == -1)
+                {
                     Toast.makeText(context, "Failed to Add Book Warnings", Toast.LENGTH_SHORT).show();
                 }
-            }
 
-            // Add Chapters.
-            for (int i = 0; i < NewBook.Chapters.size(); i++) {
+                db.setTransactionSuccessful();
+            }
+            finally
+            {
+                db.endTransaction();
+            }
+        }
+
+        // Add Chapters.
+        db.beginTransaction();
+        try
+        {
+            for (Book.Chapter ThisChapter : NewBook.Chapters)
+            {
+                Log.println(Log.INFO, "Hi", "Adding Chapter " + ThisChapter.ID + " / " + NewBook.Chapters.size() + " To DB.");
+
                 ContentValues ChapterCV = new ContentValues();
 
                 ChapterCV.put(BOOK_ID, BookID);
-                ChapterCV.put(CHAPTER_ID, NewBook.Chapters.get(i).ID);
-                ChapterCV.put(CHAPTER_NAME, NewBook.Chapters.get(i).Name);
-                ChapterCV.put(CHAPTER_URL, NewBook.Chapters.get(i).URL);
+                ChapterCV.put(CHAPTER_ID, ThisChapter.ID);
+                ChapterCV.put(CHAPTER_NAME, ThisChapter.Name);
+                ChapterCV.put(CHAPTER_URL, ThisChapter.URL);
 
-                Result = db.insert(CHAPTERS_TABLE_NAME, null, ChapterCV);
+                Result = db.insertOrThrow(CHAPTERS_TABLE_NAME, null, ChapterCV);
+
+                db.beginTransaction();
+                try
+                {
+                    for (Book.Paragraph ThisParagraph : ThisChapter.Content)
+                    {
+                        ContentValues ParagraphCV = new ContentValues();
+
+                        ParagraphCV.put(BOOK_ID, BookID);
+                        ParagraphCV.put(CHAPTER_ID, ThisChapter.ID);
+                        ParagraphCV.put(CHAPTER_PARAGRAPH_ID, ThisParagraph.ParagraphID);
+                        ParagraphCV.put(CHAPTER_PARAGRAPH_CONTENT, ThisParagraph.Content);
+
+                        Result = db.insertOrThrow(CHAPTER_PARAGRAPHS_TABLE_NAME, null, ParagraphCV);
+
+                        ParagraphCV.clear();
+                    }
+
+                    db.setTransactionSuccessful();
+                }
+                finally
+                {
+                    db.endTransaction();
+                }
 
                 ChapterCV.clear();
 
-                if (Result == -1) {
-                    Toast.makeText(context, "Failed to Add Book Chapter: " + NewBook.Chapters.get(i).ID, Toast.LENGTH_SHORT).show();
-                }
-
-                // Add Chapter Lines.
-                for (int j = 0; j < NewBook.Chapters.get(i).ContentLines.size(); j++) {
-                    ContentValues ChapterLinesCV = new ContentValues();
-
-                    ChapterLinesCV.put(CHAPTER_ID, NewBook.Chapters.get(i).ID);
-                    ChapterLinesCV.put(CHAPTER_LINE_ID, NewBook.Chapters.get(i).ContentLines.get(j).ID);
-                    ChapterLinesCV.put(CHAPTER_LINE, NewBook.Chapters.get(i).ContentLines.get(j).Line);
-                    ChapterLinesCV.put(LINE_STYLE, NewBook.Chapters.get(i).ContentLines.get(j).Style);
-
-                    Result = db.insert(CHAPTER_CONTENT_TABLE_NAME, null, ChapterLinesCV);
-
-                    ChapterLinesCV.clear();
-
-                    if (Result == -1) {
-                        Toast.makeText(context, "Failed to Add Book Chapter Line: " + NewBook.Chapters.get(i).ContentLines.get(j).Line + " For Chapter: " + NewBook.Chapters.get(i).ID, Toast.LENGTH_SHORT).show();
-                    }
+                if (Result == -1)
+                {
+                    Toast.makeText(context, "Failed to Add Book Chapter: " + ThisChapter.ID, Toast.LENGTH_SHORT).show();
                 }
             }
+
+            db.setTransactionSuccessful();
+        }
+        finally
+        {
+            db.endTransaction();
         }
 
         Log.println(Log.INFO, "Hi", "Added Book " + NewBook.Title + " To DB");
 
-        // Send Download Notification to Phone. ( CURRENTLY DOES NOT WORK WITH MULTIPLE UPDATES ).
         Notification DownloadedNotification = new NotificationCompat.Builder(context, DOWNLOAD_CHANNEL)
                 .setSmallIcon(R.mipmap.icon)
                 .setContentTitle(NewBook.Title)
@@ -414,86 +463,97 @@ public class DBHandler extends SQLiteOpenHelper
         if(db != null)
         {
             cursor = db.rawQuery(Query, null);
-        }
 
-        cursor.moveToFirst();
-
-        NewBook.InternalID = Integer.parseInt(cursor.getString(0));
-        NewBook.ExternalID = Integer.parseInt(cursor.getString(1));
-
-        int TypeCaster = Integer.parseInt(cursor.getString(2));
-
-        if(TypeCaster == 0)
-        {
-            NewBook.Type = Book.BookType.Original;
-        }
-        else if(TypeCaster == 1)
-        {
-            NewBook.Type = Book.BookType.Fanfiction;
-        }
-
-        NewBook.Title = cursor.getString(3);
-        NewBook.Author = cursor.getString(4);
-        NewBook.Description = cursor.getString(5);
-
-        NewBook.CoverURL = cursor.getString(6);
-
-        int ChapterCount = Integer.parseInt(cursor.getString(7));
-
-        NewBook.Chapters = new ArrayList<>();
-
-        String ChapterQuery = "SELECT * FROM " + CHAPTERS_TABLE_NAME + " WHERE " + BOOK_ID + " = " + NewBook.InternalID;
-
-        Cursor ChapterCursor = db.rawQuery(ChapterQuery, null);
-        ChapterCursor.moveToFirst();
-
-        for(int i = 0; i < ChapterCount; i++)
-        {
-            Book.Chapter NewChapter = new Book.Chapter();
-
-            NewChapter.ID = Integer.parseInt(ChapterCursor.getString(1));
-            NewChapter.Name = ChapterCursor.getString(2);
-            NewChapter.URL = ChapterCursor.getString(3);
-
-            NewChapter.ContentLines = new ArrayList<>();
-
-            /*String ChapterLineQuery = "SELECT * FROM " + CHAPTER_CONTENT_TABLE_NAME + " WHERE " + CHAPTER_ID + " = " + NewChapter.ID;
-            Cursor ChapterLineCursor = db.rawQuery(ChapterLineQuery, null);
-
-            ChapterLineCursor.moveToFirst();
-            for(int j = 0; j < ChapterLineCursor.getCount(); j++)
+            db.beginTransaction();
+            try
             {
-                Book.ChapterLine NewChapterLine = new Book.ChapterLine();
+                cursor.moveToFirst();
 
-                NewChapterLine.ID = Integer.parseInt(ChapterLineCursor.getString(1));
-                NewChapterLine.Line = ChapterLineCursor.getString(2);
-                NewChapterLine.Style = Integer.parseInt(ChapterLineCursor.getString(3));
+                NewBook.InternalID = Integer.parseInt(cursor.getString(0));
+                NewBook.ExternalID = Integer.parseInt(cursor.getString(1));
 
-                NewChapter.ContentLines.add(NewChapterLine);
+                int TypeCaster = Integer.parseInt(cursor.getString(2));
 
-                ChapterLineCursor.moveToNext();
+                if(TypeCaster == 0)
+                {
+                    NewBook.Type = Book.BookType.Original;
+                }
+                else if(TypeCaster == 1)
+                {
+                    NewBook.Type = Book.BookType.Fanfiction;
+                }
+
+                NewBook.Title = cursor.getString(3);
+                NewBook.Author = cursor.getString(4);
+                NewBook.Description = cursor.getString(5);
+
+                NewBook.CoverURL = cursor.getString(6);
+
+                int ChapterCount = Integer.parseInt(cursor.getString(7));
+
+                NewBook.Chapters = new ArrayList<>();
+
+                db.beginTransaction();
+                try
+                {
+                    String ChapterQuery = "SELECT * FROM " + CHAPTERS_TABLE_NAME + " WHERE " + BOOK_ID + " = " + NewBook.InternalID;
+
+                    Cursor ChapterCursor = db.rawQuery(ChapterQuery, null);
+                    ChapterCursor.moveToFirst();
+
+                    for(int i = 0; i < ChapterCount; i++)
+                    {
+                        Book.Chapter NewChapter = new Book.Chapter();
+
+                        NewChapter.ID = Integer.parseInt(ChapterCursor.getString(1));
+                        NewChapter.Name = ChapterCursor.getString(2);
+                        NewChapter.URL = ChapterCursor.getString(3);
+
+                        NewBook.Chapters.add(NewChapter);
+
+                        ChapterCursor.moveToNext();
+                    }
+
+                    ChapterCursor.close();
+
+                    db.setTransactionSuccessful();
+                }
+                finally
+                {
+                    db.endTransaction();
+                }
+
+                NewBook.PageCount = Integer.parseInt(cursor.getString(8));
+                NewBook.Followers = Integer.parseInt(cursor.getString(9));
+                NewBook.Favourites = Integer.parseInt(cursor.getString(10));
+                NewBook.Rating = Double.parseDouble(cursor.getString(11));
+
+                //NewBook.CreatedDatetime = cursor.getString(12);
+                //NewBook.LastUpdatedDatetime = Double.parseDouble(cursor.getString(13));
+                //NewBook.DownloadedDatetime = Double.parseDouble(cursor.getString(14));
+
+                int HasReadCaster = Integer.parseInt(cursor.getString(15));
+
+                if(HasReadCaster == 0)
+                {
+                    NewBook.SetHasRead(false);
+                }
+                else if(HasReadCaster == 1)
+                {
+                    NewBook.SetHasRead(true);
+                }
+
+                NewBook.SetLastReadChapter(Integer.parseInt(cursor.getString(16)));
+
+                cursor.close();
+                db.setTransactionSuccessful();
             }
-            */
-
-
-            NewBook.Chapters.add(NewChapter);
-
-            //ChapterLineCursor.close();
-            ChapterCursor.moveToNext();
+            finally
+            {
+                db.endTransaction();
+            }
         }
 
-        ChapterCursor.close();
-
-        NewBook.PageCount = Integer.parseInt(cursor.getString(8));
-        NewBook.Followers = Integer.parseInt(cursor.getString(9));
-        NewBook.Favourites = Integer.parseInt(cursor.getString(10));
-        NewBook.Rating = Double.parseDouble(cursor.getString(11));
-
-        //NewBook.CreatedDatetime = cursor.getString(12);
-        //NewBook.LastUpdatedDatetime = Double.parseDouble(cursor.getString(11));
-        //NewBook.DownloadedDatetime = Double.parseDouble(cursor.getString(11));
-
-        cursor.close();
         return NewBook;
     }
 
@@ -526,16 +586,19 @@ public class DBHandler extends SQLiteOpenHelper
             cursor = db.rawQuery(Query, null);
         }
 
+        boolean Result = false;
+
         if(cursor.getCount() >= 1)
         {
-            cursor.close();
-            return true;
+            Result = true;
         }
         else
         {
-            cursor.close();
-            return false;
+            Result = false;
         }
+
+        cursor.close();
+        return Result;
     }
 
     public int GetBookID(int ExternalID)
@@ -555,5 +618,410 @@ public class DBHandler extends SQLiteOpenHelper
         cursor.close();
 
         return CursorNum;
+    }
+
+    public long[] GetExternalIDs()
+    {
+        int BookCount = GetLibraryCount();
+
+        SQLiteDatabase db = this.getReadableDatabase();
+        long[] ExternalIDs = new long[BookCount];
+
+        String Query = "SELECT " + EXTERNAL_ID + " FROM " + LIBRARY_TABLE_NAME;
+        Cursor cursor = null;
+
+        if(db != null)
+        {
+            cursor = db.rawQuery(Query, null);
+        }
+
+        cursor.moveToFirst();
+
+        for(int i = 0; i < BookCount; i++)
+        {
+            ExternalIDs[i] = cursor.getLong(i);
+        }
+
+        cursor.close();
+        return ExternalIDs;
+    }
+
+    public int GetChapterCount(long ID)
+    {
+        SQLiteDatabase db = this.getReadableDatabase();
+
+        String Query = "SELECT " + CHAPTER_COUNT + " FROM " + LIBRARY_TABLE_NAME + " WHERE " + EXTERNAL_ID + " = " + ID;
+        Cursor cursor = null;
+
+        if(db != null)
+        {
+            cursor = db.rawQuery(Query, null);
+        }
+
+        cursor.moveToFirst();
+        int ChapterCount = cursor.getInt(0);
+
+        cursor.close();
+        return ChapterCount;
+    }
+
+    public String GetBookTitle(long ExternalID)
+    {
+        String Query = "SELECT " + TITLE + " FROM " + LIBRARY_TABLE_NAME + " WHERE " + EXTERNAL_ID + " = " + ExternalID;
+        SQLiteDatabase db = this.getReadableDatabase();
+
+        Cursor cursor = null;
+        if(db != null)
+        {
+            cursor = db.rawQuery(Query, null);
+        }
+
+        cursor.moveToFirst();
+
+        String Title = cursor.getString(0);
+        cursor.close();
+
+        return Title;
+    }
+
+    public Book.Chapter GetChapter(int BookID, int ChapterID)
+    {
+        Book.Chapter ChapterGot = new Book.Chapter();
+        ChapterGot.Content = new ArrayList<Book.Paragraph>();
+
+        // Getting Chapter
+        SQLiteDatabase db = this.getReadableDatabase();
+
+        Cursor cursor = null;
+        if(db != null)
+        {
+            db.beginTransaction();
+            try
+            {
+                String ChapterQuery = "SELECT * FROM " + CHAPTERS_TABLE_NAME + " WHERE " + BOOK_ID + " = " + BookID;
+
+                cursor = db.rawQuery(ChapterQuery, null);
+
+                db.setTransactionSuccessful();
+            }
+            finally
+            {
+                db.endTransaction();
+            }
+        }
+
+        cursor.moveToPosition(ChapterID);
+
+        ChapterGot.ID = ChapterID;
+        ChapterGot.Name = cursor.getString(1);
+        ChapterGot.URL = cursor.getString(2);
+
+        cursor.close();
+        cursor = null;
+
+        db.beginTransaction();
+        try
+        {
+            String ParagraphQuery = "SELECT * FROM " + CHAPTER_PARAGRAPHS_TABLE_NAME + " WHERE " + BOOK_ID + " = " + BookID + " AND " + CHAPTER_ID + " = " + ChapterID;
+
+            cursor = db.rawQuery(ParagraphQuery, null);
+
+            db.setTransactionSuccessful();
+        }
+        finally
+        {
+            db.endTransaction();
+        }
+
+        cursor.moveToFirst();
+
+        for(int i = 0; i < cursor.getCount(); i++)
+        {
+            // Repeat for Each Paragraph.
+            Book.Paragraph Paragraph = new Book.Paragraph();
+
+            Paragraph.ParagraphID = cursor.getInt(2);
+            Paragraph.Content = cursor.getString(3);
+
+            ChapterGot.Content.add(Paragraph);
+            cursor.moveToNext();
+        }
+
+        cursor.close();
+        return ChapterGot;
+    }
+
+    public void CheckUpdate(Context ThisContext, Book ThisBook) throws InterruptedException
+    {
+        boolean HasUpdated = false;
+
+        String URL = "https://www.royalroad.com/fiction/" + ThisBook.ExternalID;
+        Book NewBook = new Book().CreateBook(ThisContext, ThisBook.ExternalID, false, false);
+
+        /*
+        // Check to See if Anything has Updated.
+        if(NewBook.GetType() != ThisBook.GetType())
+        {
+            UpdateBookType(ThisBook.GetExternalID(), NewBook.GetType());
+        }
+
+        if(NewBook.GetTitle() != ThisBook.GetTitle())
+        {
+            UpdateTitle(ThisBook.GetExternalID(), NewBook.GetTitle());
+        }
+
+        if(NewBook.GetDescription() != ThisBook.GetDescription())
+        {
+            UpdateDescription(ThisBook.GetExternalID(), NewBook.GetDescription());
+        }
+
+        if(NewBook.GetCover() != ThisBook.GetCover())
+        {
+            UpdateCoverURL(ThisBook.GetExternalID(), NewBook.GetCover());
+        }
+
+        if(NewBook.GetGenres().size() != ThisBook.GetGenres().size())
+        {
+            //UpdateGenres(ThisBook.GetExternalID(), NewBook.GetPageCount());
+        }
+
+        boolean PageCountChanged = false;
+
+        if(NewBook.GetPageCount() != ThisBook.GetPageCount())
+        {
+            UpdatePageCount(ThisBook.GetExternalID(), NewBook.GetPageCount());
+
+            PageCountChanged = true;
+        }
+
+        if(NewBook.GetFollowerCount() != ThisBook.GetFollowerCount())
+        {
+            UpdateFollowers(ThisBook.GetExternalID(), NewBook.GetFollowerCount());
+        }
+
+        if(NewBook.GetFavouriteCount() != ThisBook.GetFavouriteCount())
+        {
+            UpdateFavourites(ThisBook.GetExternalID(), NewBook.GetFavouriteCount());
+        }
+
+        if(NewBook.GetRating() != ThisBook.GetRating())
+        {
+            UpdateRating(ThisBook.GetExternalID(), NewBook.GetRating());
+        }
+
+        /*
+        if(NewBook.GetLastUpdatedDateTime().toString() != ThisBook.GetLastUpdatedDateTime().toString())
+        {
+            HasUpdated = true;
+            UpdateLastUpdateDateTime();
+        }
+
+
+        if(NewBook.GetAllChapters().size() != ThisBook.GetAllChapters().size())
+        {
+            HasUpdated = true;
+
+            // Ammount of Chapters in NewBook is Less than ThisBook, Remove Chapter.
+            if(ThisBook.GetAllChapters().size() > ThisBook.GetAllChapters().size())
+            {
+                //RemoveChapter();
+            }
+            else if(ThisBook.GetAllChapters().size() < ThisBook.GetAllChapters().size()) // Ammount of Chapters in NewBook is Greater than ThisBook, Add NewChapter
+            {
+                //AddChapter();
+            }
+        }
+        else
+        {
+            // No New or Removed Chapters, But PageCount Has Changed, Thus Chapter Has been Modified.
+            if(PageCountChanged)
+            {
+                //ReplaceChapter();
+            }
+        }
+
+        if(NewBook.GetTags().size() != ThisBook.GetTags().size())
+        {
+            //UpdateTags();
+        }
+
+        if(NewBook.GetWarnings().size() != ThisBook.GetWarnings().size())
+        {
+            //UpdateWarnings();
+        }
+
+        if(HasUpdated)
+        {
+            // Send Update Notification.
+        }
+        */
+    }
+
+    public void UpdateBookType(int ExternalID, Book.BookType NewType)
+    {
+        SQLiteDatabase db = this.getWritableDatabase();
+
+        ContentValues TypeCV = new ContentValues();
+        TypeCV.put(TYPE, NewType.toString());
+
+        db.update(LIBRARY_TABLE_NAME, TypeCV,EXTERNAL_ID + " = " + ExternalID, null);
+    }
+
+    public void UpdateTitle(int ExternalID, String NewTitle)
+    {
+        SQLiteDatabase db = this.getWritableDatabase();
+
+        ContentValues TitleCV = new ContentValues();
+        TitleCV.put(TITLE, NewTitle);
+
+        db.update(LIBRARY_TABLE_NAME, TitleCV,EXTERNAL_ID + " = " + ExternalID, null);
+    }
+
+    public void UpdateDescription(int ExternalID, String NewDescription)
+    {
+        SQLiteDatabase db = this.getWritableDatabase();
+
+        ContentValues DescriptionCV = new ContentValues();
+        DescriptionCV.put(DESCRIPTION, NewDescription);
+
+        db.update(LIBRARY_TABLE_NAME, DescriptionCV,EXTERNAL_ID + " = " + ExternalID, null);
+    }
+
+    public void UpdateCoverURL(int ExternalID, String NewCoverURL)
+    {
+        SQLiteDatabase db = this.getWritableDatabase();
+
+        ContentValues CoverCV = new ContentValues();
+        CoverCV.put(COVER_URL, NewCoverURL);
+
+        db.update(LIBRARY_TABLE_NAME, CoverCV,EXTERNAL_ID + " = " + ExternalID, null);
+    }
+
+    public void UpdateGenres(int ExternalID, ArrayList<Book.Genres> NewGenres)
+    {
+
+    }
+
+    public void UpdatePageCount(int ExternalID, int NewPageCount)
+    {
+        SQLiteDatabase db = this.getWritableDatabase();
+
+        ContentValues PageCountCV = new ContentValues();
+        PageCountCV.put(PAGE_COUNT, NewPageCount);
+
+        db.update(LIBRARY_TABLE_NAME, PageCountCV, EXTERNAL_ID + " = " + ExternalID, null);
+    }
+
+    public void UpdateFollowers(int ExternalID, int NewFollowerCount)
+    {
+        SQLiteDatabase db = this.getWritableDatabase();
+
+        ContentValues FollowerCV = new ContentValues();
+        FollowerCV.put(FOLLOWERS, NewFollowerCount);
+
+        db.update(LIBRARY_TABLE_NAME, FollowerCV, EXTERNAL_ID + " = " + ExternalID, null);
+    }
+
+    public void UpdateFavourites(int ExternalID, int NewFavouriteCount)
+    {
+        SQLiteDatabase db = this.getWritableDatabase();
+
+        ContentValues FavouriteCV = new ContentValues();
+        FavouriteCV.put(FAVOURITES, NewFavouriteCount);
+
+        db.update(LIBRARY_TABLE_NAME, FavouriteCV, EXTERNAL_ID + " = " + ExternalID, null);
+    }
+
+    public void UpdateRating(int ExternalID, double NewRating)
+    {
+        SQLiteDatabase db = this.getWritableDatabase();
+
+        ContentValues RatingCV = new ContentValues();
+        RatingCV.put(RATING, NewRating);
+
+        db.update(LIBRARY_TABLE_NAME, RatingCV, EXTERNAL_ID + " = " + ExternalID, null);
+    }
+
+    public void UpdateLastUpdateDateTime(int ExternalID, GregorianCalendar NewDateTime)
+    {
+
+    }
+
+    public void ReplaceChapter(int BookID, int ChapterID, Book.Chapter ReplaceChapter)
+    {
+        // Send Chapter Modified Notification.
+    }
+
+    public void RemoveChapter(int BookID, int ChapterID, Book.Chapter ReplaceChapter)
+    {
+        // Send Chapter Removed Notification.
+    }
+    public void AddChapter(int BookID, Book.Chapter NewChapter)
+    {
+        // Send Chapter Update Notification.
+    }
+
+    public void UpdateTags(int ExternalID, ArrayList<Book.Tags> NewTags)
+    {
+
+    }
+
+    public void UpdateWarnings(int ExternalID, ArrayList<Book.Warnings> NewWarnings)
+    {
+
+    }
+
+    public void UpdateHasRead(int ExternalID)
+    {
+        SQLiteDatabase db = this.getWritableDatabase();
+        db.execSQL("UPDATE " + LIBRARY_TABLE_NAME + " SET " + HAS_READ +" = '1' WHERE " + EXTERNAL_ID + " = " + ExternalID);
+    }
+
+    public void UpdateLastReadChapter(int ExternalID, int ChapterID)
+    {
+        SQLiteDatabase db = this.getWritableDatabase();
+
+        ContentValues LastReadValues = new ContentValues();
+
+        LastReadValues.put(LAST_READ_CHAPTER, ChapterID);
+
+        db.beginTransaction();
+        try
+        {
+            int Result = db.update(LIBRARY_TABLE_NAME, LastReadValues, EXTERNAL_ID + " = " + ExternalID, null);
+
+            if(Result == -1)
+            {
+                Log.println(Log.INFO, "Hi", "Failed in Updating LastReadChapter");
+            }
+            else
+            {
+                Log.println(Log.INFO, "Hi", "Updated LastReadChapter for " + ExternalID + " to Chapter: " + ChapterID);
+            }
+
+            db.setTransactionSuccessful();
+        }
+        finally
+        {
+            db.endTransaction();
+        }
+    }
+
+    public void DeleteBook(int ExternalID)
+    {
+        SQLiteDatabase db = this.getWritableDatabase();
+
+        int BookID = GetBookID(ExternalID);
+
+        db.delete(LIBRARY_TABLE_NAME, EXTERNAL_ID + " = " + ExternalID, null);
+        db.delete(CHAPTERS_TABLE_NAME, BOOK_ID + " = " + BookID, null);
+        db.delete(CHAPTERS_TABLE_NAME, BOOK_ID + " = " + BookID, null);
+    }
+
+    public void DeleteChapter(int BookID, int ChapterID)
+    {
+        SQLiteDatabase db = this.getWritableDatabase();
+        db.delete(CHAPTERS_TABLE_NAME, BOOK_ID + " = " + BookID + " AND " +
+                CHAPTER_ID +  " = " + ChapterID, null);
     }
 }

@@ -64,6 +64,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
+import java.util.concurrent.ExecutionException;
 
 public class HomeActivity extends AppCompatActivity {
     Button LoginBTN;
@@ -96,6 +97,8 @@ public class HomeActivity extends AppCompatActivity {
     DBHandler SQLiteDB;
 
     int SELECT_PICTURE = 200;
+    public static final String UPDATE_CHANNEL = "updatechannel";
+    String GROUP_KEY_STORY_NOTIFICATION = "com.android.example.STORY_NOTIFICATION";
 
     @SuppressLint("ResourceAsColor")
     @Override
@@ -103,14 +106,6 @@ public class HomeActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
 
-        /*
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
-            StrictMode.setVmPolicy( new StrictMode.VmPolicy.Builder(StrictMode.getVmPolicy())
-                    .detectLeakedClosableObjects()
-                    .penaltyLog()
-                    .build());
-        }
-        */
 
         db = FirebaseFirestore.getInstance();
         SQLiteDB = new DBHandler(HomeActivity.this);
@@ -332,11 +327,16 @@ public class HomeActivity extends AppCompatActivity {
             }
         });
 
-        CheckUpdates();
+        try
+        {
+            CheckUpdates();
+        } catch (InterruptedException e)
+        {
+            throw new RuntimeException(e);
+        }
     }
 
-    private void CheckUpdates()
-    {
+    private void CheckUpdates() throws InterruptedException {
         ConnectivityManager connectivityManager = (ConnectivityManager)getSystemService(Context.CONNECTIVITY_SERVICE);
 
         // Check if Online.
@@ -365,9 +365,17 @@ public class HomeActivity extends AppCompatActivity {
 
                                 if(DB_Records == 0)
                                 {
+                                    Book[] AddBooks = new Book[ExternalIDs.size()];
+
                                     for(int i = 0; i < ExternalIDs.size(); i++)
                                     {
-                                        new LibraryTasks(HomeActivity.this, Math.toIntExact(ExternalIDs.get(i))).execute();
+                                        //Book NewBook = new LibraryTasks(HomeActivity.this, ExternalIDs.get(i), false).execute().get();
+                                        AddBooks[i] = new Book();
+                                        try {
+                                            AddBooks[i] = AddBooks[i].CreateBook(HomeActivity.this, ExternalIDs.get(i), true, true);
+                                        } catch (InterruptedException e) {
+                                            throw new RuntimeException(e);
+                                        }
                                     }
                                 }
                                 else
@@ -378,7 +386,13 @@ public class HomeActivity extends AppCompatActivity {
 
                                         if(!ExistsInDB)
                                         {
-                                            new LibraryTasks(HomeActivity.this, Math.toIntExact(ExternalIDs.get(i))).execute();
+                                            Book[] AddBooks = new Book[ExternalIDs.size()];
+                                            AddBooks[i] = new Book();
+                                            try {
+                                                AddBooks[i] = AddBooks[i].CreateBook(HomeActivity.this, ExternalIDs.get(i), true, true);
+                                            } catch (InterruptedException e) {
+                                                throw new RuntimeException(e);
+                                            }
                                         }
                                     }
                                 }
@@ -386,21 +400,96 @@ public class HomeActivity extends AppCompatActivity {
                         }
                     });
 
-            // Run through the SQLite Database ExternalIDs and Check if any have Updated.
-            ArrayList<Integer> ExternalIDs = new ArrayList<>();
+
 
             if(HasUpdated)
             {
-                // Update SQLite Database Entry.
-                // Send Update Notification.
+                int Count = SQLiteDB.GetLibraryCount();
+
+                if(Count > 0)
+                {
+                    long[] ExternalIDs = SQLiteDB.GetExternalIDs();
+
+                    for(int i = 0; i < ExternalIDs.length; i++)
+                    {
+                        String URL = "https://www.royalroad.com/fiction/" + ExternalIDs[i];
+
+                        int finalI = i;
+                        Thread CheckThread = new Thread(new Runnable()
+                        {
+                            @Override
+                            public void run()
+                            {
+                                try
+                                {
+                                    int CurrentChapterCount = SQLiteDB.GetChapterCount(ExternalIDs[finalI]);
+                                    Document UpdateDoc = Jsoup.connect(URL).get();
+
+                                    int ChapterCount = Integer.parseInt(UpdateDoc.getElementsByClass("label label-default pull-right").get(0).text());
+
+                                    if(CurrentChapterCount != ChapterCount)
+                                    {
+                                        String Title = SQLiteDB.GetBookTitle(ExternalIDs[finalI]);
+
+                                        // Something has Changed.
+                                        // New Chapters.
+                                        if(ChapterCount > CurrentChapterCount)
+                                        {
+
+                                        }
+
+                                        // Update in DB.
+
+                                        NotificationManager NotifyManager = getApplicationContext().getSystemService(NotificationManager.class);
+
+                                        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O)
+                                        {
+                                            NotificationChannel DownloadChannel = new NotificationChannel(UPDATE_CHANNEL, "Download Channel", NotificationManager.IMPORTANCE_DEFAULT);
+                                            NotifyManager.createNotificationChannel(DownloadChannel);
+                                        }
+
+                                        // Send Notification.
+                                        Notification DownloadedNotification = new NotificationCompat.Builder(getApplicationContext(), UPDATE_CHANNEL)
+                                                .setSmallIcon(R.mipmap.icon)
+                                                .setContentTitle(Title)
+                                                .setContentText("Story Updated")
+                                                .setPriority(Notification.PRIORITY_DEFAULT)
+                                                .setCategory(Notification.CATEGORY_MESSAGE)
+                                                .setGroup(GROUP_KEY_STORY_NOTIFICATION)
+                                                .build();
+
+                                        NotifyManager.notify((int) ExternalIDs[finalI], DownloadedNotification);
+                                    }
+                                }
+                                catch (IOException e)
+                                {
+                                    throw new RuntimeException(e);
+                                }
+                            }
+                        });
+
+                        CheckThread.start();
+                        CheckThread.join();
+                    }
+                }
             }
 
             SQLiteDB.close();
         }
         else
         {
-            Toast.makeText(this, "Offline", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Connect to internet to update.", Toast.LENGTH_SHORT).show();
         }
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        SharedPreferences Pref = getSharedPreferences("Settings", MODE_PRIVATE);
+        boolean TempDarkMode = Pref.getBoolean("AppTheme", false);
+
+        SwitchThemes(TempDarkMode);
     }
 
     @SuppressLint("ResourceAsColor")

@@ -5,10 +5,12 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
+import androidx.viewpager2.widget.ViewPager2;
 
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.Button;
 import android.widget.FrameLayout;
 
 public class ReadActivity extends AppCompatActivity {
@@ -16,8 +18,11 @@ public class ReadActivity extends AppCompatActivity {
     Toolbar BottomToolbar;
     Toolbar TopToolbar;
 
+    private ViewPager2 BookPager;
     boolean ToolbarAppeared;
     public Book ReadBook;
+    public Button BackBTN;
+    public Button ChapterCount;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -27,6 +32,9 @@ public class ReadActivity extends AppCompatActivity {
         Intent ThisIntent = getIntent();
         ReadBook = (Book)ThisIntent.getExtras().getSerializable("Book");
         boolean HasDownloaded = ThisIntent.getBooleanExtra("HasDownloaded", false);
+
+        BackBTN = findViewById(R.id.BackBTN);
+        ChapterCount = findViewById(R.id.ChapterCount);
 
         ToolbarAppeared = true;
 
@@ -42,46 +50,63 @@ public class ReadActivity extends AppCompatActivity {
         }
 
         TopToolbar = (Toolbar) findViewById(R.id.BookTopToolbar);
-        TopToolbar.inflateMenu(R.menu.booktoptoolbar);
 
-        FrameLayout FragmentFrame = findViewById(R.id.ReadFragmentFrame);
+        BookPager = findViewById(R.id.ReadPager);
+        VPAdapter vpAdapter = new VPAdapter(getSupportFragmentManager(), getLifecycle());
 
-        FragmentFrame.setOnClickListener(new View.OnClickListener() {
+        vpAdapter.AddFragment(new BookHomeFragment());
+
+        for(int i = 0; i < ReadBook.Chapters.size(); i++)
+        {
+            vpAdapter.AddFragment(new ChapterFragment(i));
+        }
+
+        BookPager.setAdapter(vpAdapter);
+        BookPager.setCurrentItem(0);
+
+        BookPager.registerOnPageChangeCallback(new ViewPager2.OnPageChangeCallback() {
             @Override
-            public void onClick(View v) {
-                if(ToolbarAppeared && ReadBook.HasRead)
+            public void onPageSelected(int position)
+            {
+                if(position == 0)
                 {
-                    BottomToolbar.setVisibility(View.GONE);
-                    TopToolbar.setVisibility(View.GONE);
-
-                    ToolbarAppeared = false;
+                    ChapterCount.setText("Home / " + ReadBook.Chapters.size());
                 }
                 else
                 {
-                    BottomToolbar.setVisibility(View.VISIBLE);
-                    TopToolbar.setVisibility(View.VISIBLE);
-
-                    ToolbarAppeared = true;
+                    ChapterCount.setText(position + " / " + ReadBook.Chapters.size());
                 }
             }
         });
+        BackBTN.setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View view) {
+                finish();
+            }
+        });
+
+        BackBTN.setText(ReadBook.Title);
 
         if(ReadBook.HasRead)
         {
-            ReplaceFragment(new ChapterFragment());
+            if(ReadBook.LastReadChapter > 0)
+            {
+                BookPager.setCurrentItem(ReadBook.LastReadChapter);
+            }
+            else
+            {
+                // Has Read but Last Chapter is Home Page.
+                BookPager.setCurrentItem(0);
+            }
         }
         else
         {
-            ReplaceFragment(new BookHomeFragment());
+            BookPager.setCurrentItem(0);
+
+            DBHandler SQLiteDB = new DBHandler(this);
+            SQLiteDB.UpdateHasRead(ReadBook.GetExternalID());
+            SQLiteDB.close();
         }
-    }
-
-    public void ReplaceFragment(Fragment fragment)
-    {
-        FragmentManager fragmentManager = getSupportFragmentManager();
-        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-
-        fragmentTransaction.replace(R.id.ReadFragmentFrame, fragment);
-        fragmentTransaction.commit();
     }
 }
