@@ -34,4 +34,6 @@
 
     <color name="BookInProgress">#FFFF9900</color>
     <color name="BookComplete">#FF07C101</color>
+
+    <color name="ForumToolbar">#3c86c6</color>
 </resources>
