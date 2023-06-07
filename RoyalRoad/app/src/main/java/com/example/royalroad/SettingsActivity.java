@@ -21,6 +21,7 @@ import android.view.View;
 import android.view.Window;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.SeekBar;
 import android.widget.Spinner;
@@ -30,8 +31,9 @@ import com.google.android.material.button.MaterialButton;
 
 public class SettingsActivity extends AppCompatActivity {
 
-    Boolean IsDarkMode;
+    boolean IsDarkMode;
     public Boolean IsFirstFragment;
+    private FrameLayout FragmentLayout;
     MaterialButton BackBTN;
 
     @Override
@@ -40,14 +42,17 @@ public class SettingsActivity extends AppCompatActivity {
         setContentView(R.layout.activity_settings);
 
         IsFirstFragment = true;
-        ReplaceFragment(new BaseSettingsFragment());
 
         SharedPreferences Pref = getSharedPreferences("Settings", MODE_PRIVATE);
 
         IsDarkMode = Pref.getBoolean("AppTheme", false);
 
         BackBTN = findViewById(R.id.BackBTN);
+        FragmentLayout = findViewById(R.id.FragmentLayout);
+
         SwitchTheme(IsDarkMode);
+
+        ReplaceFragment(new BaseSettingsFragment());
     }
 
     public void BackBTN(View view)
@@ -75,11 +80,15 @@ public class SettingsActivity extends AppCompatActivity {
     {
         if(DarkMode)
         {
+            getWindow().getDecorView().setBackgroundColor(getColor(R.color.DarkOuter));
             BackBTN.setIconTint(ColorStateList.valueOf(getColor(R.color.white)));
+            FragmentLayout.setBackgroundColor(getColor(R.color.DarkOuter));
         }
         else
         {
+            getWindow().getDecorView().setBackgroundColor(getColor(R.color.white));
             BackBTN.setIconTint(ColorStateList.valueOf(getColor(R.color.black)));
+            FragmentLayout.setBackgroundColor(getColor(R.color.white));
         }
     }
 }

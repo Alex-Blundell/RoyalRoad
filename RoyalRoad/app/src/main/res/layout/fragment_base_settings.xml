@@ -286,12 +286,12 @@
         android:id="@+id/BrightnessSlider"
         android:layout_width="180dp"
         android:layout_height="wrap_content"
-        android:layout_toRightOf="@+id/FontSizeTXT"
         android:layout_below="@id/AppThemeDropdown"
-        android:layout_marginTop="20dp"
         android:layout_marginLeft="100dp"
+        android:layout_marginTop="20dp"
         android:layout_marginRight="10dp"
-        />
+        android:layout_toRightOf="@+id/FontSizeTXT"
+        android:max="255" />
 
     <Spinner
         android:id="@+id/AppFontDropdown"

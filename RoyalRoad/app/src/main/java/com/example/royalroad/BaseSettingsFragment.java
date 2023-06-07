@@ -53,16 +53,15 @@ public class BaseSettingsFragment extends Fragment {
 
     Button AccountInfoBTN;
 
-    private ContentResolver cResolver;
+    //private ContentResolver cResolver;
     SeekBar BrightnessSlider;
     SeekBar FontSizeSlider;
     SeekBar AppFontSizeSlider;
     int CurrentBrightness;
-    private Window window;
-
     private Boolean IsDarkMode;
     private int FontSize;
     private int AppFontSize;
+
 
     ImageView NextBTN;
     ArrayList<TextView> ChangeTexts = new ArrayList<>();
@@ -98,11 +97,10 @@ public class BaseSettingsFragment extends Fragment {
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
         return inflater.inflate(R.layout.fragment_base_settings, container, false);
     }
-
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
@@ -111,8 +109,6 @@ public class BaseSettingsFragment extends Fragment {
         SharedPreferences.Editor PrefEditor = Pref.edit();
 
         IsDarkMode = Pref.getBoolean("AppTheme", false);
-
-        window = getActivity().getWindow();
 
         AccountInfoBTN = (Button) view.findViewById(R.id.AccountInfoBTN);
 
@@ -166,8 +162,8 @@ public class BaseSettingsFragment extends Fragment {
 
         SwitchTheme(IsDarkMode);
 
-        int SelectedAppFont = Pref.getInt("AppFont", FontStyle.Open_Sans.ordinal());
-        int SelectedReadingFont = Pref.getInt("ReadingFont", AppFontStyle.Open_Sans.ordinal());
+        int SelectedAppFont = Pref.getInt("AppFont", AppFontStyle.Open_Sans.ordinal());
+        int SelectedReadingFont = Pref.getInt("ReadingFont", FontStyle.Open_Sans.ordinal());
 
         AppFontDropdown.setSelection(SelectedAppFont);
         ReadingFontDropdown.setSelection(SelectedReadingFont);
@@ -367,54 +363,7 @@ public class BaseSettingsFragment extends Fragment {
             }
         });
 
-        cResolver = getActivity().getContentResolver();
 
-        try
-        {
-            CurrentBrightness = System.getInt(cResolver, System.SCREEN_BRIGHTNESS);
-        }
-        catch (Settings.SettingNotFoundException e)
-        {
-            throw new RuntimeException(e);
-        }
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M)
-        {
-            if (!Settings.System.canWrite(getActivity().getApplicationContext()))
-            {
-                Intent intent = new Intent(Settings.ACTION_MANAGE_WRITE_SETTINGS, Uri.parse("package:" + getActivity().getPackageName()));
-                startActivity(intent);
-            }
-        }
-
-        BrightnessSlider.setProgress(CurrentBrightness);
-        BrightnessSlider.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
-            @Override
-            public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
-                if(i <= 20)
-                {
-                    CurrentBrightness = 20;
-                }
-                else
-                {
-                    CurrentBrightness = i;
-                }
-            }
-
-            @Override
-            public void onStartTrackingTouch(SeekBar seekBar) {
-
-            }
-
-            @Override
-            public void onStopTrackingTouch(SeekBar seekBar) {
-                System.putInt(cResolver, System.SCREEN_BRIGHTNESS, CurrentBrightness);
-
-                LayoutParams layoutpars = window.getAttributes();
-                layoutpars.screenBrightness = CurrentBrightness / (float)255;
-                window.setAttributes(layoutpars);
-            }
-        });
     }
 
     void SwitchTheme(@NonNull Boolean DarkMode)

@@ -3,6 +3,7 @@ package com.example.royalroad;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Context;
+import android.nfc.Tag;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
@@ -11,6 +12,7 @@ import android.widget.TextView;
 import org.jsoup.Connection;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
 import java.io.BufferedReader;
@@ -19,379 +21,546 @@ import java.io.InputStreamReader;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.GregorianCalendar;
-
-public class LibraryTasks extends AsyncTask<Void, Void, Void>
-{
-    public int ExternalID;
+public class LibraryTasks extends AsyncTask<Void, Void, Book> {
+    public long ExternalID;
     public Context context;
 
     private Book AddBook;
 
-    public LibraryTasks(Context thisContext, int ID)
+    private Document StoryDoc;
+    boolean GetChapterContent;
+
+    public LibraryTasks(Context thisContext, long ID, boolean getChapterContent)
     {
         this.context = thisContext;
         this.ExternalID = ID;
+        this.GetChapterContent = getChapterContent;
     }
 
     @Override
-    protected Void doInBackground(Void... voids)
+    protected Book doInBackground(Void... voids)
     {
         Log.println(Log.INFO, "Hi", "Adding New Book");
+
         try
         {
-            DBHandler SQLiteDB = new DBHandler(context);
-
-            Book NewBook = new Book();
-            NewBook.ExternalID = ExternalID;
-
             String URL = "https://www.royalroad.com/fiction/" + ExternalID + "/";
+            Connection.Response response = null;
 
-            Connection.Response response = Jsoup.connect(URL).followRedirects(true).execute();
+            response = Jsoup.connect(URL).followRedirects(true).execute();
 
             String RealURL = String.valueOf(response.url());
+            this.StoryDoc = Jsoup.connect(RealURL).get();
 
-            Document Doc = Jsoup.connect(RealURL).get();
+            DBHandler SQLiteDB = new DBHandler(this.context);
 
-            Elements elementsOne = Doc.getElementsByClass("font-white");
-            Elements elementsTwo = Doc.getElementsByClass("description");
-            Elements elementsThree = Doc.getElementsByAttribute("href");
-            Elements elementsFour = Doc.getElementsByClass("text-center font-red-sunglo");
-            Elements elementsFive = Doc.getElementsByClass("bold uppercase font-red-sunglo");
-            Elements elementsSix = Doc.getElementsByClass("thumbnail inline-block");
-            Elements elementsSeven = Doc.getElementsByClass("list-item");
-            Elements elementsEight = Doc.getElementsByClass("label label-default label-sm bg-blue-hoki");
-            Elements elementsNine = Doc.getElementsByClass("label label-default label-sm bg-blue-dark fiction-tag");
+            this.AddBook = new Book();
+            AddBook.ExternalID = (int)ExternalID;
 
-            for(int i = 0; i < elementsEight.size(); i++)
-            {
-                if(elementsEight.get(i).text().equals("Original") || elementsEight.get(i).text().equals("Fan Fiction"))
-                {
-                    if(elementsEight.get(i).text().equals("Original"))
-                    {
-                        NewBook.Type = Book.BookType.Original;
-                    }
-                    else if(elementsEight.get(i).text().equals("Fan Fiction"))
-                    {
-                        NewBook.Type = Book.BookType.Fanfiction;
-                    }
-                }
+            Elements elementsThree = StoryDoc.getElementsByAttribute("href");
 
-                if(elementsEight.get(i).text().equals("ONGOING") || elementsEight.get(i).text().equals("COMPLETED"))
-                {
+            AddBook.Type = GetBookType();
 
-                }
-            }
+            String[] TitleAuthor = GetTitleAuthor();
 
-            NewBook.SelectedGenres = new ArrayList<>();
-            NewBook.TagsList = new ArrayList<>();
+            AddBook.Title = TitleAuthor[0];
+            AddBook.Author = TitleAuthor[1];
 
-            // Add Tags and Genres.
-            for(int i = 0; i < elementsNine.size(); i++)
-            {
-                switch (elementsNine.get(i).text())
-                {
-                    // Genres.
-                    case "Action":
-                        NewBook.SelectedGenres.add(Book.Genres.Action);
-                        break;
+            AddBook.Description = GetDescription();
 
-                    case "Adventure":
-                        NewBook.SelectedGenres.add(Book.Genres.Adventure);
-                        break;
+            AddBook.CoverURL = GetCoverURL();
 
-                    case "Comedy":
-                        NewBook.SelectedGenres.add(Book.Genres.Comedy);
-                        break;
+            AddBook.ContentWarnings = GetWarnings();
+            AddBook.SelectedGenres = GetGenres();
+            AddBook.TagsList = GetTags();
 
-                    case "Contemporary":
-                        NewBook.SelectedGenres.add(Book.Genres.Contemporary);
-                        break;
+            int[] Counts = GetCounts();
 
-                    case "Drama":
-                        NewBook.SelectedGenres.add(Book.Genres.Drama);
-                        break;
+            AddBook.Followers = Counts[0];
+            AddBook.Favourites = Counts[1];
+            AddBook.PageCount = Counts[2];
 
-                    case "Fantasy":
-                        NewBook.SelectedGenres.add(Book.Genres.Fantasy);
-                        break;
-
-                    case "Historical":
-                        NewBook.SelectedGenres.add(Book.Genres.Historical);
-                        break;
-
-                    case "Horror":
-                        NewBook.SelectedGenres.add(Book.Genres.Horror);
-                        break;
-
-                    case "Mystery":
-                        NewBook.SelectedGenres.add(Book.Genres.Mystery);
-                        break;
-
-                    case "Psychological":
-                        NewBook.SelectedGenres.add(Book.Genres.Psychological);
-                        break;
-
-                    case "Romance":
-                        NewBook.SelectedGenres.add(Book.Genres.Romance);
-                        break;
-
-                    case "Satire":
-                        NewBook.SelectedGenres.add(Book.Genres.Satire);
-                        break;
-
-                    case "Sci-fi":
-                        NewBook.SelectedGenres.add(Book.Genres.Sci_Fi);
-                        break;
-
-                    case "Short Story":
-                        NewBook.SelectedGenres.add(Book.Genres.Short_Story);
-                        break;
-
-                    case "Tragedy":
-                        NewBook.SelectedGenres.add(Book.Genres.Tragedy);
-                        break;
-
-                    // Tags.
-                }
-            }
-
-            if(elementsOne.size() > 1)
-            {
-                NewBook.Title = elementsOne.get(0).text();
-                NewBook.Author = elementsOne.get(3).text();
-            }
-
-            NewBook.Description = elementsTwo.get(0).text();
-            NewBook.ContentWarnings = new ArrayList<>();
-
-            if(elementsFour.size() > 0)
-            {
-                if(elementsFour.get(0).getElementsByClass("list-inline").get(0).childrenSize() > 1)
-                {
-                    for(int i = 0; i < elementsFour.get(0).getElementsByClass("list-inline").get(0).childrenSize(); i++)
-                    {
-                        String Warning = elementsFour.get(0).getElementsByClass("list-inline").get(0).child(i).toString();
-                        Warning = Warning.substring(4, Warning.length() - 5);
-
-                        switch (Warning)
-                        {
-                            case "Gore":
-                                NewBook.ContentWarnings.add(Book.Warnings.Gore);
-                                break;
-
-                            case "Profanity":
-                                NewBook.ContentWarnings.add(Book.Warnings.Profanity);
-                                break;
-
-                            case "Traumatising content":
-                                NewBook.ContentWarnings.add(Book.Warnings.Traumatising_Content);
-                                break;
-
-                            case "Sexual Content":
-                                NewBook.ContentWarnings.add(Book.Warnings.Sexual_Content);
-                                break;
-                        }
-                    }
-                }
-            }
-
-            String Followers = elementsFive.get(2).text();
-            Followers = Followers.replace(",", "");
-
-            String Favourites = elementsFive.get(3).text();
-            Favourites = Favourites.replace(",", "");
-
-            String PageCount = elementsFive.get(5).text();
-            PageCount = PageCount.replace(",", "");
-
-            NewBook.Followers = Integer.parseInt(Followers);
-            NewBook.Favourites = Integer.parseInt(Favourites);
-            NewBook.PageCount = Integer.parseInt(PageCount);
-
-            if(elementsSix.size() == 1)
-            {
-                String CoverURL = elementsSix.get(0).attr("src");
-
-                if(CoverURL.contains("?"))
-                {
-                    String[] Splitter = CoverURL.split("\\?");
-                    CoverURL = Splitter[0];
-                }
-
-                NewBook.CoverURL = CoverURL;
-            }
-
-            for(int i = 0; i < elementsSeven.size(); i++)
-            {
-                if(elementsSeven.get(i).childrenSize() > 0)
-                {
-                    String RatingTitle = elementsSeven.get(i).child(0).attr("data-original-title");
-
-                    if(RatingTitle.equals("Overall Score"))
-                    {
-                        String Rating = elementsSeven.get(i).child(0).attr("data-content");
-                        Rating = Rating.substring(0, Rating.length() - 4);
-
-                        NewBook.Rating = Double.parseDouble(Rating);
-                    }
-                }
-            }
+            AddBook.Rating = GetRating();
 
             // DateTimes.
-            NewBook.CreatedDatetime = new GregorianCalendar();
-            NewBook.LastUpdatedDatetime = new GregorianCalendar();
-            NewBook.DownloadedDatetime = new GregorianCalendar();
+            AddBook.CreatedDatetime = new GregorianCalendar();
+            AddBook.LastUpdatedDatetime = new GregorianCalendar();
+            AddBook.DownloadedDatetime = new GregorianCalendar();
 
-            Elements elementNew = Doc.getElementsByTag("time");
-
-            String[] DateString = elementNew.get(0).attr("datetime").split("-");
-            String[] SplitString = DateString[2].split("T");
-            String[] TimeString = SplitString[1].split(":");
-            String[] SecondSplitString = TimeString[2].split("\\.");
-
-            DateString[2] = SplitString[0];
-            TimeString[2] = SecondSplitString[0];
-
-            int Year = Integer.parseInt(DateString[0]);
-            int Month = Integer.parseInt(DateString[1]);
-            int Date = Integer.parseInt(DateString[2]);
-
-            int Hour = Integer.parseInt(TimeString[0]);
-            int Minute = Integer.parseInt(TimeString[1]);
-            int Seconds = Integer.parseInt(TimeString[2]);
-
-            NewBook.CreatedDatetime.set(Year, Month, Date, Hour, Minute, Seconds);
-
-            DateString = elementNew.get(elementNew.size() - 1).attr("datetime").split("-");
-            SplitString = DateString[2].split("T");
-            TimeString = SplitString[1].split(":");
-            SecondSplitString = TimeString[2].split("\\.");
-
-            DateString[2] = SplitString[0];
-            TimeString[2] = SecondSplitString[0];
-
-            Year = Integer.parseInt(DateString[0]);
-            Month = Integer.parseInt(DateString[1]);
-            Date = Integer.parseInt(DateString[2]);
-
-            Hour = Integer.parseInt(TimeString[0]);
-            Minute = Integer.parseInt(TimeString[1]);
-            Seconds = Integer.parseInt(TimeString[2]);
-
-            NewBook.LastUpdatedDatetime.set(Year, Month, Date, Hour, Minute, Seconds);
-
-            NewBook.Chapters = new ArrayList<>();
-            int ChapterIndex = 0;
-
-            for (int i = 0; i < elementsThree.size(); i++)
+            if (GetChapterContent)
             {
-                String ElementString = elementsThree.get(i).toString();
-
-                if(ElementString.contains("fiction") && !ElementString.contains("data")
-                        && !ElementString.contains("nofollow") && !ElementString.contains("nav-link")
-                        && !ElementString.contains("label-sm") && !ElementString.contains("button-icon")
-                        && !ElementString.contains("canonical") && !ElementString.contains("btn-lg")
-                        && !ElementString.contains("returnurl"))
-                {
-                    String[] StringArray = ElementString.split(">");
-
-                    String SeperateURL = StringArray[0];
-                    SeperateURL = SeperateURL.substring(9, SeperateURL.length() - 1);
-
-                    String ChapterName = elementsThree.get(i).text();
-                    String ChapterURL = "https://www.royalroad.com" + SeperateURL;
-
-                    Book.Chapter NewChapter = new Book.Chapter();
-                    NewChapter.ContentLines = new ArrayList<>();
-
-                    NewChapter.ID = ChapterIndex;
-                    NewChapter.Name = ChapterName;
-                    NewChapter.URL = ChapterURL;
-
-                    // Get Chapter Content.
-                    Document ChapterDoc = Jsoup.connect(ChapterURL).get();
-                    Elements element = ChapterDoc.getElementsByTag("p");
-
-                    int LineID = 0;
-
-                    for (int j = 0; j < element.size(); j++)
-                    {
-                        if(!element.get(j).text().contains("Bio") && !element.get(j).text().contains("Royal Road"))
-                        {
-                            Book.ChapterLine NewLine = new Book.ChapterLine();
-
-                            if(j > 0)
-                            {
-                                if(element.get(j - 1).text().isEmpty() && element.get(j).text().isEmpty())
-                                {
-                                    NewLine.ID = LineID;
-
-                                    NewLine.Line = "SPLITTER";
-                                    NewLine.Style = 0;
-
-                                    NewChapter.ContentLines.add(NewLine);
-
-                                    LineID++;
-                                }
-                            }
-
-                            NewLine.ID = LineID;
-
-                            NewLine.Line = element.get(j).text();
-                            NewLine.Style = 0;
-
-                            LineID++;
-
-                            NewChapter.ContentLines.add(NewLine);
-                            NewLine = null;
-                        }
-                    }
-
-                    element.clear();
-                    ChapterDoc = null;
-
-                    NewBook.Chapters.add(NewChapter);
-                    NewChapter = null;
-
-                    ChapterIndex++;
-                }
+                AddBook.Chapters = GetChapters();
+            }
+            else
+            {
+                AddBook.Chapters = new ArrayList<>();
             }
 
-            NewBook.HasRead = false;
-            NewBook.LastReadChapter = 0;
+            Log.println(Log.INFO, "Hi", "Setting HasRead and LastReadChapter to 0");
+            AddBook.HasRead = false;
+            AddBook.LastReadChapter = 0;
 
-            this.AddBook = NewBook;
-
-            elementNew.clear();
-            elementsOne.clear();
-            elementsTwo.clear();
+            //elementNew.clear();
             elementsThree.clear();
-            elementsFour.clear();
-            elementsFive.clear();
-            elementsSix.clear();
-            elementsSeven.clear();
-            elementsEight.clear();
-            elementsNine.clear();
 
-            Doc = null;
+            StoryDoc = null;
 
-            Log.println(Log.INFO, "Hi", "New Book: " + NewBook.Title);
+            Log.println(Log.INFO, "Hi", "New Book: " + AddBook.Title);
             SQLiteDB.close();
         }
         catch (IOException e)
         {
             throw new RuntimeException(e);
         }
-        return null;
+
+        return this.AddBook;
     }
 
-    @Override
-    protected void onPostExecute(Void unused) {
-        super.onPostExecute(unused);
-        DBHandler SQLiteDB = new DBHandler(context);
+    private double GetRating() {
+        Log.println(Log.INFO, "Hi", "Getting Rating");
+        Elements RatingElements = StoryDoc.getElementsByClass("list-item");
+        double Rating = 0.0;
 
-        SQLiteDB.AddBook(AddBook);
+        for (int i = 0; i < RatingElements.size(); i++)
+        {
+            if (RatingElements.get(i).childrenSize() > 0)
+            {
+                String RatingTitle = RatingElements.get(i).child(0).attr("data-original-title");
 
-        SQLiteDB.close();
+                if (RatingTitle.equals("Overall Score"))
+                {
+                    String RatingString = RatingElements.get(i).child(0).attr("data-content");
+                    RatingString = RatingString.substring(0, RatingString.length() - 4);
+
+                    Rating = Double.parseDouble(RatingString);
+                }
+            }
+        }
+
+        RatingElements.clear();
+        return Rating;
+    }
+
+    public String GetDescription() {
+        Log.println(Log.INFO, "Hi", "Getting Description");
+
+        Element DescriptionElement = this.StoryDoc.selectFirst(".description");
+        return DescriptionElement.text();
+    }
+
+    public String[] GetTitleAuthor() {
+        Log.println(Log.INFO, "Hi", "Getting Title and Author");
+
+        String[] TitleAuthor = new String[2];
+
+        Element Title = this.StoryDoc.selectFirst("h1.font-white");
+        Element Author = this.StoryDoc.selectFirst("h4.font-white");
+
+        String AuthorTXT = Author.text();
+        AuthorTXT = AuthorTXT.substring(3);
+
+        TitleAuthor[0] = Title.text();
+        TitleAuthor[1] = AuthorTXT;
+
+        return TitleAuthor;
+    }
+
+    public ArrayList<Book.Chapter> GetChapters() throws IOException {
+        Log.println(Log.INFO, "Hi", "Getting Chapters");
+
+        ArrayList<Book.Chapter> AllChapters = new ArrayList<>();
+        Elements ChapterLinks = StoryDoc.select("td:not([class]) a");
+
+        int ChapterIndex = 0;
+
+        for (Element Link : ChapterLinks) {
+            Book.Chapter NewChapter = new Book.Chapter();
+
+            NewChapter.ID = ChapterIndex;
+            NewChapter.Name = Link.text();
+            NewChapter.URL = Link.attr("abs:href");
+
+            Document ChapterContent = Jsoup.connect(Link.attr("abs:href")).get();
+            //NewChapter.Content = ChapterContent.select(".chapter-content").first().text();
+
+            int ChapterID = ChapterIndex + 1;
+
+            Log.println(Log.INFO, "Hi", "Got Chapter " + ChapterID + " / " + ChapterLinks.size());
+            ChapterContent = null;
+
+
+            AllChapters.add(NewChapter);
+            ChapterIndex++;
+        }
+
+        ChapterLinks.clear();
+
+        Log.println(Log.INFO, "Hi", "Finished Getting Chapters");
+        return AllChapters;
+    }
+
+    public ArrayList<Book.Warnings> GetWarnings() {
+        Log.println(Log.INFO, "Hi", "Getting Warnings");
+
+        Elements WarningElements = StoryDoc.getElementsByClass("text-center font-red-sunglo");
+        ArrayList<Book.Warnings> BookWarnings = new ArrayList<>();
+
+        if (WarningElements.size() > 0) {
+            if (WarningElements.get(0).getElementsByClass("list-inline").get(0).childrenSize() > 1) {
+                for (int i = 0; i < WarningElements.get(0).getElementsByClass("list-inline").get(0).childrenSize(); i++) {
+                    String Warning = WarningElements.get(0).getElementsByClass("list-inline").get(0).child(i).toString();
+                    Warning = Warning.substring(4, Warning.length() - 5);
+
+                    switch (Warning) {
+                        case "Gore":
+                            BookWarnings.add(Book.Warnings.Gore);
+                            break;
+
+                        case "Profanity":
+                            BookWarnings.add(Book.Warnings.Profanity);
+                            break;
+
+                        case "Traumatising content":
+                            BookWarnings.add(Book.Warnings.Traumatising_Content);
+                            break;
+
+                        case "Sexual Content":
+                            BookWarnings.add(Book.Warnings.Sexual_Content);
+                            break;
+                    }
+                }
+            }
+        }
+
+        WarningElements.clear();
+        return BookWarnings;
+    }
+
+    public ArrayList<Book.Genres> GetGenres() {
+        Log.println(Log.INFO, "Hi", "Getting Genres");
+
+        Elements GenreElements = StoryDoc.getElementsByClass("label label-default label-sm bg-blue-dark fiction-tag");
+        ArrayList<Book.Genres> SelectedGenres = new ArrayList<>();
+
+        // Add Tags and Genres.
+        for (int i = 0; i < GenreElements.size(); i++) {
+            switch (GenreElements.get(i).text()) {
+                // Genres.
+                case "Action":
+                    SelectedGenres.add(Book.Genres.Action);
+                    break;
+
+                case "Adventure":
+                    SelectedGenres.add(Book.Genres.Adventure);
+                    break;
+
+                case "Comedy":
+                    SelectedGenres.add(Book.Genres.Comedy);
+                    break;
+
+                case "Contemporary":
+                    SelectedGenres.add(Book.Genres.Contemporary);
+                    break;
+
+                case "Drama":
+                    SelectedGenres.add(Book.Genres.Drama);
+                    break;
+
+                case "Fantasy":
+                    SelectedGenres.add(Book.Genres.Fantasy);
+                    break;
+
+                case "Historical":
+                    SelectedGenres.add(Book.Genres.Historical);
+                    break;
+
+                case "Horror":
+                    SelectedGenres.add(Book.Genres.Horror);
+                    break;
+
+                case "Mystery":
+                    SelectedGenres.add(Book.Genres.Mystery);
+                    break;
+
+                case "Psychological":
+                    SelectedGenres.add(Book.Genres.Psychological);
+                    break;
+
+                case "Romance":
+                    SelectedGenres.add(Book.Genres.Romance);
+                    break;
+
+                case "Satire":
+                    SelectedGenres.add(Book.Genres.Satire);
+                    break;
+
+                case "Sci-fi":
+                    SelectedGenres.add(Book.Genres.Sci_Fi);
+                    break;
+
+                case "Short Story":
+                    SelectedGenres.add(Book.Genres.Short_Story);
+                    break;
+
+                case "Tragedy":
+                    SelectedGenres.add(Book.Genres.Tragedy);
+                    break;
+            }
+        }
+
+        GenreElements.clear();
+
+        return SelectedGenres;
+    }
+
+    public ArrayList<Book.Tags> GetTags() {
+        ArrayList<Book.Tags> BookTags = new ArrayList<>();
+
+        Elements SelectedTags = this.StoryDoc.select(".tags span");
+
+        for (Element Tag : SelectedTags) {
+            switch (Tag.text()) {
+                case "Anti-Hero Lead":
+                    BookTags.add(Book.Tags.Anti_Hero_Lead);
+                    break;
+
+                case "Artificial Intelligence":
+                    BookTags.add(Book.Tags.Artificial_Intelligence);
+                    break;
+
+                case "Attractive Lead":
+                    BookTags.add(Book.Tags.Attractive_Lead);
+                    break;
+
+                case "Cyberpunk":
+                    BookTags.add(Book.Tags.Cyberpunk);
+                    break;
+
+                case "Dungeon":
+                    BookTags.add(Book.Tags.Dungeon);
+                    break;
+
+                case "Dystopia":
+                    BookTags.add(Book.Tags.Dystopia);
+                    break;
+
+                case "Female Lead":
+                    BookTags.add(Book.Tags.Female_Lead);
+                    break;
+
+                case "First Contact":
+                    BookTags.add(Book.Tags.First_Contact);
+                    break;
+
+                case "GameLit":
+                    BookTags.add(Book.Tags.GameLit);
+                    break;
+
+                case "Gender Bender":
+                    BookTags.add(Book.Tags.Gender_Bender);
+                    break;
+
+                case "Grimdark":
+                    BookTags.add(Book.Tags.GrimDark);
+                    break;
+
+                case "Hard Sci-fi":
+                    BookTags.add(Book.Tags.Hard_SciFi);
+                    break;
+
+                case "Harem":
+                    BookTags.add(Book.Tags.Harem);
+                    break;
+
+                case "High Fantasy":
+                    BookTags.add(Book.Tags.High_Fantasy);
+                    break;
+
+                case "LitRPG":
+                    BookTags.add(Book.Tags.LitRPG);
+                    break;
+
+                case "Loop":
+                    BookTags.add(Book.Tags.Loop);
+                    break;
+
+                case "Low Fantasy":
+                    BookTags.add(Book.Tags.Low_Fantasy);
+                    break;
+
+                case "Magic":
+                    BookTags.add(Book.Tags.Magic);
+                    break;
+
+                case "Male Lead":
+                    BookTags.add(Book.Tags.Male_Lead);
+                    break;
+
+                case "Martial Arts":
+                    BookTags.add(Book.Tags.Martial_Arts);
+                    break;
+
+                case "Multiple Lead Characters":
+                    BookTags.add(Book.Tags.Multiple_Lead_Characters);
+                    break;
+
+                case "Mythos":
+                    BookTags.add(Book.Tags.Mythos);
+                    break;
+
+                case "Non-Human Lead":
+                    BookTags.add(Book.Tags.Non_Human_Lead);
+                    break;
+
+                case "Portal Fantasy / Isekai":
+                    BookTags.add(Book.Tags.Portal_Fantasy_Isekai);
+                    break;
+
+                case "Post Apocalypse":
+                    BookTags.add(Book.Tags.Post_Apocalypse);
+                    break;
+
+                case "Progression":
+                    BookTags.add(Book.Tags.Progression);
+                    break;
+
+                case "Reader Interactive":
+                    BookTags.add(Book.Tags.Reader_Interactive);
+                    break;
+
+                case "Reincarnation":
+                    BookTags.add(Book.Tags.Reincarnation);
+                    break;
+
+                case "Ruling Class":
+                    BookTags.add(Book.Tags.Ruling_Class);
+                    break;
+
+                case "School Life":
+                    BookTags.add(Book.Tags.School_Life);
+                    break;
+
+                case "Secret Identity":
+                    BookTags.add(Book.Tags.Secret_Identity);
+                    break;
+
+                case "Slice of Life":
+                    BookTags.add(Book.Tags.Slice_of_Life);
+                    break;
+
+                case "Space Opera":
+                    BookTags.add(Book.Tags.Space_Opera);
+                    break;
+
+                case "Sports":
+                    BookTags.add(Book.Tags.Sports);
+                    break;
+
+                case "Steampunk":
+                    BookTags.add(Book.Tags.Steampunk);
+                    break;
+
+                case "Strategy":
+                    BookTags.add(Book.Tags.Strategy);
+                    break;
+
+                case "Strong Lead":
+                    BookTags.add(Book.Tags.Strong_Lead);
+                    break;
+
+                case "Super Heroes":
+                    BookTags.add(Book.Tags.Super_Heroes);
+                    break;
+
+                case "Supernatural":
+                    BookTags.add(Book.Tags.Supernatural);
+                    break;
+
+                case "Technological Engineered":
+                    BookTags.add(Book.Tags.Technologically_Engineered);
+                    break;
+
+                case "Time Travel":
+                    BookTags.add(Book.Tags.Time_Travel);
+                    break;
+
+                case "Urban Fantasy":
+                    BookTags.add(Book.Tags.Urban_Fantasy);
+                    break;
+
+                case "Villainous Lead":
+                    BookTags.add(Book.Tags.Villainous_Lead);
+                    break;
+
+                case "Virtual Reality":
+                    BookTags.add(Book.Tags.Virtual_Reality);
+                    break;
+
+                case "War and Military":
+                    BookTags.add(Book.Tags.War_and_Military);
+                    break;
+
+                case "Wuxia":
+                    BookTags.add(Book.Tags.Wuxia);
+                    break;
+
+                case "Xianxia":
+                    BookTags.add(Book.Tags.Xianxia);
+                    break;
+            }
+        }
+
+        SelectedTags.clear();
+        return BookTags;
+    }
+
+    public Book.BookType GetBookType() {
+        Log.println(Log.INFO, "Hi", "Getting Book Type.");
+
+        Elements BookTypeElements = StoryDoc.getElementsByClass("label label-default label-sm bg-blue-hoki");
+        Book.BookType SelectedBookType = Book.BookType.Original;
+
+        for (int i = 0; i < BookTypeElements.size(); i++) {
+            if (BookTypeElements.get(i).text().equals("Original") || BookTypeElements.get(i).text().equals("Fan Fiction")) {
+                if (BookTypeElements.get(i).text().equals("Original")) {
+                    SelectedBookType = Book.BookType.Original;
+                } else if (BookTypeElements.get(i).text().equals("Fan Fiction")) {
+                    SelectedBookType = Book.BookType.Fanfiction;
+                }
+            }
+
+            if (BookTypeElements.get(i).text().equals("ONGOING") || BookTypeElements.get(i).text().equals("COMPLETED")) {
+
+            }
+        }
+
+        BookTypeElements.clear();
+        return SelectedBookType;
+    }
+
+    public String GetCoverURL() {
+        return this.StoryDoc.select("img.thumbnail").attr("abs:src");
+    }
+
+    public int[] GetCounts() {
+        Log.println(Log.INFO, "Hi", "Getting Counts");
+
+        int[] Counts = new int[3];
+        Elements CountElements = StoryDoc.getElementsByClass("bold uppercase font-red-sunglo");
+
+        String Followers = CountElements.get(2).text();
+        Followers = Followers.replace(",", "");
+        Counts[0] = Integer.parseInt(Followers);
+
+        String Favourites = CountElements.get(3).text();
+        Favourites = Favourites.replace(",", "");
+        Counts[1] = Integer.parseInt(Favourites);
+
+        String PageCount = CountElements.get(5).text();
+        PageCount = PageCount.replace(",", "");
+        Counts[2] = Integer.parseInt(PageCount);
+
+        CountElements.clear();
+        return Counts;
     }
 }

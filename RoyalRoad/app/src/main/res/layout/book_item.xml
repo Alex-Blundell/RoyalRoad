@@ -3,7 +3,7 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="160dp">
+    android:layout_height="wrap_content">
 
     <ImageView
         android:id="@+id/Cover"
@@ -59,123 +59,212 @@
         android:text="HelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHello"
         android:textSize="11sp" />
 
-    <TextView
-        android:id="@+id/ContentWarnings"
+    <GridLayout
+        android:id="@+id/DetailsGridLayout"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@id/Description"
-        android:layout_marginLeft="10dp"
         android:layout_marginTop="5dp"
-        android:layout_marginBottom="5dp"
-        android:text="Warnings"
-        android:textSize="11sp"
-        />
+        android:layout_below="@id/Description"
+        android:columnCount="8"
+        android:columnOrderPreserved="false">
 
-    <TextView
-        android:id="@+id/Language"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/Description"
-        android:layout_toRightOf="@id/ContentWarnings"
-        android:layout_marginLeft="10dp"
-        android:layout_marginTop="5dp"
-        android:layout_marginBottom="5dp"
-        android:text="Language"
-        android:textSize="11sp"
-        />
+        <TextView
+            android:id="@+id/ContentWarnings"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/Description"
+            android:layout_marginLeft="10dp"
+            android:layout_marginTop="5dp"
+            android:text="Warnings"
+            android:textSize="11sp" />
 
-    <TextView
-        android:id="@+id/BookType"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/Description"
-        android:layout_toRightOf="@id/Language"
-        android:layout_marginLeft="10dp"
-        android:layout_marginTop="5dp"
-        android:layout_marginBottom="5dp"
-        android:text="Original"
-        android:textSize="11sp"
-        />
+        <TextView
+            android:id="@+id/Language"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/Description"
+            android:layout_marginLeft="10dp"
+            android:layout_marginTop="5dp"
+            android:layout_marginBottom="5dp"
+            android:layout_toRightOf="@id/ContentWarnings"
+            android:text="Language"
+            android:textSize="11sp" />
 
-    <TextView
-        android:id="@+id/PageCount"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/Description"
-        android:layout_toRightOf="@id/BookType"
-        android:layout_marginLeft="10dp"
-        android:layout_marginTop="5dp"
-        android:layout_marginBottom="5dp"
-        android:text="29,951"
-        android:textSize="11sp" />
+        <TextView
+            android:id="@+id/BookType"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/Description"
+            android:layout_marginLeft="10dp"
+            android:layout_marginTop="5dp"
+            android:layout_marginBottom="5dp"
+            android:layout_toRightOf="@id/Language"
+            android:text="Original"
+            android:textSize="11sp" />
 
-    <TextView
-        android:id="@+id/ChapterCount"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/Description"
-        android:layout_toRightOf="@id/PageCount"
-        android:layout_marginLeft="10dp"
-        android:layout_marginTop="5dp"
-        android:layout_marginBottom="5dp"
-        android:text="1005"
-        android:textSize="11sp"
-        />
+        <TextView
+            android:id="@+id/PageCount"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/Description"
+            android:layout_marginLeft="10dp"
+            android:layout_marginTop="5dp"
+            android:layout_marginBottom="5dp"
+            android:layout_toRightOf="@id/BookType"
+            android:text="29,951"
+            android:textSize="11sp" />
 
-    <TextView
-        android:id="@+id/CreatedDate"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/Description"
-        android:layout_toRightOf="@id/ChapterCount"
-        android:layout_marginLeft="10dp"
-        android:layout_marginTop="5dp"
-        android:layout_marginBottom="5dp"
-        android:drawableLeft="@drawable/empty_clock"
-        android:text="15-01-2022"
-        android:textSize="11sp" />
+        <TextView
+            android:id="@+id/ChapterCount"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/Description"
+            android:layout_marginLeft="10dp"
+            android:layout_marginTop="5dp"
+            android:layout_marginBottom="5dp"
+            android:layout_toRightOf="@id/PageCount"
+            android:text="1005"
+            android:textSize="11sp" />
 
-    <TextView
-        android:id="@+id/UpdatedDate"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/Description"
-        android:layout_marginLeft="10dp"
-        android:layout_marginTop="5dp"
-        android:layout_marginBottom="5dp"
-        android:layout_marginRight="5dp"
-        android:layout_toRightOf="@id/CreatedDate"
-        android:drawableLeft="@drawable/sync"
-        android:text="16-01-2022"
-        android:textSize="11sp" />
+        <TextView
+            android:id="@+id/FollowerCount"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/Description"
+            android:layout_marginLeft="10dp"
+            android:layout_marginTop="5dp"
+            android:layout_marginBottom="5dp"
+            android:layout_toRightOf="@id/PageCount"
+            android:text="1005"
+            android:textSize="11sp" />
 
-    <TextView
-        android:id="@+id/Complete"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/Description"
-        android:layout_marginLeft="10dp"
-        android:layout_marginTop="5dp"
-        android:layout_marginBottom="5dp"
-        android:layout_toRightOf="@id/UpdatedDate"
-        android:drawableLeft="@drawable/sync"
-        android:text="16-01-2022"
-        android:layout_marginRight="5dp"
-        android:textSize="11sp" />
+        <TextView
+            android:id="@+id/FavouriteCount"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/Description"
+            android:layout_marginLeft="10dp"
+            android:layout_marginTop="5dp"
+            android:layout_marginBottom="5dp"
+            android:layout_toRightOf="@id/PageCount"
+            android:text="1005"
+            android:textSize="11sp" />
+
+        <TextView
+            android:id="@+id/CreatedDate"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/Description"
+            android:layout_marginLeft="10dp"
+            android:layout_marginTop="5dp"
+            android:layout_marginBottom="5dp"
+            android:layout_toRightOf="@id/ChapterCount"
+            android:text="15-01-2022"
+            android:textSize="11sp" />
+
+        <TextView
+            android:id="@+id/UpdatedDate"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/Description"
+            android:layout_marginLeft="10dp"
+            android:layout_marginTop="5dp"
+            android:layout_marginRight="5dp"
+            android:layout_marginBottom="5dp"
+            android:layout_toRightOf="@id/CreatedDate"
+            android:text="16-01-2022"
+            android:textSize="11sp" />
+
+        <TextView
+            android:id="@+id/Tag1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/Description"
+            android:layout_marginLeft="10dp"
+            android:layout_marginTop="5dp"
+            android:layout_marginRight="5dp"
+            android:layout_marginBottom="5dp"
+            android:layout_toRightOf="@id/UpdatedDate"
+            android:text="Tag1"
+            android:textSize="11sp" />
+
+        <TextView
+            android:id="@+id/Tag2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/Description"
+            android:layout_marginLeft="10dp"
+            android:layout_marginTop="5dp"
+            android:layout_marginRight="5dp"
+            android:layout_marginBottom="5dp"
+            android:layout_toRightOf="@id/UpdatedDate"
+            android:text="Tag2"
+            android:textSize="11sp" />
+
+        <TextView
+            android:id="@+id/Tag3"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/Description"
+            android:layout_marginLeft="10dp"
+            android:layout_marginTop="5dp"
+            android:layout_marginRight="5dp"
+            android:layout_marginBottom="5dp"
+            android:layout_toRightOf="@id/UpdatedDate"
+            android:text="Tag3"
+            android:textSize="11sp" />
+
+        <TextView
+            android:id="@+id/Tag4"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/Description"
+            android:layout_marginLeft="10dp"
+            android:layout_marginTop="5dp"
+            android:layout_marginRight="5dp"
+            android:layout_marginBottom="5dp"
+            android:layout_toRightOf="@id/UpdatedDate"
+            android:text="Tag4"
+            android:textSize="11sp" />
+
+        <TextView
+            android:id="@+id/Complete"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/Description"
+            android:layout_marginLeft="10dp"
+            android:layout_marginTop="5dp"
+            android:layout_marginRight="5dp"
+            android:layout_marginBottom="5dp"
+            android:layout_toRightOf="@id/UpdatedDate"
+            android:text="Complete"
+            android:textSize="11sp" />
+
+    </GridLayout>
 
     <com.google.android.material.divider.MaterialDivider
         android:id="@+id/Divider"
         android:layout_width="match_parent"
         android:layout_height="2dp"
-        android:layout_alignParentBottom="true"
+        android:layout_below="@id/DetailsGridLayout"
         />
 
     <Button
         android:id="@+id/OpenBookBTN"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:layout_alignBottom="@+id/Divider"
+        android:layout_alignParentTop="true"
         android:background="@color/Invis"
-        android:scaleX="2"
-        android:scaleY="2" />
+        />
+
+    <ImageView
+        android:id="@+id/DarkCover"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_alignBottom="@id/Divider"
+        android:background="#30000000"
+        android:visibility="gone"
+        />
 
 </RelativeLayout>

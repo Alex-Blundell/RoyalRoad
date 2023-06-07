@@ -57,7 +57,7 @@
                 android:layout_toRightOf="@id/BookCover"
                 android:layout_marginLeft="20dp"
                 android:layout_marginTop="5dp"
-                android:text="Author"
+                android:text="TAGS"
                 />
 
             <TextView
@@ -100,7 +100,27 @@
                 android:layout_height="wrap_content"
                 android:layout_below="@id/DateUpdatedTXT"
                 android:layout_centerHorizontal="true"
-                android:layout_marginTop="10dp" />
+                android:layout_marginTop="10dp"
+                android:clickable="false"
+                android:isIndicator="true"
+                android:scaleX="0.85"
+                android:scaleY="0.85" />
+
+            <com.google.android.material.divider.MaterialDivider
+                android:id="@+id/Divider"
+                android:layout_below="@id/BookDescription"
+                android:layout_width="match_parent"
+                android:layout_height="2dp"
+                android:layout_marginTop="10dp"
+                />
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/ReviewRecyclerView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/Divider"
+                android:layout_marginTop="10dp"
+                />
 
         </RelativeLayout>
     </ScrollView>

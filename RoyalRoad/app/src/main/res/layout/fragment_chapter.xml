@@ -9,9 +9,10 @@
         android:id="@+id/ChapterContentList"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:clickable="false"
         android:divider="@null"
         android:fadeScrollbars="true"
         android:scrollbars="vertical"
-        />
+        android:smoothScrollbar="true" />
 
 </RelativeLayout>

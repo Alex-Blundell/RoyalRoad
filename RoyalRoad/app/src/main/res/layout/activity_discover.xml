@@ -60,37 +60,80 @@
                     android:text="New Releases" />
             </com.google.android.material.tabs.TabLayout>
 
-            <FrameLayout
-                android:id="@+id/NewsDisplay"
+            <ImageView
+                android:id="@+id/NewsBackground"
                 android:layout_width="match_parent"
-                android:layout_height="200dp"
+                android:layout_height="250dp"
+                android:scaleType="center"
                 android:layout_below="@id/DiscoverTabs"
                 android:layout_marginLeft="10dp"
                 android:layout_marginTop="25dp"
                 android:layout_marginRight="10dp"
-                >
+                />
 
-            </FrameLayout>
+            <ImageView
+                android:id="@+id/NewsTextBackground"
+                android:layout_width="225dp"
+                android:layout_height="130dp"
+                android:layout_below="@id/DiscoverTabs"
+                android:layout_marginLeft="30dp"
+                android:layout_marginTop="60dp"
+                android:layout_marginRight="10dp"
+                android:background="#99000000"
+                android:cropToPadding="false"
+                android:scaleType="center" />
+
+            <TextView
+                android:id="@+id/NewsTitle"
+                android:layout_width="200dp"
+                android:layout_height="35dp"
+                android:layout_below="@id/DiscoverTabs"
+                android:layout_marginLeft="40dp"
+                android:layout_marginTop="70dp"
+                android:text="sadsadsadasdadsadsadsadsadasdsad" />
+
+            <TextView
+                android:id="@+id/NewsDescription"
+                android:layout_width="200dp"
+                android:layout_height="50dp"
+                android:layout_below="@id/NewsTitle"
+                android:layout_marginTop="5dp"
+                android:layout_marginLeft="40dp"
+                android:text="sadsadsadasdadsadsadsadsadasdsad"
+                android:textSize="11sp"
+                />
+
+            <Button
+                android:id="@+id/NewsBTN"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/NewsDescription"
+                android:layout_marginLeft="60dp"
+                android:layout_marginTop="5dp"
+                android:backgroundTint="#9a2830"
+                android:text="Learn More"
+                android:textSize="11sp" />
 
             <TextView
                 android:id="@+id/LatestUpdatesTXT"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_below="@id/NewsDisplay"
+                android:layout_below="@id/NewsBackground"
                 android:layout_marginLeft="50dp"
                 android:layout_marginTop="25dp"
                 android:drawableLeft="@drawable/best_completed_icon"
                 android:drawablePadding="@dimen/default_gap"
                 android:text="Latest Updates" />
 
-            <ListView
+            <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/LatestUpdatesList"
                 android:layout_width="match_parent"
-                android:layout_height="650dp"
+                android:layout_height="wrap_content"
                 android:layout_below="@id/LatestUpdatesTXT"
                 android:layout_marginLeft="25dp"
                 android:layout_marginRight="25dp"
-                android:layout_marginTop="5dp"/>
+                android:layout_marginTop="5dp"
+                />
 
             <Button
                 android:id="@+id/MoreUpdatesBTN"
@@ -114,10 +157,10 @@
                 android:textSize="18sp"
                 />
 
-            <ListView
+            <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/RisingStartsList"
                 android:layout_width="match_parent"
-                android:layout_height="450dp"
+                android:layout_height="wrap_content"
                 android:layout_below="@id/RisingStarsTXT"
                 android:layout_marginLeft="25dp"
                 android:layout_marginRight="25dp"
@@ -237,10 +280,10 @@
                 android:textSize="18sp"
                 />
 
-            <ListView
+            <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/BestCompletedList"
                 android:layout_width="match_parent"
-                android:layout_height="650dp"
+                android:layout_height="wrap_content"
                 android:layout_below="@id/BestCompletedTXT"
                 android:layout_marginLeft="25dp"
                 android:layout_marginRight="25dp"
@@ -268,10 +311,10 @@
                 android:textSize="18sp"
                 />
 
-            <ListView
+            <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/BestOngoingList"
                 android:layout_width="match_parent"
-                android:layout_height="650dp"
+                android:layout_height="wrap_content"
                 android:layout_below="@id/BestOngoingTXT"
                 android:layout_marginLeft="25dp"
                 android:layout_marginRight="25dp"
@@ -288,7 +331,6 @@
                 android:text="More Fictions"
                 android:backgroundTint="@color/ButtonInner"
                 />
-
         </RelativeLayout>
     </ScrollView>
 </RelativeLayout>

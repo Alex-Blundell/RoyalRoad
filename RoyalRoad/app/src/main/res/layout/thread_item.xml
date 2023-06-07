@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <ImageView
+        android:id="@+id/ThreadIcon"
+        android:layout_width="75dp"
+        android:layout_height="75dp"
+        android:layout_marginTop="15dp"
+        android:layout_marginLeft="15dp"
+        android:layout_marginBottom="10dp"
+        />
+
+    <TextView
+        android:id="@+id/ThreadTitle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="10dp"
+        android:layout_marginTop="12dp"
+        android:layout_toRightOf="@id/ThreadIcon"
+        android:text="Thread Title"
+        android:textSize="16dp"
+        android:textStyle="bold" />
+
+    <TextView
+        android:id="@+id/ThreadAuthor"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Thread Author, DateTime"
+        android:layout_toRightOf="@id/ThreadIcon"
+        android:layout_below="@id/ThreadTitle"
+        android:layout_marginTop="2dp"
+        android:layout_marginLeft="10dp"
+        />
+
+    <TextView
+        android:id="@+id/ThreadDetails"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Number Replies, Number Views"
+        android:layout_toRightOf="@id/ThreadIcon"
+        android:layout_below="@id/ThreadAuthor"
+        android:layout_marginTop="2dp"
+        android:layout_marginLeft="10dp"
+        />
+
+    <TextView
+        android:id="@+id/ThreadLastReply"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Last Reply by USERNAME at DATE, TIME"
+        android:layout_toRightOf="@id/ThreadIcon"
+        android:layout_below="@id/ThreadDetails"
+        android:layout_marginTop="2dp"
+        android:layout_marginLeft="10dp"
+        />
+
+    <Button
+        android:id="@+id/OpenThreadBTN"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_alignBottom="@id/Divider"
+        android:background="@color/Invis"
+        />
+    
+    <com.google.android.material.divider.MaterialDivider
+        android:id="@+id/Divider"
+        android:layout_width="match_parent"
+        android:layout_height="2dp"
+        android:layout_marginTop="5dp"
+        android:layout_below="@id/ThreadLastReply"
+        />
+
+</RelativeLayout>

@@ -170,6 +170,7 @@ public class RegistrationFragment extends Fragment {
             User.put("UserID", NewUserID);
             User.put("Username", Username);
             User.put("Password", Password); // Eventually Encrypt Password so that it is not Stored on the DB in Plain English.
+            User.put("AvatarURL", ""); // Eventually Encrypt Password so that it is not Stored on the DB in Plain English.
 
             NewUserID++;
 
