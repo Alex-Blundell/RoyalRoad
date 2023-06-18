@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="OrderByArray">
+        <item>Relevance</item>
+        <item>Popularity</item>
+        <item>Average Rating</item>
+        <item>Last Update</item>
+        <item>Release Date</item>
+        <item>Followers</item>
+        <item>Number of Pages</item>
+        <item>Views</item>
+        <item>Title</item>
+        <item>Author</item>
+    </string-array>
+</resources>

@@ -90,6 +90,8 @@ public class HomeActivity extends AppCompatActivity {
 
     SearchView Searchbar;
 
+    View Divider;
+
     Boolean IsDarkMode;
     String FilePath = "";
 
@@ -141,6 +143,8 @@ public class HomeActivity extends AppCompatActivity {
         BackgroundAvatar.setVisibility(View.GONE);
         SelectBTN.setVisibility(View.GONE);
         CloseBTN.setVisibility(View.GONE);
+
+        Divider = findViewById(R.id.DividerOne);
 
         Searchbar = findViewById(R.id.HomeSearchbar);
         Searchbar.setOnClickListener(new View.OnClickListener() {
@@ -372,7 +376,7 @@ public class HomeActivity extends AppCompatActivity {
                                         //Book NewBook = new LibraryTasks(HomeActivity.this, ExternalIDs.get(i), false).execute().get();
                                         AddBooks[i] = new Book();
                                         try {
-                                            AddBooks[i] = AddBooks[i].CreateBook(HomeActivity.this, ExternalIDs.get(i), true, true);
+                                            AddBooks[i] = AddBooks[i].CreateBook(HomeActivity.this, ExternalIDs.get(i), true, true, false);
                                         } catch (InterruptedException e) {
                                             throw new RuntimeException(e);
                                         }
@@ -389,7 +393,7 @@ public class HomeActivity extends AppCompatActivity {
                                             Book[] AddBooks = new Book[ExternalIDs.size()];
                                             AddBooks[i] = new Book();
                                             try {
-                                                AddBooks[i] = AddBooks[i].CreateBook(HomeActivity.this, ExternalIDs.get(i), true, true);
+                                                AddBooks[i] = AddBooks[i].CreateBook(HomeActivity.this, ExternalIDs.get(i), true, true, false);
                                             } catch (InterruptedException e) {
                                                 throw new RuntimeException(e);
                                             }
@@ -499,11 +503,13 @@ public class HomeActivity extends AppCompatActivity {
         if (DarkMode)
         {
             getWindow().getDecorView().setBackgroundColor(getColor(R.color.DarkOuter));
-            UsernameTXT.setTextColor(getColor(R.color.white));
+            UsernameTXT.setTextColor(getColor(R.color.DarkText));
 
-            MailBTN.setImageTintList(ColorStateList.valueOf(getColor(R.color.white)));
-            NotificationsBTN.setImageTintList(ColorStateList.valueOf(getColor(R.color.white)));
+            MailBTN.setImageTintList(ColorStateList.valueOf(getColor(R.color.DarkText)));
+            NotificationsBTN.setImageTintList(ColorStateList.valueOf(getColor(R.color.DarkText)));
             Searchbar.setBackgroundColor(getColor(R.color.DarkOuter));
+
+            Divider.setBackgroundColor(getColor(R.color.DarkBorder));
         }
         else
         {

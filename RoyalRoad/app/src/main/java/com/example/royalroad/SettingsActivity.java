@@ -81,7 +81,7 @@ public class SettingsActivity extends AppCompatActivity {
         if(DarkMode)
         {
             getWindow().getDecorView().setBackgroundColor(getColor(R.color.DarkOuter));
-            BackBTN.setIconTint(ColorStateList.valueOf(getColor(R.color.white)));
+            BackBTN.setIconTint(ColorStateList.valueOf(getColor(R.color.DarkText)));
             FragmentLayout.setBackgroundColor(getColor(R.color.DarkOuter));
         }
         else

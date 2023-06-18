@@ -3,6 +3,7 @@ package com.example.royalroad;
 import static android.content.Context.MODE_PRIVATE;
 
 import android.accounts.Account;
+import android.annotation.SuppressLint;
 import android.content.ContentResolver;
 import android.content.SharedPreferences;
 import android.content.res.ColorStateList;
@@ -53,21 +54,24 @@ public class BaseSettingsFragment extends Fragment {
 
     Button AccountInfoBTN;
 
-    //private ContentResolver cResolver;
     SeekBar BrightnessSlider;
     SeekBar FontSizeSlider;
     SeekBar AppFontSizeSlider;
-    int CurrentBrightness;
+
     private Boolean IsDarkMode;
     private int FontSize;
     private int AppFontSize;
 
 
     ImageView NextBTN;
+    ImageView NextNotificationsBTN;
     ArrayList<TextView> ChangeTexts = new ArrayList<>();
 
     View TopDivider;
     View AccountDivider;
+    View NotificationDivider;
+    View SettingsDivider;
+    View AppSettingsDivider;
 
     public enum FontStyle
     {
@@ -122,6 +126,7 @@ public class BaseSettingsFragment extends Fragment {
         AppFontSizeSlider = (SeekBar) view.findViewById(R.id.AppFontSizeSlider);
 
         NextBTN = (ImageView) view.findViewById(R.id.NextBTN);
+        NextNotificationsBTN = (ImageView) view.findViewById(R.id.NextNotificationsBTN);
 
         ArrayAdapter<CharSequence> ThemeAdapter = ArrayAdapter.createFromResource(getActivity(), R.array.ThemeArray, android.R.layout.simple_spinner_item);
         ThemeAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
@@ -157,6 +162,9 @@ public class BaseSettingsFragment extends Fragment {
 
         TopDivider = view.findViewById(R.id.TopDivider);
         AccountDivider = view.findViewById(R.id.AccountDivider);
+        NotificationDivider = view.findViewById(R.id.NotificationDivider);
+        SettingsDivider = view.findViewById(R.id.SettingsDivider);
+        AppSettingsDivider = view.findViewById(R.id.AppSettingsDivider);
 
         AppFontSizeSlider.setProgress(AppFontSize - 10);
 
@@ -369,19 +377,25 @@ public class BaseSettingsFragment extends Fragment {
     void SwitchTheme(@NonNull Boolean DarkMode)
     {
         if(DarkMode)
+
         {
             AppThemeDropdown.setSelection(1);
+
             getActivity().getWindow().getDecorView().setBackgroundColor(getResources().getColor(R.color.DarkInner));
 
             for(int i = 0; i < ChangeTexts.size(); i++)
             {
-                ChangeTexts.get(i).setTextColor(getResources().getColor(R.color.white));
+                ChangeTexts.get(i).setTextColor(getResources().getColor(R.color.DarkText));
             }
 
-            NextBTN.setImageTintList(ColorStateList.valueOf(getResources().getColor(R.color.white)));
+            NextBTN.setImageTintList(ColorStateList.valueOf(getResources().getColor(R.color.DarkText)));
+            NextNotificationsBTN.setImageTintList(ColorStateList.valueOf(getResources().getColor(R.color.DarkText)));
 
             TopDivider.setBackgroundColor(getResources().getColor(R.color.DarkBorder));
             AccountDivider.setBackgroundColor(getResources().getColor(R.color.DarkBorder));
+            NotificationDivider.setBackgroundColor(getResources().getColor(R.color.DarkBorder));
+            SettingsDivider.setBackgroundColor(getResources().getColor(R.color.DarkBorder));
+            AppSettingsDivider.setBackgroundColor(getResources().getColor(R.color.DarkBorder));
         }
         else
         {
@@ -394,6 +408,7 @@ public class BaseSettingsFragment extends Fragment {
             }
 
             NextBTN.setImageTintList(ColorStateList.valueOf(getResources().getColor(R.color.black)));
+            NextNotificationsBTN.setImageTintList(ColorStateList.valueOf(getResources().getColor(R.color.black)));
         }
     }
 }

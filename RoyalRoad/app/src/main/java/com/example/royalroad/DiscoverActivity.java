@@ -94,25 +94,6 @@ public class DiscoverActivity extends AppCompatActivity {
         DebugBook.SetHasRead(false);
         DebugBook.SetLastReadChapter(0);
 
-        BackgroundURLs = null;
-        Titles = null;
-        Descriptions = null;
-
-        SharedPreferences Pref = getSharedPreferences("Settings", MODE_PRIVATE);
-        boolean IsDarkMode = Pref.getBoolean("AppTheme", false);
-
-        ConnectivityManager connectivityManager = (ConnectivityManager)getSystemService(Context.CONNECTIVITY_SERVICE);
-
-        boolean IsOnline = (connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_MOBILE).getState() == NetworkInfo.State.CONNECTED ||
-                connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI).getState() == NetworkInfo.State.CONNECTED);
-
-        NewsBackground = findViewById(R.id.NewsBackground);
-        NewsTitle = findViewById(R.id.NewsTitle);
-        NewsDescription = findViewById(R.id.NewsDescription);
-
-        NewsTitle.setTextColor(getColor(R.color.ToolbarItem));
-        NewsDescription.setTextColor(getColor(R.color.white));
-
         LatestUpdatesRV = findViewById(R.id.LatestUpdatesList);
         RisingStarsRV = findViewById(R.id.RisingStartsList);
         BestCompletedRV = findViewById(R.id.BestCompletedList);
@@ -167,6 +148,25 @@ public class DiscoverActivity extends AppCompatActivity {
 
         BestOngoingAdapter = new BookAdapter(Arrays.asList(BestOngoing));
         BestOngoingRV.setAdapter(BestOngoingAdapter);
+
+        BackgroundURLs = null;
+        Titles = null;
+        Descriptions = null;
+
+        SharedPreferences Pref = getSharedPreferences("Settings", MODE_PRIVATE);
+        boolean IsDarkMode = Pref.getBoolean("AppTheme", false);
+
+        ConnectivityManager connectivityManager = (ConnectivityManager)getSystemService(Context.CONNECTIVITY_SERVICE);
+
+        boolean IsOnline = (connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_MOBILE).getState() == NetworkInfo.State.CONNECTED ||
+                connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI).getState() == NetworkInfo.State.CONNECTED);
+
+        NewsBackground = findViewById(R.id.NewsBackground);
+        NewsTitle = findViewById(R.id.NewsTitle);
+        NewsDescription = findViewById(R.id.NewsDescription);
+
+        NewsTitle.setTextColor(getColor(R.color.ToolbarItem));
+        NewsDescription.setTextColor(getColor(R.color.white));
 
         SwitchThemes(IsDarkMode);
 
@@ -283,7 +283,7 @@ public class DiscoverActivity extends AppCompatActivity {
                                 {
                                     try
                                     {
-                                        NewLatestUpdates[i] = new Book().CreateBook(DiscoverActivity.this, ExternalID, false, false);
+                                        NewLatestUpdates[j] = new Book().CreateBook(DiscoverActivity.this, ExternalID, false, false, false);
                                     }
                                     catch (InterruptedException e)
                                     {
@@ -294,7 +294,7 @@ public class DiscoverActivity extends AppCompatActivity {
                                 {
                                     try
                                     {
-                                        NewRisingStars[i] = new Book().CreateBook(DiscoverActivity.this, ExternalID, false, false);
+                                        NewRisingStars[j] = new Book().CreateBook(DiscoverActivity.this, ExternalID, false, false, false);
                                     }
                                     catch (InterruptedException e)
                                     {
@@ -305,7 +305,7 @@ public class DiscoverActivity extends AppCompatActivity {
                                 {
                                     try
                                     {
-                                        NewBestCompleted[i] = new Book().CreateBook(DiscoverActivity.this, ExternalID, false, false);
+                                        NewBestCompleted[j] = new Book().CreateBook(DiscoverActivity.this, ExternalID, false, false, false);
                                     } catch (InterruptedException e)
                                     {
                                         throw new RuntimeException(e);
@@ -315,7 +315,7 @@ public class DiscoverActivity extends AppCompatActivity {
                                 {
                                     try
                                     {
-                                        NewBestOngoing[i] = new Book().CreateBook(DiscoverActivity.this, ExternalID, false, false);
+                                        NewBestOngoing[j] = new Book().CreateBook(DiscoverActivity.this, ExternalID, false, false, false);
                                     }
                                     catch (InterruptedException e)
                                     {
@@ -342,8 +342,7 @@ public class DiscoverActivity extends AppCompatActivity {
             NewsTitle.setText(Titles[0]);
             NewsDescription.setText(Descriptions[0]);
 
-            Thread UpdateBookThread = new Thread(new Runnable()
-            {
+            Thread UpdateStoriesThread = new Thread(new Runnable() {
                 @Override
                 public void run()
                 {
@@ -351,7 +350,7 @@ public class DiscoverActivity extends AppCompatActivity {
 
                     for(Book ThisBook : NewLatestUpdates)
                     {
-                        while(!ThisBook.IsCompleted)
+                        while(!ThisBook.IsCompleted && LatestUpdateAdapter.getItemCount() == 10)
                         {
                             try
                             {
@@ -363,9 +362,16 @@ public class DiscoverActivity extends AppCompatActivity {
                             }
                         }
 
-                        Log.println(Log.INFO, "Hi", "Books: " + NewLatestUpdates.length);
-                        LatestUpdateAdapter.Data.set(Index, ThisBook);
-                        LatestUpdateAdapter.notifyItemChanged(Index);
+                        int finalIndex = Index;
+                        LatestUpdatesRV.post(new Runnable() {
+                            @Override
+                            public void run()
+                            {
+                                LatestUpdateAdapter.Data.set(finalIndex, ThisBook);
+                                LatestUpdateAdapter.notifyItemChanged(finalIndex);
+                            }
+                        });
+
                         Index++;
                     }
 
@@ -385,51 +391,71 @@ public class DiscoverActivity extends AppCompatActivity {
                             }
                         }
 
-                        RisingStarsAdapter.Data.set(Index, ThisBook);
-                        RisingStarsAdapter.notifyItemChanged(Index);
+                        int finalIndex = Index;
+                        RisingStarsRV.post(new Runnable()
+                        {
+                            @Override
+                            public void run()
+                            {
+                                RisingStarsAdapter.Data.set(finalIndex, ThisBook);
+                                RisingStarsAdapter.notifyItemChanged(finalIndex);
+                            }
+                        });
+
+                        Index++;
+                    }
+
+                    Index = 0;
+
+                    for(Book ThisBook : NewBestCompleted)
+                    {
+                        while(!ThisBook.IsCompleted)
+                        {
+                            try
+                            {
+                                Thread.sleep(50);
+                            }
+                            catch (InterruptedException e)
+                            {
+                                throw new RuntimeException(e);
+                            }
+                        }
+
+                        BestCompletedAdapter.Data.set(Index, ThisBook);
+                        BestCompletedAdapter.notifyItemChanged(Index);
+
+                        Index++;
+                    }
+
+                    Index = 0;
+
+                    for(Book ThisBook : NewBestOngoing)
+                    {
+                        while(!ThisBook.IsCompleted)
+                        {
+                            try
+                            {
+                                Thread.sleep(50);
+                            }
+                            catch (InterruptedException e)
+                            {
+                                throw new RuntimeException(e);
+                            }
+                        }
+
+                        BestOngoingAdapter.Data.set(Index, ThisBook);
+                        BestOngoingAdapter.notifyItemChanged(Index);
+
                         Index++;
                     }
                 }
             });
 
-
-
-            UpdateBookThread.start();
+            UpdateStoriesThread.start();
         }
         catch (Exception e)
         {
             e.printStackTrace();
-        }
-    }
-
-    void ChangeBook(int ListID, int ID, Book ReplaceBook)
-    {
-        Log.println(Log.INFO, "Hi", "Updating Book Adapter");
-
-        if(ListID == 0)
-        {
-
-        }
-        else if(ListID == 1)
-        {
-            RisingStars[ID] = ReplaceBook;
-            RisingStarsAdapter.Data.set(ID, ReplaceBook);
-            RisingStarsAdapter.notifyItemChanged(ID);
-        }
-        else if(ListID == 2)
-        {
-            PopularThisWeek[ID] = ReplaceBook;
-            //LatestUpdateAdapter.notifyItemChanged(ID);
-        }
-        else if(ListID == 3)
-        {
-            BestCompleted[ID] = ReplaceBook;
-            BestCompletedAdapter.notifyItemChanged(ID);
-        }
-        else if (ListID == 4)
-        {
-            BestOngoing[ID] = ReplaceBook;
-            BestOngoingAdapter.notifyItemChanged(ID);
         }
     }
 

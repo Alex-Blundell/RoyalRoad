@@ -756,7 +756,7 @@ public class DBHandler extends SQLiteOpenHelper
         boolean HasUpdated = false;
 
         String URL = "https://www.royalroad.com/fiction/" + ThisBook.ExternalID;
-        Book NewBook = new Book().CreateBook(ThisContext, ThisBook.ExternalID, false, false);
+        Book NewBook = new Book().CreateBook(ThisContext, ThisBook.ExternalID, false, false, false);
 
         /*
         // Check to See if Anything has Updated.

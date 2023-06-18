@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="StatusArray">
+        <item>All</item>
+        <item>Completed</item>
+        <item>Dropped</item>
+        <item>Ongoing</item>
+        <item>Hiatus</item>
+        <item>Stub</item>
+    </string-array>
+</resources>

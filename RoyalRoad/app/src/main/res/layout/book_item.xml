@@ -24,7 +24,7 @@
         android:max="50"
         android:progress="25"
         android:progressTint="#FF9900"
-        android:scaleY="3"
+        android:scaleY="2.5"
         android:thumb="@color/ButtonInner" />
 
     <TextView

@@ -9,9 +9,12 @@ import androidx.viewpager2.widget.ViewPager2;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.FrameLayout;
+
+import com.google.firebase.firestore.FirebaseFirestore;
 
 public class ReadActivity extends AppCompatActivity {
 
@@ -51,6 +54,41 @@ public class ReadActivity extends AppCompatActivity {
 
         TopToolbar = (Toolbar) findViewById(R.id.BookTopToolbar);
 
+        BottomToolbar.setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem item)
+            {
+                switch (item.getOrder())
+                {
+                    case 1:
+                        DownloadStory();
+                        break;
+
+                    case 2:
+                        OpenProfile();
+                        break;
+
+                    case 3:
+                        WriteReview();
+                        break;
+
+                    case 4:
+                        FavouriteBook();
+                        break;
+
+                    case 5:
+                        FollowBook();
+                        break;
+
+                    case 6:
+                        ShareBook();
+                        break;
+                }
+
+                return false;
+            }
+        });
+
         BookPager = findViewById(R.id.ReadPager);
         VPAdapter vpAdapter = new VPAdapter(getSupportFragmentManager(), getLifecycle());
 
@@ -74,14 +112,20 @@ public class ReadActivity extends AppCompatActivity {
                 }
                 else
                 {
+                    DBHandler SQLiteDB = new DBHandler(getApplicationContext());
+                    SQLiteDB.UpdateLastReadChapter(ReadBook.GetExternalID(), position);
+                    SQLiteDB.close();
+
                     ChapterCount.setText(position + " / " + ReadBook.Chapters.size());
                 }
             }
         });
+
         BackBTN.setOnClickListener(new View.OnClickListener()
         {
             @Override
-            public void onClick(View view) {
+            public void onClick(View view)
+            {
                 finish();
             }
         });
@@ -90,7 +134,7 @@ public class ReadActivity extends AppCompatActivity {
 
         if(ReadBook.HasRead)
         {
-            if(ReadBook.LastReadChapter > 0)
+            if(ReadBook.LastReadChapter >= 0)
             {
                 BookPager.setCurrentItem(ReadBook.LastReadChapter);
             }
@@ -108,5 +152,42 @@ public class ReadActivity extends AppCompatActivity {
             SQLiteDB.UpdateHasRead(ReadBook.GetExternalID());
             SQLiteDB.close();
         }
+    }
+
+    public void DownloadStory()
+    {
+        try
+        {
+            Book NewBook = new Book().CreateBook(this, ReadBook.GetExternalID(), true, true, true);
+        }
+        catch (InterruptedException e)
+        {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public void OpenProfile()
+    {
+
+    }
+
+    public void WriteReview()
+    {
+
+    }
+
+    public void FavouriteBook()
+    {
+
+    }
+
+    public void FollowBook()
+    {
+
+    }
+
+    public void ShareBook()
+    {
+
     }
 }

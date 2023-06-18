@@ -13,6 +13,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
 
@@ -36,6 +37,8 @@ public class ForumsHomeFragment extends Fragment {
     ForumAdapter FictionsAdapter;
     ForumAdapter TipsAdapter;
     ForumAdapter ForumsAdapter;
+
+    ImageView HeaderImage;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -78,6 +81,8 @@ public class ForumsHomeFragment extends Fragment {
 
         ForumsForums.setLayoutManager(new LinearLayoutManager(getContext()));
         ForumsForums.setHasFixedSize(true);
+
+        HeaderImage = view.findViewById(R.id.ForumHeader);
 
         SwitchTheme(IsDark);
         InitializeForums();
@@ -126,6 +131,8 @@ public class ForumsHomeFragment extends Fragment {
             FictionsForums.setBackgroundColor(getResources().getColor(R.color.DarkInner));
             TipsForums.setBackgroundColor(getResources().getColor(R.color.DarkInner));
             ForumsForums.setBackgroundColor(getResources().getColor(R.color.DarkInner));
+
+            HeaderImage.setBackgroundColor(getResources().getColor(R.color.forumsDark));
         }
         else
         {
@@ -137,6 +144,8 @@ public class ForumsHomeFragment extends Fragment {
             FictionsForums.setBackgroundColor(getResources().getColor(R.color.white));
             TipsForums.setBackgroundColor(getResources().getColor(R.color.white));
             ForumsForums.setBackgroundColor(getResources().getColor(R.color.white));
+
+            HeaderImage.setBackgroundColor(getResources().getColor(R.color.forumswhite));
         }
     }
 }

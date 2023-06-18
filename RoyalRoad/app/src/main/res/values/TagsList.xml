@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="TagsArray">
+        <item>Anti-Hero Lead</item>
+        <item>Artificial Intelligence</item>
+        <item>Attractive Lead</item>
+        <item>Cyberpunk</item>
+        <item>Dungeon</item>
+        <item>Dystopia</item>
+        <item>Female Lead</item>
+        <item>First Contact</item>
+        <item>GameLit</item>
+        <item>Gender Bender</item>
+        <item>Genetically Engineered</item>
+        <item>Grimdark</item>
+        <item>Hard Sci-fi</item>
+        <item>Harem</item>
+        <item>High Fantasy</item>
+        <item>LitRPG</item>
+        <item>Low Fantasy</item>
+        <item>Magic</item>
+        <item>Male Lead</item>
+        <item>Martial Arts</item>
+        <item>Multiple Lead Characters</item>
+        <item>Non-Human Lead</item>
+        <item>Portal Fantasy / Isekai</item>
+        <item>Post Apocalyptic</item>
+        <item>Progression</item>
+        <item>Reader Interactive</item>
+        <item>Reincarnation</item>
+        <item>Ruling Class</item>
+        <item>School Life</item>
+        <item>Secret Identity</item>
+        <item>Slice of Life</item>
+        <item>Soft Sci-fi</item>
+        <item>Space Opera</item>
+        <item>Sports</item>
+        <item>Steampunk</item>
+        <item>Strategy</item>
+        <item>Strong Lead</item>
+        <item>Super Heroes</item>
+        <item>Supernatural</item>
+        <item>Technological Engineered</item>
+        <item>Time Loop</item>
+        <item>Time Travel</item>
+        <item>Urban Fantasy</item>
+        <item>Villainous Lead</item>
+        <item>Virtual Reality</item>
+        <item>War and Military</item>
+        <item>Wuxia</item>
+        <item>Xianxia</item>
+    </string-array>
+</resources>

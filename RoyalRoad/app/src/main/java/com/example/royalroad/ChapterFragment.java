@@ -58,8 +58,6 @@ public class ChapterFragment extends Fragment
         DBHandler SQLiteDB = new DBHandler(getActivity().getApplicationContext());
 
         Book.Chapter CurrentChapter = SQLiteDB.GetChapter(BookID, ChapterID);
-        SQLiteDB.UpdateLastReadChapter(readActivity.ReadBook.GetExternalID(), ChapterID);
-
         SQLiteDB.close();
 
         StoryList = (ListView) view.findViewById(R.id.ChapterContentList);
@@ -101,7 +99,7 @@ public class ChapterFragment extends Fragment
                 TextView textView = (TextView) view.findViewById(android.R.id.text1);
                 if(IsDarkMode)
                 {
-                    textView.setTextColor(getResources().getColor(R.color.white));
+                    textView.setTextColor(getResources().getColor(R.color.DarkText));
                 }
 
                 return view;

@@ -1,10 +1,20 @@
 package com.example.royalroad;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.util.Log;
 
+import androidx.annotation.NonNull;
+
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.annotations.concurrent.Background;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FieldValue;
+import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QuerySnapshot;
 
 import org.checkerframework.common.returnsreceiver.qual.This;
@@ -105,6 +115,24 @@ public class Book implements Serializable
         Traumatising_Content
     }
 
+    public static class Review implements Serializable
+    {
+        String Title;
+        String ReviewedAt;
+        String ReviewAuthor;
+        String[] ReviewDescription;
+
+        String DateTime;
+
+        double OverallScore;
+        double StyleScore;
+        double StoryScore;
+        double GrammerScore;
+        double CharacterScore;
+
+        boolean IsAdvancedReview;
+    }
+
     public static class Chapter implements Serializable
     {
         public int ID;
@@ -179,6 +207,7 @@ public class Book implements Serializable
             "<p style=\"margin-bottom: 1em\">",
             "<p style=\"margin-bottom: 2em\">",
             "<span style=\"font-size: 1.3em\">",
+            "<span style=\"font-size: 1.1em\">",
             "<span style=\"color: rgba(255, 255, 255, 1)\">",
             "<td style=\"width: 0; height: 68px\">",
             "</sup>",
@@ -206,7 +235,7 @@ public class Book implements Serializable
     }
 
     @Background
-    public Book CreateBook(Context context, long ExternalID, boolean GetChapterContent, boolean AddToDB) throws InterruptedException {
+    public Book CreateBook(Context context, long ExternalID, boolean GetChapterContent, boolean AddToDB, boolean AddToFirebase) throws InterruptedException {
         Book NewBook = new Book();
         Thread BookThread = new Thread(new Runnable()
         {
@@ -280,6 +309,43 @@ public class Book implements Serializable
                         new AddToDBTask(context, NewBook).execute();
                     }
 
+
+                    if(AddToFirebase)
+                    {
+                        FirebaseFirestore FireDB = FirebaseFirestore.getInstance();
+
+                        SharedPreferences Pref = context.getSharedPreferences("Settings", Context.MODE_PRIVATE);
+                        int UserID = Pref.getInt("UserID", 1);
+
+
+                        FirebaseFirestore finalFireDB = FireDB;
+                        FireDB.collection("User_Books")
+                                .whereEqualTo("UserID", UserID)
+                                .get()
+                                .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>()
+                                {
+                                    @Override
+                                    public void onSuccess(QuerySnapshot queryDocumentSnapshots)
+                                    {
+                                        DocumentReference Update = queryDocumentSnapshots.getDocuments().get(0).getReference();
+
+                                        finalFireDB.collection("User_Books")
+                                                .document(Update.getId())
+                                                .update("ExternalID", FieldValue.arrayUnion(ExternalID));
+                                    }
+                                })
+                                .addOnFailureListener(new OnFailureListener()
+                                {
+                                    @Override
+                                    public void onFailure(@NonNull Exception e)
+                                    {
+                                        // Can't Find a User_Book Entry for this User. Create One.
+                                    }
+                                });
+
+
+                        FireDB = null;
+                    }
 
                     SQLiteDB.close();
                 }

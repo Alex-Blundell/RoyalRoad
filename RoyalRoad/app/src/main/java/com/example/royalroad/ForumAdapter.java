@@ -39,15 +39,14 @@ public class ForumAdapter extends RecyclerView.Adapter<ForumAdapter.forumviewhol
     public void onBindViewHolder(@NonNull forumviewholder holder, int position)
     {
         SharedPreferences Pref = holder.itemView.getContext().getSharedPreferences("Settings", Context.MODE_PRIVATE);
-
         boolean IsDarkMode = Pref.getBoolean("AppTheme", false);
 
         if(IsDarkMode)
         {
-            holder.Title.setTextColor(holder.itemView.getResources().getColor(R.color.white));
-            holder.Description.setTextColor(holder.itemView.getResources().getColor(R.color.white));
-            holder.PostsCount.setTextColor(holder.itemView.getResources().getColor(R.color.white));
-            holder.TopicsCount.setTextColor(holder.itemView.getResources().getColor(R.color.white));
+            holder.Title.setTextColor(holder.itemView.getResources().getColor(R.color.DarkText));
+            holder.Description.setTextColor(holder.itemView.getResources().getColor(R.color.DarkText));
+            holder.PostsCount.setTextColor(holder.itemView.getResources().getColor(R.color.DarkText));
+            holder.TopicsCount.setTextColor(holder.itemView.getResources().getColor(R.color.DarkText));
         }
         else
         {

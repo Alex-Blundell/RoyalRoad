@@ -19,7 +19,7 @@
     <color name="DarkInner">#131313</color>
     <color name="DarkOuter">#181818</color>
     <color name="DarkBorder">#2B2B2B</color>
-    <color name="DarkText">#CCffffff</color>
+    <color name="DarkText">#CCFFFFFF</color>
 
     <!--Light Theme-->
 
@@ -31,6 +31,7 @@
     <color name="ButtonBorder">#2e6da4</color>
 
     <color name="forumswhite">#D8FFFFFF</color>
+    <color name="forumsDark">#D8000000</color>
 
     <color name="BookInProgress">#FFFF9900</color>
     <color name="BookComplete">#FF07C101</color>

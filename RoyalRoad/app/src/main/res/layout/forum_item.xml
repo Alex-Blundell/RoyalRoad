@@ -57,6 +57,55 @@
         android:textSize="12dp"
         />
 
+    <ImageView
+        android:id="@+id/LastUserIcon"
+        android:layout_width="25dp"
+        android:layout_height="25dp"
+        android:layout_below="@id/ForumDescription"
+        android:layout_marginTop="20dp"
+
+        android:layout_marginLeft="20dp"
+        />
+
+    <TextView
+        android:id="@+id/LastUserTitle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_toRightOf="@id/LastUserIcon"
+        android:layout_toLeftOf="@id/LastUser"
+        android:layout_below="@id/ForumDescription"
+        android:layout_marginTop="20dp"
+        android:layout_marginLeft="5dp"
+        android:text="Last User Thread Title"
+        android:textSize="12sp"
+        />
+
+    <TextView
+        android:id="@+id/LastUser"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:layout_marginLeft="5dp"
+        android:text="Last User"
+        android:textSize="12sp"
+        android:layout_toLeftOf="@id/LastUserDate"
+        android:layout_below="@id/ForumDescription"
+        />
+
+    <TextView
+        android:id="@+id/LastUserDate"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_marginTop="20dp"
+        android:layout_marginLeft="5dp"
+        android:layout_marginRight="10dp"
+        android:textSize="12sp"
+        android:text="LastUserDate"
+        android:layout_below="@id/ForumDescription"
+        />
+
+
     <Button
         android:id="@+id/OpenForumBTN"
         android:layout_width="match_parent"
@@ -65,12 +114,13 @@
         android:layout_alignBottom="@id/ForumDivider"
         android:background="@color/Invis"
         />
-    
+
     <com.google.android.material.divider.MaterialDivider
         android:id="@+id/ForumDivider"
         android:layout_width="match_parent"
         android:layout_height="2dp"
-        android:layout_below="@id/ForumIcon"
+        android:layout_below="@id/LastUserIcon"
+        android:layout_marginTop="10dp"
         />
 
 </RelativeLayout>

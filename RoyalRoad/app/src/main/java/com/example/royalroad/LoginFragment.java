@@ -274,13 +274,13 @@ public class LoginFragment extends Fragment {
             Background.setStrokeColor(ColorStateList.valueOf(getResources().getColor(R.color.DarkBorder)));
 
             UsernameField.setBackgroundColor(getResources().getColor(R.color.DarkInner));
-            UsernameField.setTextColor(getResources().getColor(R.color.white));
+            UsernameField.setTextColor(getResources().getColor(R.color.DarkText));
 
             PasswordField.setBackgroundColor(getResources().getColor(R.color.DarkInner));
-            PasswordField.setTextColor(getResources().getColor(R.color.white));
+            PasswordField.setTextColor(getResources().getColor(R.color.DarkText));
 
-            UsernameTXT.setTextColor(getResources().getColor(R.color.white));
-            PasswordTXT.setTextColor(getResources().getColor(R.color.white));
+            UsernameTXT.setTextColor(getResources().getColor(R.color.DarkText));
+            PasswordTXT.setTextColor(getResources().getColor(R.color.DarkText));
         }
         else
         {
