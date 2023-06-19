@@ -24,6 +24,8 @@ import android.widget.Toast;
 import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.tabs.TabLayoutMediator;
 
+import org.checkerframework.common.subtyping.qual.Bottom;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -54,7 +56,8 @@ public class LibraryActivity extends AppCompatActivity {
     }
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(Bundle savedInstanceState)
+    {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_library);
 
@@ -74,12 +77,14 @@ public class LibraryActivity extends AppCompatActivity {
 
         LibraryPager.setAdapter(vpAdapter);
         LibraryPager.setCurrentItem(0);
+
         LibraryPager.registerOnPageChangeCallback(new ViewPager2.OnPageChangeCallback() {
             @Override
             public void onPageSelected(int position) {
                 BottomTabs.selectTab(BottomTabs.getTabAt(position));
             }
         });
+
         BottomTabs.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
             @Override
             public void onTabSelected(TabLayout.Tab tab)
@@ -129,6 +134,12 @@ public class LibraryActivity extends AppCompatActivity {
                 return false;
             }
         });
+
+        LibraryPager.setCurrentItem(4);
+        LibraryPager.setCurrentItem(3);
+        LibraryPager.setCurrentItem(2);
+        LibraryPager.setCurrentItem(1);
+        LibraryPager.setCurrentItem(0);
     }
 
     public void SyncLibrary()
