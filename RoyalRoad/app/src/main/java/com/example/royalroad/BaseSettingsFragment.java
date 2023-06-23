@@ -248,7 +248,7 @@ public class BaseSettingsFragment extends Fragment {
                     PrefEditor.apply();
                     SwitchTheme(false);
 
-                    ((SettingsActivity)getActivity()).SwitchTheme(false);
+                    //((SettingsActivity)getActivity()).SwitchTheme(false);
                 }
                 else if(i == 1)
                 {
@@ -256,7 +256,7 @@ public class BaseSettingsFragment extends Fragment {
                     PrefEditor.apply();
                     SwitchTheme(true);
 
-                    ((SettingsActivity)getActivity()).SwitchTheme(true);
+                    //((SettingsActivity)getActivity()).SwitchTheme(true);
                 }
             }
 

@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
@@ -9,10 +8,9 @@
         android:id="@+id/Cover"
         android:layout_width="75dp"
         android:layout_height="110dp"
-        android:src="@drawable/default_cover"
         android:layout_marginLeft="5dp"
         android:layout_marginTop="5dp"
-        />
+        android:src="@drawable/default_cover" />
 
     <SeekBar
         android:id="@+id/BookProgress"
@@ -31,23 +29,21 @@
         android:id="@+id/Title"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="BookTitle"
-        android:layout_toRightOf="@id/Cover"
-        android:layout_marginTop="10dp"
         android:layout_marginLeft="10dp"
-        android:textSize="16sp"
-        />
+        android:layout_marginTop="10dp"
+        android:layout_toRightOf="@id/Cover"
+        android:text="BookTitle"
+        android:textSize="16sp" />
 
     <TextView
         android:id="@+id/Author"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Author Name"
-        android:layout_toRightOf="@id/Cover"
-        android:layout_marginLeft="10dp"
         android:layout_below="@id/Title"
-        android:textSize="11sp"
-        />
+        android:layout_marginLeft="10dp"
+        android:layout_toRightOf="@id/Cover"
+        android:text="Author Name"
+        android:textSize="11sp" />
 
     <TextView
         android:id="@+id/Description"
@@ -55,199 +51,29 @@
         android:layout_height="75dp"
         android:layout_below="@id/Author"
         android:layout_marginLeft="20dp"
+        android:layout_marginRight="5dp"
         android:layout_toRightOf="@id/Cover"
         android:text="HelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHello"
         android:textSize="11sp" />
 
-    <GridLayout
-        android:id="@+id/DetailsGridLayout"
-        android:layout_width="wrap_content"
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/DetailsRV"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="5dp"
         android:layout_below="@id/Description"
-        android:columnCount="8"
-        android:columnOrderPreserved="false">
-
-        <TextView
-            android:id="@+id/ContentWarnings"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_below="@id/Description"
-            android:layout_marginLeft="10dp"
-            android:layout_marginTop="5dp"
-            android:text="Warnings"
-            android:textSize="11sp" />
-
-        <TextView
-            android:id="@+id/Language"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_below="@id/Description"
-            android:layout_marginLeft="10dp"
-            android:layout_marginTop="5dp"
-            android:layout_marginBottom="5dp"
-            android:layout_toRightOf="@id/ContentWarnings"
-            android:text="Language"
-            android:textSize="11sp" />
-
-        <TextView
-            android:id="@+id/BookType"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_below="@id/Description"
-            android:layout_marginLeft="10dp"
-            android:layout_marginTop="5dp"
-            android:layout_marginBottom="5dp"
-            android:layout_toRightOf="@id/Language"
-            android:text="Original"
-            android:textSize="11sp" />
-
-        <TextView
-            android:id="@+id/PageCount"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_below="@id/Description"
-            android:layout_marginLeft="10dp"
-            android:layout_marginTop="5dp"
-            android:layout_marginBottom="5dp"
-            android:layout_toRightOf="@id/BookType"
-            android:text="29,951"
-            android:textSize="11sp" />
-
-        <TextView
-            android:id="@+id/ChapterCount"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_below="@id/Description"
-            android:layout_marginLeft="10dp"
-            android:layout_marginTop="5dp"
-            android:layout_marginBottom="5dp"
-            android:layout_toRightOf="@id/PageCount"
-            android:text="1005"
-            android:textSize="11sp" />
-
-        <TextView
-            android:id="@+id/FollowerCount"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_below="@id/Description"
-            android:layout_marginLeft="10dp"
-            android:layout_marginTop="5dp"
-            android:layout_marginBottom="5dp"
-            android:layout_toRightOf="@id/PageCount"
-            android:text="1005"
-            android:textSize="11sp" />
-
-        <TextView
-            android:id="@+id/FavouriteCount"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_below="@id/Description"
-            android:layout_marginLeft="10dp"
-            android:layout_marginTop="5dp"
-            android:layout_marginBottom="5dp"
-            android:layout_toRightOf="@id/PageCount"
-            android:text="1005"
-            android:textSize="11sp" />
-
-        <TextView
-            android:id="@+id/CreatedDate"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_below="@id/Description"
-            android:layout_marginLeft="10dp"
-            android:layout_marginTop="5dp"
-            android:layout_marginBottom="5dp"
-            android:layout_toRightOf="@id/ChapterCount"
-            android:text="15-01-2022"
-            android:textSize="11sp" />
-
-        <TextView
-            android:id="@+id/UpdatedDate"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_below="@id/Description"
-            android:layout_marginLeft="10dp"
-            android:layout_marginTop="5dp"
-            android:layout_marginRight="5dp"
-            android:layout_marginBottom="5dp"
-            android:layout_toRightOf="@id/CreatedDate"
-            android:text="16-01-2022"
-            android:textSize="11sp" />
-
-        <TextView
-            android:id="@+id/Tag1"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_below="@id/Description"
-            android:layout_marginLeft="10dp"
-            android:layout_marginTop="5dp"
-            android:layout_marginRight="5dp"
-            android:layout_marginBottom="5dp"
-            android:layout_toRightOf="@id/UpdatedDate"
-            android:text="Tag1"
-            android:textSize="11sp" />
-
-        <TextView
-            android:id="@+id/Tag2"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_below="@id/Description"
-            android:layout_marginLeft="10dp"
-            android:layout_marginTop="5dp"
-            android:layout_marginRight="5dp"
-            android:layout_marginBottom="5dp"
-            android:layout_toRightOf="@id/UpdatedDate"
-            android:text="Tag2"
-            android:textSize="11sp" />
-
-        <TextView
-            android:id="@+id/Tag3"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_below="@id/Description"
-            android:layout_marginLeft="10dp"
-            android:layout_marginTop="5dp"
-            android:layout_marginRight="5dp"
-            android:layout_marginBottom="5dp"
-            android:layout_toRightOf="@id/UpdatedDate"
-            android:text="Tag3"
-            android:textSize="11sp" />
-
-        <TextView
-            android:id="@+id/Tag4"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_below="@id/Description"
-            android:layout_marginLeft="10dp"
-            android:layout_marginTop="5dp"
-            android:layout_marginRight="5dp"
-            android:layout_marginBottom="5dp"
-            android:layout_toRightOf="@id/UpdatedDate"
-            android:text="Tag4"
-            android:textSize="11sp" />
-
-        <TextView
-            android:id="@+id/Complete"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_below="@id/Description"
-            android:layout_marginLeft="10dp"
-            android:layout_marginTop="5dp"
-            android:layout_marginRight="5dp"
-            android:layout_marginBottom="5dp"
-            android:layout_toRightOf="@id/UpdatedDate"
-            android:text="Complete"
-            android:textSize="11sp" />
-
-    </GridLayout>
+        android:orientation="horizontal"
+        android:layout_marginTop="2.5dp"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        app:layoutManager="com.google.android.flexbox.FlexboxLayoutManager"
+        />
 
     <com.google.android.material.divider.MaterialDivider
         android:id="@+id/Divider"
         android:layout_width="match_parent"
         android:layout_height="2dp"
-        android:layout_below="@id/DetailsGridLayout"
-        />
+        android:layout_marginTop="5dp"
+        android:layout_below="@id/DetailsRV" />
 
     <Button
         android:id="@+id/OpenBookBTN"
@@ -255,8 +81,7 @@
         android:layout_height="match_parent"
         android:layout_alignBottom="@+id/Divider"
         android:layout_alignParentTop="true"
-        android:background="@color/Invis"
-        />
+        android:background="@color/Invis" />
 
     <ImageView
         android:id="@+id/DarkCover"

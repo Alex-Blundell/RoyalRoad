@@ -2,6 +2,8 @@ package com.example.royalroad;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.graphics.Color;
+import android.graphics.drawable.Drawable;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
@@ -145,6 +147,30 @@ public class Book implements Serializable
     {
         public int ParagraphID;
         public String Content;
+    }
+
+    public static class Details
+    {
+        public Details(String text, Drawable icon, int strokeColor, int iconColor)
+        {
+            this.Text = text;
+            this.Icon = icon;
+            this.IconColor = iconColor;
+            this.StrokeID = strokeColor;
+        }
+
+        public Details(String text, int strokeID)
+        {
+            this.Text = text;
+            this.StrokeID = strokeID;
+        }
+
+
+        public String Text;
+        public Drawable Icon;
+        public int IconColor;
+
+        public int StrokeID;
     }
 
     public enum LineStyle
@@ -418,7 +444,8 @@ public class Book implements Serializable
 
         int ChapterIndex = 0;
 
-        for (Element Link : ChapterLinks) {
+        for (Element Link : ChapterLinks)
+        {
             Book.Chapter NewChapter = new Book.Chapter();
 
             NewChapter.ID = ChapterIndex;

@@ -546,6 +546,7 @@ public class DBHandler extends SQLiteOpenHelper
                 NewBook.SetLastReadChapter(Integer.parseInt(cursor.getString(16)));
 
                 cursor.close();
+
                 db.setTransactionSuccessful();
             }
             finally

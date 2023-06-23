@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/GridBTN"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:backgroundTint="@color/DarkInner"
+        android:insetLeft="0dp"
+        android:insetTop="0dp"
+        android:insetRight="5dp"
+        android:insetBottom="5dp"
+        android:minWidth="0dp"
+        android:minHeight="0dp"
+        android:padding="3dp"
+        android:paddingStart="4dp"
+        android:paddingTop="4dp"
+        android:paddingEnd="6dp"
+        android:text="Complete"
+        android:textAllCaps="false"
+        android:textColor="@color/DarkText"
+        android:textSize="12sp"
+        app:icon="@drawable/search_icon"
+        app:iconPadding="5dp"
+        app:iconSize="17dp"
+        app:strokeColor="@color/BlueBorder"
+        app:strokeWidth="1.5dp" />
+
+</RelativeLayout>

@@ -6,234 +6,41 @@
     android:layout_height="match_parent"
     tools:context=".HomeActivity">
 
-    <SearchView
-        android:id="@+id/HomeSearchbar"
+    <androidx.viewpager2.widget.ViewPager2
+        android:id="@+id/HomePager"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
+        android:layout_height="match_parent"
+        android:layout_above="@id/HomeTabs"
+        />
 
-    <View
-        android:id="@+id/DividerOne"
+
+    <com.google.android.material.tabs.TabLayout
+        android:id="@+id/HomeTabs"
         android:layout_width="match_parent"
-        android:layout_height="2dp"
-        android:background="?android:attr/listDivider"
-        android:layout_below="@id/HomeSearchbar"/>
-
-    <Button
-        android:id="@+id/DiscoverBTN"
-        android:layout_width="150dp"
-        android:layout_height="75dp"
-        android:layout_below="@id/ProfileImage"
-        android:layout_marginLeft="20dp"
-        android:layout_marginTop="150dp"
-        android:backgroundTint="@color/ButtonInner"
-        android:drawableLeft="@drawable/discover_icon"
-        android:text="Discover"
-        app:strokeColor="@color/ButtonBorder"
-        app:strokeWidth="4dp"
-        android:textColor="@color/DarkText"
-        />
-
-    <Button
-        android:id="@+id/LibraryBTN"
-        android:layout_width="150dp"
-        android:layout_height="75dp"
-        android:layout_below="@id/ProfileImage"
-        android:layout_marginLeft="70dp"
-        android:layout_marginTop="150dp"
-        android:layout_marginRight="20dp"
-        android:layout_toRightOf="@id/DiscoverBTN"
-        android:backgroundTint="@color/ButtonInner"
-        android:drawableLeft="@drawable/book"
-        android:text="Library"
-        app:strokeColor="@color/ButtonBorder"
-        app:strokeWidth="4dp"
-        android:textColor="@color/DarkText"
-        />
-
-    <Button
-        android:id="@+id/WriteBTN"
-        android:layout_width="150dp"
-        android:layout_height="75dp"
-        android:layout_below="@id/DiscoverBTN"
-        android:layout_marginLeft="20dp"
-        android:layout_marginTop="20dp"
-        android:backgroundTint="@color/ButtonInner"
-        android:drawableLeft="@drawable/write_icon"
-        android:text="Write"
-        app:strokeColor="@color/ButtonBorder"
-        app:strokeWidth="4dp"
-        android:textColor="@color/DarkText"
-        />
-
-    <Button
-        android:id="@+id/ForumsBTN"
-        android:layout_width="150dp"
-        android:layout_height="75dp"
-        android:layout_below="@id/LibraryBTN"
-        android:layout_marginLeft="70dp"
-        android:layout_marginTop="20dp"
-        android:layout_marginRight="20dp"
-        android:layout_toRightOf="@id/WriteBTN"
-        android:backgroundTint="@color/ButtonInner"
-        android:drawableLeft="@drawable/forum_icon"
-        android:text="Forums"
-        app:strokeColor="@color/ButtonBorder"
-        app:strokeWidth="4dp"
-        android:textColor="@color/DarkText"
-        />
-
-    <Button
-        android:id="@+id/FriendsBTN"
-        android:layout_width="150dp"
-        android:layout_height="75dp"
-        android:layout_below="@id/WriteBTN"
-        android:layout_marginLeft="20dp"
-        android:layout_marginTop="20dp"
-        android:backgroundTint="@color/ButtonInner"
-        android:drawableLeft="@drawable/friends_icon"
-        android:text="Friends"
-        app:strokeColor="@color/ButtonBorder"
-        app:strokeWidth="4dp"
-        android:textColor="@color/DarkText"
-        />
-
-    <Button
-        android:id="@+id/SettingsBTN"
-        android:layout_width="150dp"
-        android:layout_height="75dp"
-        android:layout_below="@id/ForumsBTN"
-        android:layout_marginLeft="70dp"
-        android:layout_marginTop="20dp"
-        android:layout_marginRight="20dp"
-        android:layout_toRightOf="@id/FriendsBTN"
-        android:backgroundTint="@color/ButtonInner"
-        android:drawableLeft="@drawable/settings_icon"
-        android:text="Settings"
-        app:strokeColor="@color/ButtonBorder"
-        app:strokeWidth="4dp"
-        android:textColor="@color/DarkText"
-        />
-
-    <Button
-        android:id="@+id/LoginBTN"
-        android:layout_width="200dp"
-        android:layout_height="50dp"
-        android:layout_below="@id/SettingsBTN"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="60dp"
-        android:layout_marginBottom="5dp"
-        android:backgroundTint="@color/ButtonInner"
-        android:text="Login"
-        app:strokeColor="@color/ButtonBorder"
-        app:strokeWidth="4dp"
-        android:textColor="@color/DarkText"
-        />
-
-    <TextView
-        android:id="@+id/Username"
-        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/Username"
-        android:layout_toRightOf="@id/ProfileImage"
-        android:layout_below="@id/HomeSearchbar"
-        android:layout_marginTop="50dp"
-        android:layout_marginLeft="25dp"
-        android:textSize="16dp"
-        />
+        android:layout_alignParentBottom="true"
+        android:background="@color/DarkBorder"
+        app:tabIconTint="@color/ToolbarItem"
+        app:tabIndicatorColor="@color/ToolbarItem">
 
-    <com.google.android.material.imageview.ShapeableImageView
-        android:id="@+id/ProfileImage"
-        android:layout_width="130dp"
-        android:layout_height="130dp"
-        android:layout_below="@id/HomeSearchbar"
-        android:layout_marginLeft="25dp"
-        android:layout_marginTop="25dp"
-        android:scaleType="centerCrop"
-        android:src="@drawable/default_profile"
-        app:strokeColor="@color/DarkBorder"
-        app:strokeWidth="5dp" />
+        <com.google.android.material.tabs.TabItem
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:icon="@drawable/baseline_home_24" />
 
-    <ImageButton
-        android:id="@+id/NotificationBTN"
-        android:layout_width="50dp"
-        android:layout_height="50dp"
-        android:layout_alignParentRight="true"
-        android:alpha="0.9"
-        android:background="@color/Invis"
-        android:rotationX="0"
-        android:scaleX="1.5"
-        android:scaleY="1.5"
-        app:srcCompat="@drawable/notifications"
-        android:layout_below="@id/HomeSearchbar"
-        />
+        <com.google.android.material.tabs.TabItem
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:icon="@drawable/write_icon" />
 
-    <ImageButton
-        android:id="@+id/MailBTN"
-        android:layout_width="50dp"
-        android:layout_height="50dp"
-        android:layout_below="@id/HomeSearchbar"
-        android:layout_marginLeft="300dp"
-        android:alpha="0.9"
-        android:background="@color/Invis"
-        android:scaleX="1.5"
-        android:scaleY="1.5"
-        app:srcCompat="@drawable/message" />
+        <com.google.android.material.tabs.TabItem
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:icon="@drawable/profile" />
 
-    <ImageView
-        android:id="@+id/DarkBackground"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_below="@id/HomeSearchbar"
-        android:background="#E0000000"
-        android:translationZ="90dp"
-        tools:visibility="gone" />
-
-    <ImageView
-        android:id="@+id/DarkBackgroundAvatar"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="#E0000000"
-        android:translationZ="90dp"
-        tools:visibility="gone"
-        />
-
-    <ImageView
-        android:id="@+id/BackgroundAvatar"
-        android:layout_width="300dp"
-        android:layout_height="300dp"
-        android:layout_centerHorizontal="true"
-        android:layout_centerVertical="true"
-        android:scaleType="centerCrop"
-        android:translationZ="90dp"
-        tools:visibility="gone"
-        />
-
-    <com.google.android.material.imageview.ShapeableImageView
-        android:id="@+id/CloseBTN"
-        android:layout_width="50dp"
-        android:layout_height="50dp"
-        android:layout_below="@id/BackgroundAvatar"
-        android:layout_marginLeft="100dp"
-        android:layout_marginTop="50dp"
-        android:background="@color/ButtonInner"
-        android:translationZ="180dp"
-        android:visibility="gone"
-        app:shapeAppearanceOverlay="@style/ShapeAppearanceOverlay.Material3.Button"
-        app:srcCompat="@drawable/close_icon"
-        />
-
-    <com.google.android.material.imageview.ShapeableImageView
-        android:id="@+id/SelectBTN"
-        android:layout_width="50dp"
-        android:layout_height="50dp"
-        android:layout_below="@id/BackgroundAvatar"
-        android:layout_alignParentRight="true"
-        android:layout_marginTop="50dp"
-        android:layout_marginRight="100dp"
-        android:adjustViewBounds="false"
-        android:background="@color/ButtonInner"
-        android:translationZ="180dp"
-        android:visibility="gone"
-        app:shapeAppearanceOverlay="@style/ShapeAppearanceOverlay.Material3.Button"
-        app:srcCompat="@drawable/insert_photo_icon" />
+        <com.google.android.material.tabs.TabItem
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:icon="@drawable/settings_icon" />
+    </com.google.android.material.tabs.TabLayout>
 </RelativeLayout>

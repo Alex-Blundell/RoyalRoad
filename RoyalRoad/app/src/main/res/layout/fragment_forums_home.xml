@@ -39,7 +39,9 @@
                 android:minHeight="?attr/actionBarSize"
                 android:theme="?attr/actionBarTheme"
                 app:title="Popular Threads"
-                app:titleTextColor="@color/white" />
+                app:titleMarginStart="110dp"
+                app:titleTextAppearance="@style/TextAppearance.AppCompat.Medium"
+                app:titleTextColor="@color/DarkText" />
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/PopularThreads"
@@ -62,9 +64,13 @@
                 android:layout_marginRight="25dp"
                 android:background="@color/ForumToolbar"
                 android:minHeight="?attr/actionBarSize"
+                android:textAlignment="center"
                 android:theme="?attr/actionBarTheme"
                 app:title="Community"
-                app:titleTextColor="@color/white" />
+                app:titleMarginEnd="100dp"
+                app:titleMarginStart="135dp"
+                app:titleTextAppearance="@style/TextAppearance.AppCompat.Medium"
+                app:titleTextColor="@color/DarkText" />
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/CommunityForums"
@@ -89,6 +95,8 @@
                 android:minHeight="?attr/actionBarSize"
                 android:theme="?attr/actionBarTheme"
                 app:title="Fictions"
+                app:titleMarginStart="140dp"
+                app:titleTextAppearance="@style/TextAppearance.AppCompat.Medium"
                 app:titleTextColor="@color/white" />
 
             <androidx.recyclerview.widget.RecyclerView
@@ -114,7 +122,9 @@
                 android:minHeight="?attr/actionBarSize"
                 android:theme="?attr/actionBarTheme"
                 app:title="Writing Tips and Discussions"
-                app:titleTextColor="@color/white" />
+                app:titleMarginStart="70dp"
+                app:titleTextAppearance="@style/TextAppearance.AppCompat.Medium"
+                app:titleTextColor="@color/DarkText" />
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/TipsForums"
@@ -139,7 +149,9 @@
                 android:minHeight="?attr/actionBarSize"
                 android:theme="?attr/actionBarTheme"
                 app:title="Forums"
-                app:titleTextColor="@color/white" />
+                app:titleMarginStart="145dp"
+                app:titleTextAppearance="@style/TextAppearance.AppCompat.Medium"
+                app:titleTextColor="@color/DarkText" />
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/ForumsForums"
@@ -152,7 +164,6 @@
                 android:background="@color/DarkInner"
                 android:entries="@array/ForumsThreadsArray"
                 android:scrollbars="none" />
-
         </RelativeLayout>
     </ScrollView>
 </FrameLayout>

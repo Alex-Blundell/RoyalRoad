@@ -8,6 +8,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.ColorStateList;
+import android.graphics.Color;
+import android.graphics.drawable.Drawable;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.util.Log;
@@ -50,9 +52,11 @@ public class BookAdapter extends RecyclerView.Adapter<BookAdapter.bookviewholder
     }
 
     @Override
-    public void onBindViewHolder(@NonNull bookviewholder holder, @SuppressLint("RecyclerView") int Position) {
-        SharedPreferences Pref = holder.itemView.getContext().getSharedPreferences("Settings", Context.MODE_PRIVATE);
+    public void onBindViewHolder(@NonNull bookviewholder holder, @SuppressLint("RecyclerView") int Position)
+    {
+        ArrayList<Book.Details> AllDetails = new ArrayList<>();
 
+        SharedPreferences Pref = holder.itemView.getContext().getSharedPreferences("Settings", Context.MODE_PRIVATE);
         boolean IsDarkMode = Pref.getBoolean("AppTheme", false);
 
         if(IsDarkMode)
@@ -60,24 +64,6 @@ public class BookAdapter extends RecyclerView.Adapter<BookAdapter.bookviewholder
             holder.Title.setTextColor(holder.itemView.getResources().getColor(R.color.DarkText));
             holder.Author.setTextColor(holder.itemView.getResources().getColor(R.color.DarkText));
             holder.Description.setTextColor(holder.itemView.getResources().getColor(R.color.DarkText));
-            holder.CreatedDate.setTextColor(holder.itemView.getResources().getColor(R.color.DarkText));
-            holder.UpdatedDate.setTextColor(holder.itemView.getResources().getColor(R.color.DarkText));
-            holder.Warnings.setTextColor(holder.itemView.getResources().getColor(R.color.DarkText));
-
-            holder.Language.setTextColor(holder.itemView.getResources().getColor(R.color.DarkText));
-            holder.PageCount.setTextColor(holder.itemView.getResources().getColor(R.color.DarkText));
-            holder.ChapterCount.setTextColor(holder.itemView.getResources().getColor(R.color.DarkText));
-            holder.Type.setTextColor(holder.itemView.getResources().getColor(R.color.DarkText));
-
-            holder.FollowCount.setTextColor(holder.itemView.getResources().getColor(R.color.DarkText));
-            holder.FavouriteCount.setTextColor(holder.itemView.getResources().getColor(R.color.DarkText));
-
-            holder.TagOne.setTextColor(holder.itemView.getResources().getColor(R.color.DarkText));
-            holder.TagTwo.setTextColor(holder.itemView.getResources().getColor(R.color.DarkText));
-            holder.TagThree.setTextColor(holder.itemView.getResources().getColor(R.color.DarkText));
-            holder.TagFour.setTextColor(holder.itemView.getResources().getColor(R.color.DarkText));
-
-            holder.Complete.setTextColor(holder.itemView.getResources().getColor(R.color.DarkText));
 
             holder.BookDivider.setBackgroundColor(holder.itemView.getResources().getColor(R.color.DarkBorder));
         }
@@ -86,24 +72,6 @@ public class BookAdapter extends RecyclerView.Adapter<BookAdapter.bookviewholder
             holder.Title.setTextColor(holder.itemView.getResources().getColor(R.color.black));
             holder.Author.setTextColor(holder.itemView.getResources().getColor(R.color.black));
             holder.Description.setTextColor(holder.itemView.getResources().getColor(R.color.black));
-            holder.CreatedDate.setTextColor(holder.itemView.getResources().getColor(R.color.black));
-            holder.UpdatedDate.setTextColor(holder.itemView.getResources().getColor(R.color.black));
-            holder.Warnings.setTextColor(holder.itemView.getResources().getColor(R.color.black));
-
-            holder.Language.setTextColor(holder.itemView.getResources().getColor(R.color.black));
-            holder.PageCount.setTextColor(holder.itemView.getResources().getColor(R.color.black));
-            holder.ChapterCount.setTextColor(holder.itemView.getResources().getColor(R.color.black));
-            holder.Type.setTextColor(holder.itemView.getResources().getColor(R.color.black));
-
-            holder.FollowCount.setTextColor(holder.itemView.getResources().getColor(R.color.black));
-            holder.FavouriteCount.setTextColor(holder.itemView.getResources().getColor(R.color.black));
-
-            holder.TagOne.setTextColor(holder.itemView.getResources().getColor(R.color.black));
-            holder.TagTwo.setTextColor(holder.itemView.getResources().getColor(R.color.black));
-            holder.TagThree.setTextColor(holder.itemView.getResources().getColor(R.color.black));
-            holder.TagFour.setTextColor(holder.itemView.getResources().getColor(R.color.black));
-
-            holder.Complete.setTextColor(holder.itemView.getResources().getColor(R.color.black));
         }
 
         holder.Title.setText(Data.get(Position).GetTitle());
@@ -122,11 +90,7 @@ public class BookAdapter extends RecyclerView.Adapter<BookAdapter.bookviewholder
             holder.Description.setText(Data.get(Position).GetDescription());
         }
 
-        holder.ChapterCount.setText(String.valueOf(Data.get(Position).GetAllChapters().size()));
-        holder.PageCount.setText(String.valueOf(Data.get(Position).GetPageCount()));
-        holder.FollowCount.setText(String.valueOf(Data.get(Position).GetFollowerCount()));
-        holder.FavouriteCount.setText(String.valueOf(Data.get(Position).GetFavouriteCount()));
-
+        // Warnings First.
         if(Data.get(Position).ContentWarnings != null)
         {
             if(Data.get(Position).ContentWarnings.size() > 0)
@@ -139,18 +103,50 @@ public class BookAdapter extends RecyclerView.Adapter<BookAdapter.bookviewholder
                     WarningsText += ThisWarning.name();
                 }
 
-                holder.Warnings.setText(WarningsText);
+                Book.Details WarningsDetail = new Book.Details(WarningsText, holder.itemView.getResources().getColor(R.color.BlueBorder));
+                AllDetails.add(WarningsDetail);
             }
-            else
-            {
-                holder.Warnings.setVisibility(View.GONE);
-            }
-        }
-        else
-        {
-            holder.Warnings.setVisibility(View.GONE);
         }
 
+        // Language Next.
+        Book.Details LanguageDetail = new Book.Details("English", holder.itemView.getResources().getDrawable(R.drawable.earth),
+                                          holder.itemView.getResources().getColor(R.color.BlueBorder), holder.itemView.getResources().getColor(R.color.DarkText));
+        AllDetails.add(LanguageDetail);
+
+        // Type Next.
+        Book.Details TypeDetail = new Book.Details(Data.get(Position).GetType().toString(), holder.itemView.getResources().getColor(R.color.BlueBorder));
+        AllDetails.add(TypeDetail);
+
+        // Genres Next.
+
+
+        // Counts Next.
+        Book.Details ChapterCountDetail = new Book.Details(String.valueOf(Data.get(Position).GetAllChapters().size()), holder.itemView.getResources().getDrawable(R.drawable.chapters),
+                                              holder.itemView.getResources().getColor(R.color.LengthBorder), holder.itemView.getResources().getColor(R.color.DarkText));
+        AllDetails.add(ChapterCountDetail);
+
+        Book.Details PageCountDetail = new Book.Details(String.valueOf(Data.get(Position).GetPageCount()), holder.itemView.getResources().getDrawable(R.drawable.pages),
+                                           holder.itemView.getResources().getColor(R.color.LengthBorder), holder.itemView.getResources().getColor(R.color.DarkText));
+        AllDetails.add(PageCountDetail);
+
+        Book.Details FollowCountDetail = new Book.Details(String.valueOf(Data.get(Position).GetFollowerCount()), holder.itemView.getResources().getDrawable(R.drawable.follow),
+                                             holder.itemView.getResources().getColor(R.color.LengthBorder), holder.itemView.getResources().getColor(R.color.Orange));
+        AllDetails.add(FollowCountDetail);
+
+        Book.Details FavouriteCountDetail = new Book.Details(String.valueOf(Data.get(Position).GetFavouriteCount()), holder.itemView.getResources().getDrawable(R.drawable.favourite),
+                                                holder.itemView.getResources().getColor(R.color.LengthBorder), holder.itemView.getResources().getColor(R.color.Red));
+        AllDetails.add(FavouriteCountDetail);
+
+        // Date Times Next.
+        Book.Details LastUpdateDateTimeDetail = new Book.Details("06/04", holder.itemView.getResources().getDrawable(R.drawable.update),
+                                                    holder.itemView.getResources().getColor(R.color.TimeBorder), holder.itemView.getResources().getColor(R.color.DarkText));
+        AllDetails.add(LastUpdateDateTimeDetail);
+
+        Book.Details CreatedDateTimeDetail = new Book.Details("01/01/01", holder.itemView.getResources().getDrawable(R.drawable.empty_clock),
+                                                 holder.itemView.getResources().getColor(R.color.TimeBorder), holder.itemView.getResources().getColor(R.color.DarkText));
+        AllDetails.add(CreatedDateTimeDetail);
+
+        // Tags Next.
         if(Data.get(Position).TagsList != null)
         {
             // Has At least One tag.
@@ -160,7 +156,8 @@ public class BookAdapter extends RecyclerView.Adapter<BookAdapter.bookviewholder
                 {
                     if(i == 0)
                     {
-                        holder.TagOne.setText(Data.get(Position).TagsList.get(i).toString());
+                        Book.Details TagDetail = new Book.Details(Data.get(Position).TagsList.get(i).toString(), holder.itemView.getResources().getColor(R.color.BlueBorder));
+                        AllDetails.add(TagDetail);
                     }
 
                     // Has Two Tags.
@@ -168,7 +165,8 @@ public class BookAdapter extends RecyclerView.Adapter<BookAdapter.bookviewholder
                     {
                         if(i == 1)
                         {
-                            holder.TagTwo.setText(Data.get(Position).TagsList.get(i).toString());
+                            Book.Details TagDetail = new Book.Details(Data.get(Position).TagsList.get(i).toString(), holder.itemView.getResources().getColor(R.color.BlueBorder));
+                            AllDetails.add(TagDetail);
                         }
 
                         // Has Three Tags.
@@ -176,7 +174,8 @@ public class BookAdapter extends RecyclerView.Adapter<BookAdapter.bookviewholder
                         {
                             if(i == 2)
                             {
-                                holder.TagThree.setText(Data.get(Position).TagsList.get(i).toString());
+                                Book.Details TagDetail = new Book.Details(Data.get(Position).TagsList.get(i).toString(), holder.itemView.getResources().getColor(R.color.BlueBorder));
+                                AllDetails.add(TagDetail);
                             }
 
                             // Has Four Tags.
@@ -184,32 +183,15 @@ public class BookAdapter extends RecyclerView.Adapter<BookAdapter.bookviewholder
                             {
                                 if(i == 1)
                                 {
-                                    holder.TagFour.setText(Data.get(Position).TagsList.get(i).toString());
+                                    Book.Details TagDetail = new Book.Details(Data.get(Position).TagsList.get(i).toString(), holder.itemView.getResources().getColor(R.color.BlueBorder));
+                                    AllDetails.add(TagDetail);
                                 }
                             }
                         }
                     }
                 }
             }
-            else
-            {
-                holder.TagOne.setVisibility(View.GONE);
-                holder.TagTwo.setVisibility(View.GONE);
-                holder.TagThree.setVisibility(View.GONE);
-                holder.TagFour.setVisibility(View.GONE);
-            }
         }
-        else
-        {
-            holder.TagOne.setVisibility(View.GONE);
-            holder.TagTwo.setVisibility(View.GONE);
-            holder.TagThree.setVisibility(View.GONE);
-            holder.TagFour.setVisibility(View.GONE);
-        }
-
-        holder.Type.setText(Data.get(Position).GetType().toString());
-
-        holder.Language.setText("English");
 
         ConnectivityManager connectivityManager = (ConnectivityManager)holder.itemView.getContext().getSystemService(Context.CONNECTIVITY_SERVICE);
 
@@ -267,14 +249,18 @@ public class BookAdapter extends RecyclerView.Adapter<BookAdapter.bookviewholder
 
         holder.OpenBookBTN.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
-            public boolean onLongClick(View v) {
+            public boolean onLongClick(View v)
+            {
                 if(holder.DarkCover.getVisibility() == View.GONE)
                 {
                     holder.DarkCover.setVisibility(View.VISIBLE);
                 }
-                return false;
+                return true;
             }
         });
+
+        DetailAdapter adpater = new DetailAdapter(AllDetails);
+        holder.DetailsRV.setAdapter(adpater);
     }
 
     @Override
@@ -290,25 +276,11 @@ public class BookAdapter extends RecyclerView.Adapter<BookAdapter.bookviewholder
                   DarkCover;
         TextView Title,
                  Author,
-                 Description,
-                 Warnings,
-                 Language,
-                 Type,
-                 PageCount,
-                 ChapterCount,
-                 FollowCount,
-                 FavouriteCount,
-                 CreatedDate,
-                 UpdatedDate,
-                 TagOne,
-                 TagTwo,
-                 TagThree,
-                 TagFour,
-                 Complete;
+                 Description;
 
         Button OpenBookBTN;
         SeekBar BookProgress;
-        GridLayout DetailsGridLayout;
+        RecyclerView DetailsRV;
 
         View BookDivider;
 
@@ -321,32 +293,14 @@ public class BookAdapter extends RecyclerView.Adapter<BookAdapter.bookviewholder
             Author = itemView.findViewById(R.id.Author);
             Description = itemView.findViewById(R.id.Description);
 
-            Warnings = itemView.findViewById(R.id.ContentWarnings);
-            Language = itemView.findViewById(R.id.Language);
-            Type = itemView.findViewById(R.id.BookType);
-
-            PageCount = itemView.findViewById(R.id.PageCount);
-            ChapterCount = itemView.findViewById(R.id.ChapterCount);
-            FollowCount = itemView.findViewById(R.id.FollowerCount);
-            FavouriteCount = itemView.findViewById(R.id.FavouriteCount);
-
-            CreatedDate = itemView.findViewById(R.id.CreatedDate);
-            UpdatedDate = itemView.findViewById(R.id.UpdatedDate);
-
-            TagOne = itemView.findViewById(R.id.Tag1);
-            TagTwo = itemView.findViewById(R.id.Tag2);
-            TagThree = itemView.findViewById(R.id.Tag3);
-            TagFour = itemView.findViewById(R.id.Tag4);
-
-            Complete = itemView.findViewById(R.id.Complete);
-
-            BookProgress = itemView.findViewById(R.id.BookProgress);
-
-            DetailsGridLayout = itemView.findViewById(R.id.DetailsGridLayout);
             OpenBookBTN = itemView.findViewById(R.id.OpenBookBTN);
             DarkCover = itemView.findViewById(R.id.DarkCover);
 
+            BookProgress = itemView.findViewById(R.id.BookProgress);
+
             BookDivider = itemView.findViewById(R.id.Divider);
+
+            DetailsRV = itemView.findViewById(R.id.DetailsRV);
         }
     }
 }

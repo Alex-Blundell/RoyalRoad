@@ -47,6 +47,10 @@ public class ForumAdapter extends RecyclerView.Adapter<ForumAdapter.forumviewhol
             holder.Description.setTextColor(holder.itemView.getResources().getColor(R.color.DarkText));
             holder.PostsCount.setTextColor(holder.itemView.getResources().getColor(R.color.DarkText));
             holder.TopicsCount.setTextColor(holder.itemView.getResources().getColor(R.color.DarkText));
+
+            holder.LastUser.setTextColor(holder.itemView.getResources().getColor(R.color.DarkText));
+            holder.LastUserTitle.setTextColor(holder.itemView.getResources().getColor(R.color.DarkText));
+            holder.LastUserDate.setTextColor(holder.itemView.getResources().getColor(R.color.DarkText));
         }
         else
         {
@@ -54,6 +58,10 @@ public class ForumAdapter extends RecyclerView.Adapter<ForumAdapter.forumviewhol
             holder.Description.setTextColor(holder.itemView.getResources().getColor(R.color.black));
             holder.PostsCount.setTextColor(holder.itemView.getResources().getColor(R.color.black));
             holder.TopicsCount.setTextColor(holder.itemView.getResources().getColor(R.color.black));
+
+            holder.LastUser.setTextColor(holder.itemView.getResources().getColor(R.color.black));
+            holder.LastUserTitle.setTextColor(holder.itemView.getResources().getColor(R.color.black));
+            holder.LastUserDate.setTextColor(holder.itemView.getResources().getColor(R.color.black));
         }
 
         holder.Icon.setImageResource(R.drawable.chatbubble);
@@ -76,11 +84,15 @@ public class ForumAdapter extends RecyclerView.Adapter<ForumAdapter.forumviewhol
 
     public class forumviewholder extends RecyclerView.ViewHolder
     {
-        ImageView Icon;
+        ImageView Icon,
+                  UserIcon;
         TextView Title,
                  Description,
                  PostsCount,
-                 TopicsCount;
+                 TopicsCount,
+                 LastUserTitle,
+                 LastUser,
+                 LastUserDate;
 
         Button OpenForumBTN;
 
@@ -93,6 +105,11 @@ public class ForumAdapter extends RecyclerView.Adapter<ForumAdapter.forumviewhol
             Description = itemView.findViewById(R.id.ForumDescription);
             PostsCount = itemView.findViewById(R.id.ForumPosts);
             TopicsCount = itemView.findViewById(R.id.ForumTopics);
+
+            UserIcon = itemView.findViewById(R.id.LastUserIcon);
+            LastUserTitle = itemView.findViewById(R.id.LastUserTitle);
+            LastUser = itemView.findViewById(R.id.LastUser);
+            LastUserDate = itemView.findViewById(R.id.LastUserDate);
 
             OpenForumBTN = itemView.findViewById(R.id.OpenForumBTN);
         }

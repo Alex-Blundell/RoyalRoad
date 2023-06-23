@@ -37,4 +37,11 @@
     <color name="BookComplete">#FF07C101</color>
 
     <color name="ForumToolbar">#3c86c6</color>
+
+    <color name="BlueBorder">#88496AFF</color>
+    <color name="TimeBorder">#FFE4E3DE</color>
+    <color name="LengthBorder">#FF77887E</color>
+
+    <color name="Red">#FFCC2222</color>
+    <color name="Orange">#FFFF8822</color>
 </resources>

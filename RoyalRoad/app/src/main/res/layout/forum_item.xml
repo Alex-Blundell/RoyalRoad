@@ -5,8 +5,8 @@
 
     <ImageView
         android:id="@+id/ForumIcon"
-        android:layout_width="50dp"
-        android:layout_height="50dp"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
         android:layout_marginTop="10dp"
         android:layout_marginBottom="10dp"
         android:layout_marginLeft="10dp"
@@ -19,7 +19,7 @@
         android:layout_toRightOf="@id/ForumIcon"
         android:layout_toLeftOf="@id/ForumTopics"
         android:layout_marginTop="10dp"
-        android:layout_marginLeft="5dp"
+        android:layout_marginLeft="15dp"
         android:text="Title"
         />
 
@@ -52,7 +52,8 @@
         android:layout_height="wrap_content"
         android:layout_below="@id/ForumTitle"
         android:layout_toRightOf="@id/ForumIcon"
-        android:layout_marginLeft="5dp"
+        android:layout_marginLeft="15dp"
+        android:layout_marginBottom="10dp"
         android:text="Description"
         android:textSize="12dp"
         />
@@ -62,8 +63,6 @@
         android:layout_width="25dp"
         android:layout_height="25dp"
         android:layout_below="@id/ForumDescription"
-        android:layout_marginTop="20dp"
-
         android:layout_marginLeft="20dp"
         />
 
@@ -73,8 +72,8 @@
         android:layout_height="wrap_content"
         android:layout_toRightOf="@id/LastUserIcon"
         android:layout_toLeftOf="@id/LastUser"
+        android:layout_marginTop="3dp"
         android:layout_below="@id/ForumDescription"
-        android:layout_marginTop="20dp"
         android:layout_marginLeft="5dp"
         android:text="Last User Thread Title"
         android:textSize="12sp"
@@ -84,8 +83,8 @@
         android:id="@+id/LastUser"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
         android:layout_marginLeft="5dp"
+        android:layout_marginTop="3dp"
         android:text="Last User"
         android:textSize="12sp"
         android:layout_toLeftOf="@id/LastUserDate"
@@ -97,9 +96,9 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentRight="true"
-        android:layout_marginTop="20dp"
         android:layout_marginLeft="5dp"
         android:layout_marginRight="10dp"
+        android:layout_marginTop="3dp"
         android:textSize="12sp"
         android:text="LastUserDate"
         android:layout_below="@id/ForumDescription"
@@ -120,7 +119,7 @@
         android:layout_width="match_parent"
         android:layout_height="2dp"
         android:layout_below="@id/LastUserIcon"
-        android:layout_marginTop="10dp"
+        android:layout_marginTop="5dp"
         />
 
 </RelativeLayout>
