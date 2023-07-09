@@ -227,7 +227,7 @@ public class ParagraphLineAdapter extends RecyclerView.Adapter<ParagraphLineAdap
 
                     if(Index > 4)
                     {
-                        AlteredParagraph.setSpan(ItalicSpan, Index - DeleteOffset, EndIndex - DeleteOffset, Spannable.SPAN_INCLUSIVE_EXCLUSIVE);
+                        AlteredParagraph.setSpan(ItalicSpan, Index - DeleteOffset + 4, EndIndex - DeleteOffset, Spannable.SPAN_INCLUSIVE_EXCLUSIVE);
                     }
                     else
                     {
@@ -261,7 +261,7 @@ public class ParagraphLineAdapter extends RecyclerView.Adapter<ParagraphLineAdap
 
                     if(Index > 8)
                     {
-                        AlteredParagraph.setSpan(BoldSpan, Index - DeleteOffset, EndIndex - DeleteOffset, Spannable.SPAN_INCLUSIVE_EXCLUSIVE);
+                        AlteredParagraph.setSpan(BoldSpan, Index - DeleteOffset + 7, EndIndex - DeleteOffset, Spannable.SPAN_INCLUSIVE_EXCLUSIVE);
                     }
                     else
                     {

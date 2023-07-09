@@ -456,6 +456,7 @@ public class Book implements Serializable
             String AlteredParagraph = Paragraphs[i];
 
             AlteredParagraph = AlteredParagraph.replace("&nbsp;", "");
+            AlteredParagraph = AlteredParagraph.replace("&amp;", "&");
 
             DeleteCharacters = false;
             StringBuilder NewParagraph = new StringBuilder(AlteredParagraph);
