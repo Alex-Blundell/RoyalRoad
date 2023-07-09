@@ -7,6 +7,8 @@ public class ForumData
     private int PostCount;
     private int TopicsCount;
 
+    public boolean HasSubForums;
+
     public ForumData(String title, String description, int postCount, int topicsCount)
     {
         this.Title = title;

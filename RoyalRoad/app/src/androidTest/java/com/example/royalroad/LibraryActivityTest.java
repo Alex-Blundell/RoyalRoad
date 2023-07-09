@@ -38,7 +38,7 @@ public class LibraryActivityTest {
     @Test
     void TestGetItemFromDB()
     {
-        DBHandler SQLiteDB = new DBHandler(libraryActivity.getApplicationContext());
+        DBHandler SQLiteDB = new DBHandler(libraryActivity);
 
         int Count = SQLiteDB.GetLibraryCount();
 

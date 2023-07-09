@@ -90,13 +90,25 @@ public class HomeActivity extends AppCompatActivity
         vpAdapter.AddFragment(new BaseSettingsFragment());
 
         HomePager.setAdapter(vpAdapter);
+        HomePager.setOffscreenPageLimit(4);
         HomePager.setCurrentItem(0);
 
         HomePager.registerOnPageChangeCallback(new ViewPager2.OnPageChangeCallback()
         {
             @Override
             public void onPageSelected(int position)
-            {HomeTabs.selectTab(HomeTabs.getTabAt(position));
+            {
+                if(HomePager.getCurrentItem() != 3)
+                {
+                    if(vpAdapter.GetFragment(3).getClass().equals(AccountSettingFragment.class))
+                    {
+                        vpAdapter.ReplaceFragment(3, new BaseSettingsFragment());
+                        vpAdapter.notifyItemChanged(3);
+                    }
+
+                }
+
+                HomeTabs.selectTab(HomeTabs.getTabAt(position));
             }
         });
 
@@ -105,6 +117,20 @@ public class HomeActivity extends AppCompatActivity
             @Override
             public void onTabSelected(TabLayout.Tab tab)
             {
+                if(HomePager.getCurrentItem() != 3)
+                {
+                    if(vpAdapter.GetFragment(3).getClass().equals(AccountSettingFragment.class))
+                    {
+                        int ID = HomePager.getCurrentItem();
+
+                        vpAdapter.ReplaceFragment(3, new BaseSettingsFragment());
+                        vpAdapter.notifyItemChanged(3);
+
+                        HomePager.setAdapter(vpAdapter);
+                        HomePager.setCurrentItem(ID);
+                    }
+                }
+
                 HomePager.setCurrentItem(tab.getPosition());
             }
 

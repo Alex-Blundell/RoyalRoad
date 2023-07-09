@@ -176,4 +176,16 @@ public class ReviewAdapter extends RecyclerView.Adapter<ReviewAdapter.ReviewView
             CharacterRating = itemView.findViewById(R.id.CharacterRating);
         }
     }
+
+    @Override
+    public long getItemId(int position)
+    {
+        return position;
+    }
+
+    @Override
+    public int getItemViewType(int position)
+    {
+        return position;
+    }
 }

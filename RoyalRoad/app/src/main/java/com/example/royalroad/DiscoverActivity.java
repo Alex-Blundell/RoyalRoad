@@ -6,6 +6,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
@@ -13,6 +14,8 @@ import android.os.Bundle;
 import android.os.Debug;
 import android.os.SystemClock;
 import android.util.Log;
+import android.view.View;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -57,6 +60,12 @@ public class DiscoverActivity extends AppCompatActivity {
     Book[] PopularThisWeek;
     Book[] BestCompleted;
     Book[] BestOngoing;
+
+    Button MoreLatestUpdates;
+    Button MoreRisingStars;
+    Button MorePopularThisWeek;
+    Button MoreBestCompleted;
+    Button MoreBestOngoing;
 
     @SuppressLint("ResourceAsColor")
     @Override
@@ -167,6 +176,68 @@ public class DiscoverActivity extends AppCompatActivity {
 
         NewsTitle.setTextColor(getColor(R.color.ToolbarItem));
         NewsDescription.setTextColor(getColor(R.color.white));
+
+        MoreLatestUpdates = findViewById(R.id.MoreUpdatesBTN);
+        MoreLatestUpdates.setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View view)
+            {
+                Intent MoreIntent = new Intent(DiscoverActivity.this, DiscoverMoreActivity.class);
+                MoreIntent.putExtra("Type", "Latest Updates");
+                startActivity(MoreIntent);
+            }
+        });
+
+        MoreRisingStars = findViewById(R.id.MoreRisingBTN);
+        MoreRisingStars.setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View view)
+            {
+                Intent MoreIntent = new Intent(DiscoverActivity.this, DiscoverMoreActivity.class);
+                MoreIntent.putExtra("Type", "Rising Stars");
+                startActivity(MoreIntent);
+            }
+        });
+
+        /*
+        MorePopularThisWeek = findViewById(R.id.MoreUpdatesBTN);
+        MorePopularThisWeek.setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View view)
+            {
+                Intent MoreIntent = new Intent(DiscoverActivity.this, DiscoverMoreActivity.class);
+                MoreIntent.putExtra("Type", "Popular This Week");
+                startActivity(MoreIntent);
+            }
+        });
+         */
+
+        MoreBestCompleted = findViewById(R.id.MoreBestCompletedBTN);
+        MoreBestCompleted.setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View view)
+            {
+                Intent MoreIntent = new Intent(DiscoverActivity.this, DiscoverMoreActivity.class);
+                MoreIntent.putExtra("Type", "Best Completed");
+                startActivity(MoreIntent);
+            }
+        });
+
+        MoreBestOngoing = findViewById(R.id.MoreBestOngoingBTN);
+        MoreBestOngoing.setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View view)
+            {
+                Intent MoreIntent = new Intent(DiscoverActivity.this, DiscoverMoreActivity.class);
+                MoreIntent.putExtra("Type", "Best Ongoing");
+                startActivity(MoreIntent);
+            }
+        });
 
         SwitchThemes(IsDarkMode);
 
@@ -283,7 +354,7 @@ public class DiscoverActivity extends AppCompatActivity {
                                 {
                                     try
                                     {
-                                        NewLatestUpdates[j] = new Book().CreateBook(DiscoverActivity.this, ExternalID, false, false, false);
+                                        NewLatestUpdates[j] = new Book().CreateBook(getApplicationContext(), ExternalID, false, false, false);
                                     }
                                     catch (InterruptedException e)
                                     {
@@ -294,7 +365,7 @@ public class DiscoverActivity extends AppCompatActivity {
                                 {
                                     try
                                     {
-                                        NewRisingStars[j] = new Book().CreateBook(DiscoverActivity.this, ExternalID, false, false, false);
+                                        NewRisingStars[j] = new Book().CreateBook(getApplicationContext(), ExternalID, false, false, false);
                                     }
                                     catch (InterruptedException e)
                                     {
@@ -305,7 +376,7 @@ public class DiscoverActivity extends AppCompatActivity {
                                 {
                                     try
                                     {
-                                        NewBestCompleted[j] = new Book().CreateBook(DiscoverActivity.this, ExternalID, false, false, false);
+                                        NewBestCompleted[j] = new Book().CreateBook(getApplicationContext(), ExternalID, false, false, false);
                                     } catch (InterruptedException e)
                                     {
                                         throw new RuntimeException(e);
@@ -315,7 +386,7 @@ public class DiscoverActivity extends AppCompatActivity {
                                 {
                                     try
                                     {
-                                        NewBestOngoing[j] = new Book().CreateBook(DiscoverActivity.this, ExternalID, false, false, false);
+                                        NewBestOngoing[j] = new Book().CreateBook(getApplicationContext(), ExternalID, false, false, false);
                                     }
                                     catch (InterruptedException e)
                                     {

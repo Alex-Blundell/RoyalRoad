@@ -9,6 +9,7 @@ import androidx.viewpager2.widget.ViewPager2;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
@@ -27,6 +28,8 @@ public class ReadActivity extends AppCompatActivity {
     public Button BackBTN;
     public Button ChapterCount;
 
+    private VPAdapter vpAdapter;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -35,6 +38,7 @@ public class ReadActivity extends AppCompatActivity {
         Intent ThisIntent = getIntent();
         ReadBook = (Book)ThisIntent.getExtras().getSerializable("Book");
         boolean HasDownloaded = ThisIntent.getBooleanExtra("HasDownloaded", false);
+        boolean FromNotification = ThisIntent.getBooleanExtra("FromNotification", false);
 
         BackBTN = findViewById(R.id.BackBTN);
         ChapterCount = findViewById(R.id.ChapterCount);
@@ -42,6 +46,15 @@ public class ReadActivity extends AppCompatActivity {
         ToolbarAppeared = true;
 
         BottomToolbar = (Toolbar) findViewById(R.id.BookBottomToolbar);
+
+        if(FromNotification)
+        {
+            DBHandler SQLiteDB = new DBHandler(this);
+
+            ReadBook.InternalID = SQLiteDB.GetBookID(ReadBook.ExternalID);
+
+            SQLiteDB.close();
+        }
 
         if(HasDownloaded)
         {
@@ -53,6 +66,7 @@ public class ReadActivity extends AppCompatActivity {
         }
 
         TopToolbar = (Toolbar) findViewById(R.id.BookTopToolbar);
+        TopToolbar.inflateMenu(R.menu.chaptertoptoolbar);
 
         BottomToolbar.setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener() {
             @Override
@@ -90,7 +104,7 @@ public class ReadActivity extends AppCompatActivity {
         });
 
         BookPager = findViewById(R.id.ReadPager);
-        VPAdapter vpAdapter = new VPAdapter(getSupportFragmentManager(), getLifecycle());
+        vpAdapter = new VPAdapter(getSupportFragmentManager(), getLifecycle());
 
         vpAdapter.AddFragment(new BookHomeFragment());
 
@@ -106,17 +120,23 @@ public class ReadActivity extends AppCompatActivity {
             @Override
             public void onPageSelected(int position)
             {
+                DBHandler SQLiteDB = new DBHandler(ReadActivity.this);
+                SQLiteDB.UpdateLastReadChapter(ReadBook.GetExternalID(), position);
+                SQLiteDB.close();
+
                 if(position == 0)
                 {
                     ChapterCount.setText("Home / " + ReadBook.Chapters.size());
+                    TopToolbar.getMenu().getItem(0).setVisible(false);
                 }
                 else
                 {
-                    DBHandler SQLiteDB = new DBHandler(getApplicationContext());
-                    SQLiteDB.UpdateLastReadChapter(ReadBook.GetExternalID(), position);
-                    SQLiteDB.close();
-
                     ChapterCount.setText(position + " / " + ReadBook.Chapters.size());
+
+                    if(!TopToolbar.getMenu().getItem(0).isVisible())
+                    {
+                        TopToolbar.getMenu().getItem(0).setVisible(true);
+                    }
                 }
             }
         });
@@ -154,11 +174,44 @@ public class ReadActivity extends AppCompatActivity {
         }
     }
 
+    @Override
+    public void onWindowFocusChanged(boolean hasFocus)
+    {
+        super.onWindowFocusChanged(hasFocus);
+
+        if(hasFocus)
+        {
+            if(!ToolbarAppeared)
+            {
+                getWindow().getDecorView().setSystemUiVisibility(HideSystemBars());
+            }
+            else
+            {
+                getWindow().getDecorView().setSystemUiVisibility(0);
+            }
+        }
+        else
+        {
+            Log.println(Log.INFO, "Hi", "Focus Changed");
+        }
+    }
+
+    private int HideSystemBars()
+    {
+        return View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+                | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
+                | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+                | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+                | View.SYSTEM_UI_FLAG_FULLSCREEN
+                | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION;
+    }
+
     public void DownloadStory()
     {
         try
         {
-            Book NewBook = new Book().CreateBook(this, ReadBook.GetExternalID(), true, true, true);
+            Book NewBook = new Book().CreateBook(getApplicationContext(), ReadBook.GetExternalID(), true, true, true);
+            BottomToolbar.getMenu().getItem(0).setVisible(false);
         }
         catch (InterruptedException e)
         {
@@ -189,5 +242,13 @@ public class ReadActivity extends AppCompatActivity {
     public void ShareBook()
     {
 
+    }
+
+    public void HideToolbars()
+    {
+        ChapterFragment CurrentChapter = (ChapterFragment)vpAdapter.GetFragment(BookPager.getCurrentItem());
+        CurrentChapter.ShowHideToolbars(ToolbarAppeared);
+
+        getWindow().setLocalFocus(true, true);
     }
 }

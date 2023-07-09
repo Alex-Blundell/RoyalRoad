@@ -1,5 +1,6 @@
 package com.example.royalroad;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.graphics.drawable.Drawable;
@@ -13,6 +14,7 @@ import android.widget.SeekBar;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.fragment.app.FragmentActivity;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
@@ -20,10 +22,12 @@ import java.util.ArrayList;
 public class ForumAdapter extends RecyclerView.Adapter<ForumAdapter.forumviewholder>
 {
     ArrayList<ForumData> Forums = new ArrayList<>();
+    Activity cm;
 
-    public ForumAdapter(ArrayList<ForumData> SelectedForums)
+    public ForumAdapter(Activity c, ArrayList<ForumData> SelectedForums)
     {
         this.Forums = SelectedForums;
+        this.cm = c;
     }
 
     @NonNull
@@ -74,6 +78,32 @@ public class ForumAdapter extends RecyclerView.Adapter<ForumAdapter.forumviewhol
         {
             holder.Description.setVisibility(View.GONE);
         }
+
+        holder.OpenForumBTN.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view)
+            {
+                // Check if this works.
+                ForumsActivity ActiveActivity = (ForumsActivity) cm;
+
+                if(Forums.get(position).GetTitle().equals("Art"))
+                {
+                    ActiveActivity.ReplaceFragment(new ForumFragment(true, "Art"));
+                }
+                else if(Forums.get(position).GetTitle().equals("Reviewing: Tips & Discussion"))
+                {
+                    ActiveActivity.ReplaceFragment(new ForumFragment(true, "Reviewing"));
+                }
+                else if(Forums.get(position).GetTitle().equals("Marketing"))
+                {
+                    ActiveActivity.ReplaceFragment(new ForumFragment(true, "Marketing"));
+                }
+                else
+                {
+                    ActiveActivity.ReplaceFragment(new ForumFragment(false, ""));
+                }
+            }
+        });
     }
 
     @Override
@@ -115,4 +145,15 @@ public class ForumAdapter extends RecyclerView.Adapter<ForumAdapter.forumviewhol
         }
     }
 
+    @Override
+    public long getItemId(int position)
+    {
+        return position;
+    }
+
+    @Override
+    public int getItemViewType(int position)
+    {
+        return position;
+    }
 }

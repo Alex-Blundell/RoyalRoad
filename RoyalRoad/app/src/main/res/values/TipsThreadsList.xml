@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<resources>
-    <string-array name="TipsThreadsList">
-        <item>Guides by the community</item>
-        <item>Reviewing: Tips and Discussions</item>
-        <item>Writing: Tips and Discussions</item>
-        <item>Marketing</item>
-    </string-array>
-</resources>

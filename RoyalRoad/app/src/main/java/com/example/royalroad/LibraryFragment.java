@@ -34,19 +34,36 @@ public class LibraryFragment extends Fragment
     private BookAdapter bookAdapter;
     private boolean IsDarkMode;
 
+    boolean DeleteMode;
+
+    int ContinueIndex = 0;
+
     public LibraryFragment(LibraryType thisType)
     {
         this.Type = thisType;
     }
+
+    public LibraryFragment()
+    {
+
+    }
+
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
+    public void onCreate(@Nullable Bundle savedInstanceState)
+    {
+        setRetainInstance(true);
+        super.onCreate(savedInstanceState);
+    }
+
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
+    {
         return inflater.inflate(R.layout.fragment_library, container, false);
     }
 
     @Override
-    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState)
+    {
         super.onViewCreated(view, savedInstanceState);
 
         libraryActivity = (LibraryActivity)getActivity();
@@ -56,12 +73,8 @@ public class LibraryFragment extends Fragment
 
         InitializeLibrary();
         SwitchTheme(IsDarkMode);
-    }
 
-    @Override
-    public void onResume() {
-        super.onResume();
-        InitializeLibrary();
+        DeleteMode = false;
     }
 
     public void InitializeLibrary()
@@ -139,6 +152,23 @@ public class LibraryFragment extends Fragment
 
         bookAdapter = new BookAdapter(BookList);
         LibraryRecyclerview.setAdapter(bookAdapter);
+
+        if(ContinueIndex != 0)
+        {
+            LibraryRecyclerview.getLayoutManager().scrollToPosition(ContinueIndex);
+        }
+    }
+
+    public void OpenDeleteMenu(boolean Delete)
+    {
+        if(Delete)
+        {
+
+        }
+        else
+        {
+
+        }
     }
 
     @SuppressLint("ResourceAsColor")
@@ -150,7 +180,7 @@ public class LibraryFragment extends Fragment
         }
         else
         {
-            LibraryRecyclerview.setBackgroundColor(getResources().getColor(R.color.white));
+            LibraryRecyclerview.setBackgroundColor(getResources().getColor(R.color.LightOuter));
         }
     }
 }

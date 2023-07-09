@@ -86,4 +86,16 @@ public class DetailAdapter extends RecyclerView.Adapter<DetailAdapter.DetailView
             DetailBTN = itemView.findViewById(R.id.GridBTN);
         }
     }
+
+    @Override
+    public long getItemId(int position)
+    {
+        return position;
+    }
+
+    @Override
+    public int getItemViewType(int position)
+    {
+        return position;
+    }
 }

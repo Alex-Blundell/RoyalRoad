@@ -1,14 +1,273 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context=".ProfileFragment">
 
-    <!-- TODO: Update blank fragment layout -->
-    <TextView
+    <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:text="@string/hello_blank_fragment" />
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
+        android:layout_above="@id/ProfileTabs">
 
-</FrameLayout>
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <ImageView
+                android:id="@+id/BlurryBackground"
+                android:layout_width="match_parent"
+                android:layout_height="140dp" />
+
+            <ImageView
+                android:id="@+id/ProfileIcon"
+                android:layout_width="100dp"
+                android:layout_height="100dp"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="30dp" />
+
+            <ImageButton
+                android:id="@+id/ReportBTN"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:layout_alignParentRight="true"
+                android:layout_marginTop="10dp"
+                android:layout_marginRight="10dp"
+                android:backgroundTint="#D43F3A"
+                android:scaleType="centerCrop"
+                android:src="@drawable/report"
+                app:tint="#FFFFFF" />
+
+            <ImageButton
+                android:id="@+id/SendPMBTN"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:layout_marginTop="10dp"
+                android:layout_marginRight="10dp"
+                android:layout_toLeftOf="@id/ReportBTN"
+                android:backgroundTint="@color/ButtonInner"
+                android:scaleType="centerCrop"
+                android:src="@drawable/forum_icon"
+                app:tint="#FFFFFF" />
+
+            <Button
+                android:id="@+id/BlockBTN"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="10dp"
+                android:layout_marginTop="10dp"
+                android:backgroundTint="#9A2830"
+                android:drawableLeft="@drawable/block_profile"
+                android:drawablePadding="0dp"
+                android:drawableTint="#FFFFFF"
+                android:paddingLeft="5dp"
+                android:paddingRight="5dp"
+                android:text="Block"
+                android:textAllCaps="false"
+                app:iconPadding="0dp" />
+
+            <com.google.android.material.divider.MaterialDivider
+                android:id="@+id/TopDivider"
+                android:layout_width="match_parent"
+                android:layout_height="2dp"
+                android:layout_below="@id/BlurryBackground" />
+
+            <TextView
+                android:id="@+id/ProfileName"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/BlurryBackground"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="12.5dp"
+                android:layout_marginBottom="10dp"
+                android:text="Name"
+                android:textAlignment="center"
+                android:textSize="18sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/FollowsNumTXT"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/ProfileName"
+                android:layout_marginLeft="10dp"
+                android:layout_marginTop="5dp"
+                android:text="Num" />
+
+            <TextView
+                android:id="@+id/FollowsTXT"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/FollowsNumTXT"
+                android:layout_marginLeft="10dp"
+                android:text="Follows" />
+
+            <TextView
+                android:id="@+id/FavouritesNumTXT"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/ProfileName"
+                android:layout_marginLeft="75dp"
+                android:layout_marginTop="5dp"
+                android:layout_marginRight="50dp"
+                android:layout_toRightOf="@id/FollowsNumTXT"
+                android:text="Num" />
+
+            <TextView
+                android:id="@+id/FavouritesTXT"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/FavouritesNumTXT"
+                android:layout_alignLeft="@id/FavouritesNumTXT"
+                android:layout_marginBottom="10dp"
+                android:text="Favourites" />
+
+            <TextView
+                android:id="@+id/FictionsNumTXT"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/ProfileName"
+                android:layout_alignLeft="@id/FictionsTXT"
+                android:layout_alignParentRight="true"
+                android:layout_marginTop="5dp"
+                android:layout_marginRight="10dp"
+                android:text="Num" />
+
+            <TextView
+                android:id="@+id/FictionsTXT"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/FictionsNumTXT"
+                android:layout_alignParentRight="true"
+                android:layout_marginRight="10dp"
+                android:text="Fictions" />
+
+            <TextView
+                android:id="@+id/ReviewsNumTXT"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/ProfileName"
+                android:layout_marginTop="5dp"
+                android:layout_marginRight="75dp"
+                android:layout_toLeftOf="@id/FictionsNumTXT"
+                android:text="Num" />
+
+            <TextView
+                android:id="@+id/ReviewsTXT"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/ReviewsNumTXT"
+                android:layout_alignLeft="@id/ReviewsNumTXT"
+                android:text="Reviews" />
+
+            <ImageView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_alignTop="@id/TopDivider"
+                android:layout_alignBottom="@id/BottomDivider" />
+
+            <com.google.android.material.divider.MaterialDivider
+                android:id="@+id/BottomDivider"
+                android:layout_width="match_parent"
+                android:layout_height="2dp"
+                android:layout_below="@id/FavouritesTXT" />
+
+            <TextView
+                android:id="@+id/JoinedDate"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/BottomDivider"
+                android:layout_marginLeft="25dp"
+                android:layout_marginTop="15dp"
+                android:layout_marginRight="25dp"
+                android:text="Joined:" />
+
+            <TextView
+                android:id="@+id/LastActiveDate"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/JoinedDate"
+                android:layout_marginLeft="25dp"
+                android:layout_marginTop="10dp"
+                android:layout_marginRight="25dp"
+                android:text="Last Active:" />
+
+            <TextView
+                android:id="@+id/GenderTXT"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/LastActiveDate"
+                android:layout_marginLeft="25dp"
+                android:layout_marginTop="10dp"
+                android:layout_marginRight="25dp"
+                android:text="Gender:" />
+
+            <TextView
+                android:id="@+id/LocationTXT"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/GenderTXT"
+                android:layout_marginLeft="25dp"
+                android:layout_marginTop="10dp"
+                android:layout_marginRight="25dp"
+                android:text="Location:" />
+
+            <TextView
+                android:id="@+id/WebsiteTXT"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/LocationTXT"
+                android:layout_marginLeft="25dp"
+                android:layout_marginTop="10dp"
+                android:layout_marginRight="25dp"
+                android:text="Website:" />
+
+            <TextView
+                android:id="@+id/BioTXT"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/WebsiteTXT"
+                android:layout_marginLeft="25dp"
+                android:layout_marginTop="10dp"
+                android:layout_marginRight="25dp"
+                android:text="Bio:" />
+        </RelativeLayout>
+    </ScrollView>
+
+    <com.google.android.material.tabs.TabLayout
+        android:id="@+id/ProfileTabs"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        app:tabMode="fixed">
+
+        <com.google.android.material.tabs.TabItem
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:icon="@drawable/profile" />
+
+        <com.google.android.material.tabs.TabItem
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:icon="@drawable/book" />
+
+        <com.google.android.material.tabs.TabItem
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:icon="@drawable/favourite" />
+
+        <com.google.android.material.tabs.TabItem
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:icon="@drawable/follow" />
+
+        <com.google.android.material.tabs.TabItem
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:icon="@drawable/forum_icon" />
+    </com.google.android.material.tabs.TabLayout>
+
+</RelativeLayout>

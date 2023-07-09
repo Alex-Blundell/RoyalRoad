@@ -14,6 +14,7 @@ import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatDelegate;
 import androidx.core.content.res.ResourcesCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
@@ -45,7 +46,9 @@ import org.w3c.dom.Text;
 
 import java.util.ArrayList;
 
-public class BaseSettingsFragment extends Fragment {
+public class BaseSettingsFragment extends Fragment
+{
+    Button NotificationBTN;
 
     Spinner AppThemeDropdown;
     Spinner ReadingThemeDropdown;
@@ -61,7 +64,6 @@ public class BaseSettingsFragment extends Fragment {
     private Boolean IsDarkMode;
     private int FontSize;
     private int AppFontSize;
-
 
     ImageView NextBTN;
     ImageView NextNotificationsBTN;
@@ -114,6 +116,7 @@ public class BaseSettingsFragment extends Fragment {
 
         IsDarkMode = Pref.getBoolean("AppTheme", false);
 
+        NotificationBTN = view.findViewById(R.id.NotificationBTN);
         AccountInfoBTN = (Button) view.findViewById(R.id.AccountInfoBTN);
 
         AppThemeDropdown = (Spinner) view.findViewById(R.id.AppThemeDropdown);
@@ -317,14 +320,20 @@ public class BaseSettingsFragment extends Fragment {
             }
         });
 
-        AccountInfoBTN.setOnClickListener(new View.OnClickListener() {
+        AccountInfoBTN.setOnClickListener(new View.OnClickListener()
+        {
             @Override
-            public void onClick(View view) {
-                FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
-                FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+            public void onClick(View view)
+            {
+                HomeActivity CurrentHome = (HomeActivity) getActivity();
 
-                fragmentTransaction.replace(R.id.FragmentLayout, new AccountSettingFragment());
-                fragmentTransaction.commit();
+                int ID = CurrentHome.HomePager.getCurrentItem();
+
+                CurrentHome.vpAdapter.ReplaceFragment(ID, new AccountSettingFragment());
+                CurrentHome.vpAdapter.notifyItemChanged(ID);
+
+                CurrentHome.HomePager.setAdapter(CurrentHome.vpAdapter);
+                CurrentHome.HomePager.setCurrentItem(ID);
             }
         });
 
@@ -371,14 +380,29 @@ public class BaseSettingsFragment extends Fragment {
             }
         });
 
+        NotificationBTN.setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View view)
+            {
+                Intent intent = new Intent();
+                intent.setAction("android.settings.APP_NOTIFICATION_SETTINGS");
+                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 
+                startActivity(intent);
+            }
+        });
     }
 
     void SwitchTheme(@NonNull Boolean DarkMode)
     {
         if(DarkMode)
-
         {
+            if(AppCompatDelegate.getDefaultNightMode() != AppCompatDelegate.MODE_NIGHT_YES)
+            {
+                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
+            }
+
             AppThemeDropdown.setSelection(1);
 
             getActivity().getWindow().getDecorView().setBackgroundColor(getResources().getColor(R.color.DarkInner));
@@ -399,6 +423,11 @@ public class BaseSettingsFragment extends Fragment {
         }
         else
         {
+            if(AppCompatDelegate.getDefaultNightMode() != AppCompatDelegate.MODE_NIGHT_NO)
+            {
+                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
+            }
+
             AppThemeDropdown.setSelection(0);
             getActivity().getWindow().getDecorView().setBackgroundColor(getResources().getColor(R.color.white));
 

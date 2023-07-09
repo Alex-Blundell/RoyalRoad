@@ -35,22 +35,6 @@
         app:strokeColor="@color/ButtonBorder"
         app:strokeWidth="4dp" />
 
-    <Button
-        android:id="@+id/ForumsBTN"
-        android:layout_width="190dp"
-        android:layout_height="100dp"
-        android:layout_below="@id/DiscoverBTN"
-        android:layout_alignParentRight="true"
-        android:layout_marginTop="10dp"
-        android:layout_marginRight="10dp"
-        android:backgroundTint="@color/ButtonInner"
-        android:text="Forums"
-        android:textColor="@color/DarkText"
-        app:icon="@drawable/forum_icon"
-        app:iconSize="40dp"
-        app:strokeColor="@color/ButtonBorder"
-        app:strokeWidth="4dp" />
-
     <TextView
         android:id="@+id/LastReadTXT"
         android:text="Last Read"
@@ -80,22 +64,44 @@
 
     <Button
         android:id="@+id/LibraryBTN"
-        android:layout_width="190dp"
+        android:layout_width="wrap_content"
         android:layout_height="100dp"
         android:layout_below="@id/DiscoverBTN"
-        android:layout_marginLeft="10dp"
         android:layout_marginTop="10dp"
+        android:layout_marginLeft="10dp"
+        android:layout_alignParentLeft="true"
         android:backgroundTint="@color/ButtonInner"
         android:text="Library"
         android:textColor="@color/DarkText"
         app:icon="@drawable/book"
         app:iconSize="40dp"
         app:strokeColor="@color/ButtonBorder"
-        app:strokeWidth="4dp" />
+        app:strokeWidth="4dp"
+        android:layout_toLeftOf="@id/ForumsBTN"
+        />
+
+    <Button
+        android:id="@+id/ForumsBTN"
+        android:layout_width="wrap_content"
+        android:layout_height="100dp"
+        android:layout_below="@+id/DiscoverBTN"
+        android:layout_marginLeft="10dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginRight="10dp"
+        android:backgroundTint="@color/ButtonInner"
+        android:text="Forums"
+        android:textColor="@color/DarkText"
+        app:icon="@drawable/forum_icon"
+        app:iconSize="40dp"
+        app:strokeColor="@color/ButtonBorder"
+        app:strokeWidth="4dp"
+        android:layout_alignParentRight="true"
+        />
+
 
     <Button
         android:id="@+id/FriendsBTN"
-        android:layout_width="190dp"
+        android:layout_width="match_parent"
         android:layout_height="100dp"
         android:layout_below="@id/ForumsBTN"
         android:layout_marginLeft="10dp"
@@ -106,19 +112,21 @@
         app:icon="@drawable/friends_icon"
         app:iconSize="40dp"
         app:strokeColor="@color/ButtonBorder"
-        app:strokeWidth="4dp" />
+        app:strokeWidth="4dp"
+        android:layout_alignParentLeft="true"
+        android:layout_toLeftOf="@id/SettingsBTN"
+        />
+
 
     <Button
         android:id="@+id/SettingsBTN"
-        android:layout_width="190dp"
+        android:layout_width="match_parent"
         android:layout_height="100dp"
         android:layout_below="@id/LibraryBTN"
         android:layout_alignParentRight="true"
-        android:layout_marginStart="10dp"
         android:layout_marginTop="10dp"
-        android:layout_marginEnd="10dp"
         android:layout_marginRight="10dp"
-        android:layout_marginBottom="10dp"
+        android:layout_marginLeft="10dp"
         android:backgroundTint="@color/ButtonInner"
         android:text="UNKNOWN BUTTON"
         android:textColor="@color/DarkText"
@@ -215,8 +223,7 @@
         android:translationZ="180dp"
         android:visibility="gone"
         app:shapeAppearanceOverlay="@style/ShapeAppearanceOverlay.Material3.Button"
-        app:srcCompat="@drawable/close_icon"
-        />
+        app:srcCompat="@drawable/close_icon" />
 
     <com.google.android.material.imageview.ShapeableImageView
         android:id="@+id/SelectBTN"
@@ -228,6 +235,8 @@
         android:layout_marginRight="100dp"
         android:adjustViewBounds="false"
         android:background="@color/ButtonInner"
+        android:cropToPadding="true"
+        android:scaleType="centerCrop"
         android:translationZ="180dp"
         android:visibility="gone"
         app:shapeAppearanceOverlay="@style/ShapeAppearanceOverlay.Material3.Button"

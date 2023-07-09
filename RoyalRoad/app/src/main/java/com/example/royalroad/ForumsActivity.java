@@ -40,4 +40,30 @@ public class ForumsActivity extends AppCompatActivity {
         fragmentTransaction.replace(R.id.ForumsFragmentFrame, fragment);
         fragmentTransaction.commit();
     }
+
+    public void BackBTN(int ID)
+    {
+        switch(ID)
+        {
+            case 0:
+                // Return to Home Activity.
+                finish();
+                break;
+
+            case 1:
+                // Return to Forum Home Fragment.
+                ReplaceFragment(new ForumsHomeFragment());
+                break;
+
+            case 2:
+                // Return from Thread;
+                ReplaceFragment(new ForumFragment(false, ""));
+                break;
+
+            case 3:
+                // Return from SubForum.
+                ReplaceFragment(new ForumFragment(false, ""));
+                break;
+        }
+    }
 }

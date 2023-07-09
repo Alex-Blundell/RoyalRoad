@@ -11,6 +11,7 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatDelegate;
 import androidx.fragment.app.Fragment;
 
 import android.os.Handler;
@@ -68,7 +69,6 @@ public class LoginFragment extends Fragment {
 
     Button LoginBTN;
     Button RegisterBTN;
-    Button SkipLoginBTN;
 
     TextView ErrorText;
 
@@ -88,14 +88,8 @@ public class LoginFragment extends Fragment {
         SharedPreferences.Editor PrefEditor = Pref.edit();
 
         boolean LoggedIn = Pref.getBoolean("IsLoggedIn", false);
-        boolean HasSkipped = false;
 
-        if(!LoggedIn)
-        {
-            HasSkipped = Pref.getBoolean("HasSkipped", false);
-        }
-
-        if(LoggedIn || HasSkipped)
+        if(LoggedIn)
         {
             Intent ThisIntent = new Intent(getActivity(), HomeActivity.class);
 
@@ -103,6 +97,10 @@ public class LoginFragment extends Fragment {
 
             getActivity().finish();
             startActivity(ThisIntent);
+        }
+        else
+        {
+            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
         }
 
         db = FirebaseFirestore.getInstance();
@@ -112,7 +110,6 @@ public class LoginFragment extends Fragment {
 
         LoginBTN = view.findViewById(R.id.LoginBTN);
         RegisterBTN = view.findViewById(R.id.RegisterBTN);
-        SkipLoginBTN = view.findViewById(R.id.SkipLoginBTN);
 
         ErrorText = view.findViewById(R.id.ErrorTextLogin);
         ErrorText.setVisibility(View.GONE);
@@ -131,28 +128,9 @@ public class LoginFragment extends Fragment {
             }
         });
 
-        SkipLoginBTN.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                PrefEditor.putBoolean("HasSkipped", true);
-                PrefEditor.apply();
-
-                Intent SkipIntent = new Intent(getActivity(), HomeActivity.class);
-                startActivity(SkipIntent);
-                getActivity().finish();
-            }
-        });
-
         boolean IsDarkMode = Pref.getBoolean("AppTheme", false);
         SwitchTheme(IsDarkMode);
     }
-
-    // For Richa:
-    // Possible Usernames and Password combinations are:
-    // Username | Password
-    // TestOne  | TestOne
-    // Hello    | Hello
-    // Admin    | Admin
 
     public void ValidateUsername()
     {
@@ -294,8 +272,6 @@ public class LoginFragment extends Fragment {
 
             UsernameTXT.setTextColor(getResources().getColor(R.color.black));
             PasswordTXT.setTextColor(getResources().getColor(R.color.black));
-
-            Background.setStrokeColor(ColorStateList.valueOf(getResources().getColor(R.color.DarkBorder)));
         }
     }
 }

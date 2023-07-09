@@ -20,6 +20,7 @@
     <color name="DarkOuter">#181818</color>
     <color name="DarkBorder">#2B2B2B</color>
     <color name="DarkText">#CCFFFFFF</color>
+    <color name="DarkBackground">#E0000000</color>
 
     <!--Light Theme-->
 

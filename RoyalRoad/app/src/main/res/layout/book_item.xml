@@ -9,7 +9,7 @@
         android:layout_width="75dp"
         android:layout_height="110dp"
         android:layout_marginLeft="5dp"
-        android:layout_marginTop="5dp"
+        android:layout_marginTop="12.5dp"
         android:src="@drawable/default_cover" />
 
     <SeekBar
@@ -22,7 +22,7 @@
         android:max="50"
         android:progress="25"
         android:progressTint="#FF9900"
-        android:scaleY="2.5"
+        android:scaleY="2"
         android:thumb="@color/ButtonInner" />
 
     <TextView
@@ -54,17 +54,18 @@
         android:layout_marginRight="5dp"
         android:layout_toRightOf="@id/Cover"
         android:text="HelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHello"
-        android:textSize="11sp" />
+        android:textSize="11sp"
+        android:translationZ="-90dp" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/DetailsRV"
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@id/Description"
         android:orientation="horizontal"
-        android:layout_marginTop="2.5dp"
-        android:layout_marginLeft="10dp"
-        android:layout_marginRight="10dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginLeft="5dp"
+        android:layout_marginRight="5dp"
         app:layoutManager="com.google.android.flexbox.FlexboxLayoutManager"
         />
 
@@ -73,7 +74,8 @@
         android:layout_width="match_parent"
         android:layout_height="2dp"
         android:layout_marginTop="5dp"
-        android:layout_below="@id/DetailsRV" />
+        android:layout_below="@id/DetailsRV"
+        />
 
     <Button
         android:id="@+id/OpenBookBTN"
@@ -81,15 +83,28 @@
         android:layout_height="match_parent"
         android:layout_alignBottom="@+id/Divider"
         android:layout_alignParentTop="true"
-        android:background="@color/Invis" />
+        android:background="@color/Invis"
+        android:backgroundTint="@color/DarkBackground"
+        />
 
     <ImageView
-        android:id="@+id/DarkCover"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_alignBottom="@id/Divider"
-        android:background="#30000000"
-        android:visibility="gone"
+        android:id="@+id/UpdatedImage"
+        android:layout_width="10dp"
+        android:layout_height="10dp"
+        android:layout_alignParentRight="true"
+        android:layout_marginTop="5dp"
+        android:layout_marginRight="5dp"
+        app:srcCompat="@drawable/updated_circle"
+        app:tint="#CC0000"
         />
+
+    <RadioButton
+        android:id="@+id/DeleteSelectBTN"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:layout_below="@id/UpdatedImage"
+        android:layout_alignParentRight="true"
+        android:layout_marginTop="5dp"
+        android:translationZ="90dp" />
 
 </RelativeLayout>

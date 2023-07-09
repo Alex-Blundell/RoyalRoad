@@ -27,6 +27,7 @@
         app:iconPadding="5dp"
         app:iconSize="17dp"
         app:strokeColor="@color/BlueBorder"
-        app:strokeWidth="1.5dp" />
+        app:strokeWidth="1.5dp"
+        />
 
 </RelativeLayout>

@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".SearchActivity">
+
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/SearchToolbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/ToolbarBlue"
+        />
+
+    <Button
+        android:id="@+id/BackBTN"
+        android:layout_width="150dp"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@id/SearchToolbar"
+        android:layout_alignParentTop="true"
+        android:background="@color/Invis"
+        app:icon="@drawable/back"
+        app:iconSize="30dp"
+        />
+
+    <androidx.appcompat.widget.SearchView
+        android:id="@+id/Searchbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/SearchToolbar"
+        />
+    
+    <com.google.android.material.divider.MaterialDivider
+        android:id="@+id/SearchDividerTop"
+        android:layout_width="match_parent"
+        android:layout_height="2dp"
+        android:layout_below="@id/Searchbar"
+        />
+
+    <RelativeLayout
+        android:id="@+id/ExpandedSearchOptions"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/SearchDividerTop"
+        >
+
+
+    </RelativeLayout>
+    
+    <com.google.android.material.divider.MaterialDivider
+        android:id="@+id/SearchDividerBottom"
+        android:layout_width="match_parent"
+        android:layout_height="2dp"
+        android:layout_below="@id/ExpandedSearchOptions"
+        />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/SearchResultsRV"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:layout_below="@id/SearchDividerBottom"
+        />
+
+    
+
+</RelativeLayout>

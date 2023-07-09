@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    tools:context=".AccountSettingFragment">
+    tools:context=".DiscoverMoreActivity">
 
     <androidx.appcompat.widget.Toolbar
-        android:id="@+id/SettingsToolbar"
+        android:id="@+id/DiscoverMoreToolbar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@color/ToolbarBlue"
@@ -15,13 +15,23 @@
 
     <Button
         android:id="@+id/BackBTN"
-        android:layout_width="150dp"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_alignBottom="@id/DiscoverMoreToolbar"
         android:layout_alignParentTop="true"
-        android:layout_alignBottom="@id/SettingsToolbar"
         android:background="@color/Invis"
+        android:text="Hello"
         app:icon="@drawable/back"
-        app:iconSize="35dp"
+        app:iconPadding="0dp"
+        app:iconSize="30dp"
+        android:textAllCaps="false"
         />
 
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/MoreBookRV"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@id/DiscoverMoreToolbar"
+        android:smoothScrollbar="true"
+        />
 </RelativeLayout>

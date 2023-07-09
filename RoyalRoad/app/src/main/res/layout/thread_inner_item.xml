@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <ImageView
+        android:id="@+id/ProfileIcon"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:layout_marginTop="15dp"
+        android:layout_marginLeft="15dp"
+        android:layout_marginRight="10dp"
+        />
+
+    <TextView
+        android:id="@+id/ThreadName"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="22.5dp"
+        android:layout_marginRight="10dp"
+        android:layout_toLeftOf="@id/PostNum"
+        android:layout_toRightOf="@id/ProfileIcon"
+        android:text="Title"
+        />
+
+    <TextView
+        android:id="@+id/PostNum"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="22.5dp"
+        android:layout_alignParentRight="true"
+        android:layout_marginRight="10dp"
+        android:text="Num"
+        />
+
+    <TextView
+        android:id="@+id/ThreadAuthor"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_toRightOf="@id/ProfileIcon"
+        android:layout_marginRight="10dp"
+        android:layout_below="@id/ThreadName"
+        android:text="Author"
+        />
+
+    <com.google.android.material.divider.MaterialDivider
+        android:id="@+id/ThreadTitleDivider"
+        android:layout_width="match_parent"
+        android:layout_height="2dp"
+        android:layout_below="@id/ProfileIcon"
+        android:layout_marginTop="10dp"
+        android:layout_marginLeft="20dp"
+        android:layout_marginRight="20dp"
+        />
+
+    <TextView
+        android:id="@+id/ThreadBody"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/ThreadTitleDivider"
+        android:layout_marginTop="10dp"
+        android:layout_marginLeft="25dp"
+        android:layout_marginRight="25dp"
+        android:text="Body"
+        />
+
+    <com.google.android.material.divider.MaterialDivider
+        android:id="@+id/BodyDivider"
+        android:layout_width="match_parent"
+        android:layout_height="2dp"
+        android:layout_below="@id/ThreadBody"
+        android:layout_marginTop="10dp"
+        android:layout_marginLeft="20dp"
+        android:layout_marginRight="20dp"
+        />
+
+    <TextView
+        android:id="@+id/ThreadDateTime"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/BodyDivider"
+        android:layout_marginTop="10dp"
+        android:layout_marginLeft="40dp"
+        android:text="DateTime"
+        />
+
+    <com.google.android.material.divider.MaterialDivider
+        android:id="@+id/EndDivider"
+        android:layout_width="match_parent"
+        android:layout_height="2dp"
+        android:layout_below="@id/ThreadDateTime"
+        android:layout_marginTop="10dp"
+        />
+
+</RelativeLayout>

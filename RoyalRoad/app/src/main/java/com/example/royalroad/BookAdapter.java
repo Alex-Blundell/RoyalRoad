@@ -4,6 +4,7 @@ import static androidx.core.content.ContextCompat.getColor;
 import static androidx.core.content.ContextCompat.getSystemService;
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -14,11 +15,13 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.GridLayout;
 import android.widget.ImageView;
+import android.widget.RadioButton;
 import android.widget.RatingBar;
 import android.widget.SeekBar;
 import android.widget.TextView;
@@ -36,6 +39,7 @@ import java.util.List;
 public class BookAdapter extends RecyclerView.Adapter<BookAdapter.bookviewholder>
 {
     List<Book> Data;
+    private boolean CanDestroy = false;
 
     public BookAdapter (List<Book> ThisData)
     {
@@ -45,8 +49,7 @@ public class BookAdapter extends RecyclerView.Adapter<BookAdapter.bookviewholder
     @NonNull
     @Override
     public bookviewholder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.book_item, parent, false);
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.book_item, parent, false);
 
         return new bookviewholder(view);
     }
@@ -73,6 +76,9 @@ public class BookAdapter extends RecyclerView.Adapter<BookAdapter.bookviewholder
             holder.Author.setTextColor(holder.itemView.getResources().getColor(R.color.black));
             holder.Description.setTextColor(holder.itemView.getResources().getColor(R.color.black));
         }
+
+        holder.UpdatedImage.setVisibility(View.GONE);
+        holder.DeleteBTN.setVisibility(View.GONE);
 
         holder.Title.setText(Data.get(Position).GetTitle());
         holder.Author.setText(Data.get(Position).GetAuthor());
@@ -232,32 +238,78 @@ public class BookAdapter extends RecyclerView.Adapter<BookAdapter.bookviewholder
         holder.OpenBookBTN.setOnClickListener(new View.OnClickListener()
         {
             @Override
-            public void onClick(View v) {
-                Intent ThisIntent = new Intent(v.getContext(), ReadActivity.class);
-                ThisIntent.putExtra("Book", Data.get(Position));
-
-                DBHandler SQLiteDB = new DBHandler(holder.itemView.getContext());
-
-                boolean HasDownloaded = SQLiteDB.GetLibraryBook(Data.get(Position).GetExternalID());
-                ThisIntent.putExtra("HasDownloaded", HasDownloaded);
-
-                SQLiteDB.close();
-
-                v.getContext().startActivity(ThisIntent);
-            }
-        });
-
-        holder.OpenBookBTN.setOnLongClickListener(new View.OnLongClickListener() {
-            @Override
-            public boolean onLongClick(View v)
+            public void onClick(View v)
             {
-                if(holder.DarkCover.getVisibility() == View.GONE)
+                if(!CanDestroy)
                 {
-                    holder.DarkCover.setVisibility(View.VISIBLE);
+                    Intent ThisIntent = new Intent(v.getContext(), ReadActivity.class);
+                    ThisIntent.putExtra("Book", Data.get(Position));
+
+                    DBHandler SQLiteDB = new DBHandler((Activity)holder.itemView.getContext());
+
+                    boolean HasDownloaded = SQLiteDB.GetLibraryBook(Data.get(Position).GetExternalID());
+                    ThisIntent.putExtra("HasDownloaded", HasDownloaded);
+
+                    SQLiteDB.close();
+
+                    v.getContext().startActivity(ThisIntent);
                 }
-                return true;
+                else
+                {
+                   if(holder.DeleteBTN.getVisibility() == View.GONE)
+                   {
+                       holder.OpenBookBTN.setBackgroundColor(holder.itemView.getResources().getColor(R.color.DarkBackground));
+                       holder.OpenBookBTN.setBackgroundTintList(ColorStateList.valueOf(holder.itemView.getResources().getColor(R.color.DarkBackground)));
+
+                       holder.DeleteBTN.setVisibility(View.VISIBLE);
+                       holder.DeleteBTN.setChecked(true);
+                   }
+                   else
+                   {
+                       holder.OpenBookBTN.setBackgroundColor(holder.itemView.getResources().getColor(R.color.Invis));
+                       holder.OpenBookBTN.setBackgroundTintList(ColorStateList.valueOf(holder.itemView.getResources().getColor(R.color.Invis)));
+
+                       holder.DeleteBTN.setVisibility(View.GONE);
+                       holder.DeleteBTN.setChecked(false);
+                   }
+                }
             }
         });
+
+        if((holder.itemView.getContext() instanceof  LibraryActivity))
+        {
+            holder.OpenBookBTN.setOnLongClickListener(new View.OnLongClickListener() {
+                @Override
+                public boolean onLongClick(View view)
+                {
+                    if(CanDestroy)
+                    {
+                        holder.OpenBookBTN.setBackgroundColor(holder.itemView.getResources().getColor(R.color.Invis));
+                        holder.OpenBookBTN.setBackgroundTintList(ColorStateList.valueOf(holder.itemView.getResources().getColor(R.color.Invis)));
+
+                        holder.DeleteBTN.setVisibility(View.GONE);
+                        holder.DeleteBTN.setChecked(false);
+
+                        CanDestroy = false;
+
+                    }
+                    else
+                    {
+                        holder.OpenBookBTN.setBackgroundColor(holder.itemView.getResources().getColor(R.color.DarkBackground));
+                        holder.OpenBookBTN.setBackgroundTintList(ColorStateList.valueOf(holder.itemView.getResources().getColor(R.color.DarkBackground)));
+
+                        holder.DeleteBTN.setVisibility(View.VISIBLE);
+                        holder.DeleteBTN.setChecked(true);
+
+                        CanDestroy = true;
+                    }
+
+                    ((LibraryActivity)holder.itemView.getContext()).OpenDeletePrompt(CanDestroy);
+
+                    return true;
+                }
+            });
+        }
 
         DetailAdapter adpater = new DetailAdapter(AllDetails);
         holder.DetailsRV.setAdapter(adpater);
@@ -269,16 +321,16 @@ public class BookAdapter extends RecyclerView.Adapter<BookAdapter.bookviewholder
         return Data.size();
     }
 
-
     public class bookviewholder extends RecyclerView.ViewHolder
     {
         ImageView Cover,
-                  DarkCover;
+                  UpdatedImage;
         TextView Title,
                  Author,
                  Description;
 
         Button OpenBookBTN;
+        RadioButton DeleteBTN;
         SeekBar BookProgress;
         RecyclerView DetailsRV;
 
@@ -289,18 +341,35 @@ public class BookAdapter extends RecyclerView.Adapter<BookAdapter.bookviewholder
             super(itemView);
 
             Cover = itemView.findViewById(R.id.Cover);
+            UpdatedImage = itemView.findViewById(R.id.UpdatedImage);
+
             Title = itemView.findViewById(R.id.Title);
             Author = itemView.findViewById(R.id.Author);
             Description = itemView.findViewById(R.id.Description);
 
             OpenBookBTN = itemView.findViewById(R.id.OpenBookBTN);
-            DarkCover = itemView.findViewById(R.id.DarkCover);
 
             BookProgress = itemView.findViewById(R.id.BookProgress);
 
             BookDivider = itemView.findViewById(R.id.Divider);
 
             DetailsRV = itemView.findViewById(R.id.DetailsRV);
+
+            DeleteBTN = itemView.findViewById(R.id.DeleteSelectBTN);
+
+            CanDestroy = false;
         }
+    }
+
+    @Override
+    public long getItemId(int position)
+    {
+        return position;
+    }
+
+    @Override
+    public int getItemViewType(int position)
+    {
+        return position;
     }
 }

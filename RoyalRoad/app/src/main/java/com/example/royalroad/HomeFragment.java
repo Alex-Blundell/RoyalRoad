@@ -52,6 +52,7 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 
 import java.io.IOException;
+import java.sql.Ref;
 import java.util.ArrayList;
 
 public class HomeFragment extends Fragment
@@ -88,6 +89,11 @@ public class HomeFragment extends Fragment
     public static final String UPDATE_CHANNEL = "updatechannel";
     String GROUP_KEY_STORY_NOTIFICATION = "com.android.example.STORY_NOTIFICATION";
 
+    private boolean IsExpandedSearch = false;
+
+    private SharedPreferences Pref;
+    private SharedPreferences.Editor PrefEditor;
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
     {
@@ -103,7 +109,11 @@ public class HomeFragment extends Fragment
         db = FirebaseFirestore.getInstance();
         SQLiteDB = new DBHandler(getActivity());
 
-        SharedPreferences Pref = getActivity().getSharedPreferences("Settings", MODE_PRIVATE);
+        IsExpandedSearch = false;
+
+        Pref = getActivity().getSharedPreferences("Settings", MODE_PRIVATE);
+        PrefEditor = Pref.edit();
+
         IsDarkMode = Pref.getBoolean("AppTheme", false);
 
         DiscoverBTN = view.findViewById(R.id.DiscoverBTN);
@@ -136,47 +146,78 @@ public class HomeFragment extends Fragment
         Divider = view.findViewById(R.id.DividerOne);
 
         Searchbar = view.findViewById(R.id.HomeSearchbar);
-        Searchbar.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Searchbar.setIconified(false);
-                DarkBackground.setVisibility(View.VISIBLE);
 
-                if(IsDarkMode)
+        Searchbar.setIconifiedByDefault(false);
+        Searchbar.setOnQueryTextListener(new SearchView.OnQueryTextListener()
+        {
+            @Override
+            public boolean onQueryTextSubmit(String s)
+            {
+                Searchbar.setQuery("", false);
+                Searchbar.clearFocus();
+
+                Intent SearchResultsIntent = new Intent(getActivity(), SearchActivity.class);
+
+                SearchResultsIntent.putExtra("IsExpandedSearch", IsExpandedSearch);
+
+                if(IsExpandedSearch)
                 {
-                    Searchbar.setBackgroundColor(getActivity().getColor(R.color.white));
+
+                }
+                else
+                {
+                    SearchResultsIntent.putExtra("Title", s);
                 }
 
-                DarkBackground.setOnClickListener(new View.OnClickListener() {
+                startActivity(SearchResultsIntent);
+                return true;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String s)
+            {
+                return false;
+            }
+        });
+
+        Searchbar.setOnQueryTextFocusChangeListener(new View.OnFocusChangeListener()
+        {
+            @Override
+            public void onFocusChange(View view, boolean b)
+            {
+                if(b)
+                {
+                    Searchbar.setBackgroundColor(getActivity().getColor(R.color.white));
+                    DarkBackground.setVisibility(View.VISIBLE);
+
+                }
+                else
+                {
+                    Searchbar.setBackgroundColor(getActivity().getColor(R.color.DarkOuter));
+                    DarkBackground.setVisibility(View.GONE);
+                    Searchbar.setQuery("", false);
+                }
+
+                DarkBackground.setOnClickListener(new View.OnClickListener()
+                {
                     @Override
                     public void onClick(View view)
                     {
-                        Searchbar.setIconified(true);
+                        Searchbar.clearFocus();
                     }
                 });
             }
         });
 
-        Searchbar.setOnCloseListener(new SearchView.OnCloseListener() {
-            @Override
-            public boolean onClose()
-            {
-                if(IsDarkMode)
-                {
-                    Searchbar.setBackgroundColor(getActivity().getColor(R.color.DarkOuter));
-                }
-
-                DarkBackground.setVisibility(View.GONE);
-                return false;
-            }
-        });
-
         boolean LoggedIn = Pref.getBoolean("IsLoggedIn", false);
 
-        if (LoggedIn) {
+        if (LoggedIn)
+        {
             String AvatarURL = Pref.getString("UserAvatarURL", "");
+            UsernameTXT.setText(Pref.getString("Username", ""));
 
-            if (!AvatarURL.isEmpty()) {
+            if (!AvatarURL.isEmpty())
+            {
                 StorageReference Reference = FirebaseStorage.getInstance().getReferenceFromUrl(AvatarURL);
 
                 Glide.with(this)
@@ -231,6 +272,10 @@ public class HomeFragment extends Fragment
                 }
             });
         }
+        else
+        {
+            UsernameTXT.setText("Not Logged In.");
+        }
 
         SwitchThemes(IsDarkMode);
 
@@ -283,19 +328,20 @@ public class HomeFragment extends Fragment
             }
         });
 
-        SharedPreferences.Editor PrefEditor = Pref.edit();
-
         try
         {
             CheckUpdates();
-        } catch (InterruptedException e)
+        }
+        catch (InterruptedException e)
         {
             throw new RuntimeException(e);
         }
     }
 
-    private void CheckUpdates() throws InterruptedException {
+    private void CheckUpdates() throws InterruptedException
+    {
         ConnectivityManager connectivityManager = (ConnectivityManager)getActivity().getSystemService(Context.CONNECTIVITY_SERVICE);
+        Context ThisContext = getActivity().getApplicationContext();
 
         // Check if Online.
         boolean IsOnline = (connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_MOBILE).getState() == NetworkInfo.State.CONNECTED ||
@@ -321,114 +367,30 @@ public class HomeFragment extends Fragment
 
                                 int DB_Records = SQLiteDB.GetLibraryCount();
 
-                                if(DB_Records == 0)
+                                for(int i = 0; i < ExternalIDs.size(); i++)
                                 {
-                                    Book[] AddBooks = new Book[ExternalIDs.size()];
+                                    boolean ExistsInDB = false;
 
-                                    for(int i = 0; i < ExternalIDs.size(); i++)
+                                    if(DB_Records != 0)
                                     {
-                                        //Book NewBook = new LibraryTasks(HomeActivity.this, ExternalIDs.get(i), false).execute().get();
-                                        AddBooks[i] = new Book();
-                                        try {
-                                            AddBooks[i] = AddBooks[i].CreateBook(getActivity(), ExternalIDs.get(i), true, true, false);
-                                        } catch (InterruptedException e) {
-                                            throw new RuntimeException(e);
-                                        }
+                                        ExistsInDB = SQLiteDB.GetLibraryBook(ExternalIDs.get(i));
                                     }
-                                }
-                                else
-                                {
-                                    for(int i = 0; i < ExternalIDs.size(); i++)
-                                    {
-                                        boolean ExistsInDB = SQLiteDB.GetLibraryBook(ExternalIDs.get(i));
 
+                                    try
+                                    {
                                         if(!ExistsInDB)
                                         {
-                                            Book[] AddBooks = new Book[ExternalIDs.size()];
-                                            AddBooks[i] = new Book();
-                                            try {
-                                                AddBooks[i] = AddBooks[i].CreateBook(getActivity(), ExternalIDs.get(i), true, true, false);
-                                            } catch (InterruptedException e) {
-                                                throw new RuntimeException(e);
-                                            }
+                                            Book NewBook = new Book().CreateBook(ThisContext, ExternalIDs.get(i), true, true, false);
                                         }
+                                    }
+                                    catch (InterruptedException e)
+                                    {
+                                        throw new RuntimeException(e);
                                     }
                                 }
                             }
                         }
                     });
-
-            if(HasUpdated)
-            {
-                int Count = SQLiteDB.GetLibraryCount();
-
-                if(Count > 0)
-                {
-                    long[] ExternalIDs = SQLiteDB.GetExternalIDs();
-
-                    for(int i = 0; i < ExternalIDs.length; i++)
-                    {
-                        String URL = "https://www.royalroad.com/fiction/" + ExternalIDs[i];
-
-                        int finalI = i;
-                        Thread CheckThread = new Thread(new Runnable()
-                        {
-                            @Override
-                            public void run()
-                            {
-                                try
-                                {
-                                    int CurrentChapterCount = SQLiteDB.GetChapterCount(ExternalIDs[finalI]);
-                                    Document UpdateDoc = Jsoup.connect(URL).get();
-
-                                    int ChapterCount = Integer.parseInt(UpdateDoc.getElementsByClass("label label-default pull-right").get(0).text());
-
-                                    if(CurrentChapterCount != ChapterCount)
-                                    {
-                                        String Title = SQLiteDB.GetBookTitle(ExternalIDs[finalI]);
-
-                                        // Something has Changed.
-                                        // New Chapters.
-                                        if(ChapterCount > CurrentChapterCount)
-                                        {
-
-                                        }
-
-                                        // Update in DB.
-
-                                        NotificationManager NotifyManager = getActivity().getApplicationContext().getSystemService(NotificationManager.class);
-
-                                        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O)
-                                        {
-                                            NotificationChannel DownloadChannel = new NotificationChannel(UPDATE_CHANNEL, "Download Channel", NotificationManager.IMPORTANCE_DEFAULT);
-                                            NotifyManager.createNotificationChannel(DownloadChannel);
-                                        }
-
-                                        // Send Notification.
-                                        Notification DownloadedNotification = new NotificationCompat.Builder(getActivity().getApplicationContext(), UPDATE_CHANNEL)
-                                                .setSmallIcon(R.mipmap.icon)
-                                                .setContentTitle(Title)
-                                                .setContentText("Story Updated")
-                                                .setPriority(Notification.PRIORITY_DEFAULT)
-                                                .setCategory(Notification.CATEGORY_MESSAGE)
-                                                .setGroup(GROUP_KEY_STORY_NOTIFICATION)
-                                                .build();
-
-                                        NotifyManager.notify((int) ExternalIDs[finalI], DownloadedNotification);
-                                    }
-                                }
-                                catch (IOException e)
-                                {
-                                    throw new RuntimeException(e);
-                                }
-                            }
-                        });
-
-                        CheckThread.start();
-                        CheckThread.join();
-                    }
-                }
-            }
 
             SQLiteDB.close();
         }
@@ -454,7 +416,7 @@ public class HomeFragment extends Fragment
         }
         else
         {
-            getActivity().getWindow().getDecorView().setBackgroundColor(getActivity().getColor(R.color.white));
+            getActivity().getWindow().getDecorView().setBackgroundColor(getActivity().getColor(R.color.LightOuter));
             UsernameTXT.setTextColor(getActivity().getColor(R.color.black));
 
             MailBTN.setImageTintList(ColorStateList.valueOf(getActivity().getColor(R.color.black)));

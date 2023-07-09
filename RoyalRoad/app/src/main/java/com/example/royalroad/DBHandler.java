@@ -1,25 +1,32 @@
 package com.example.royalroad;
 
+import android.app.Activity;
 import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
+import android.app.PendingIntent;
+import android.app.TaskStackBuilder;
 import android.content.ContentValues;
 import android.content.Context;
+import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.media.Rating;
+import android.os.Looper;
 import android.util.Log;
 import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 import androidx.core.app.NotificationCompat;
 
+import org.checkerframework.checker.units.qual.Current;
 import org.checkerframework.common.returnsreceiver.qual.This;
 import org.jsoup.select.Evaluator;
 
 import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.GregorianCalendar;
 
 public class DBHandler extends SQLiteOpenHelper
@@ -27,7 +34,7 @@ public class DBHandler extends SQLiteOpenHelper
     // Database Variables.
     public static final String DB_NAME = "BookLibrary";
     Context context;
-    public static final int DB_VERSION = 31;
+    public static final int DB_VERSION = 35;
 
     // Tables.
     public static final String LIBRARY_TABLE_NAME = "Library";
@@ -36,6 +43,8 @@ public class DBHandler extends SQLiteOpenHelper
     public static final String WARNINGS_TABLE_NAME = "Warnings";
     public static final String CHAPTERS_TABLE_NAME = "Chapters";
     public static final String CHAPTER_PARAGRAPHS_TABLE_NAME = "Chapters_Paragraphs";
+    public static final String HISTORY_LIBRARY_TABLE_NAME = "History_Library";
+    public static final String DOWNLOADING_LIST_TABLE_NAME = "Downloading_List";
 
     // Library Columns.
     public static final String ID = "ID";
@@ -76,17 +85,23 @@ public class DBHandler extends SQLiteOpenHelper
     public static final String CHAPTER_ID = "ChapterID";
     public static final String CHAPTER_NAME = "ChapterName";
     public static final String CHAPTER_URL = "ChapterURL";
+    public static final String CHAPTER_PROGRESS = "ChapterProgress";
 
     // Chapter_Paragraphs Columns.
     public static final String CHAPTER_PARAGRAPH_ID = "ParagraphID";
     public static final String CHAPTER_PARAGRAPH_CONTENT = "ParagraphContent";
+
+    // History Library Columns.
+    public static final String HAS_DOWNLOADED = "HasDownloaded";
+    public static final String LAST_READ_DATETIME = "LastReadDatetime";
 
     NotificationManager NotifyManager;
 
     public static final String DOWNLOAD_CHANNEL = "downloadchannel";
     String GROUP_KEY_STORY_NOTIFICATION = "com.android.example.STORY_NOTIFICATION";
 
-    public DBHandler(@Nullable Context context) {
+    public DBHandler(@Nullable Context context)
+    {
         super(context, DB_NAME, null, DB_VERSION);
         this.context = context;
     }
@@ -152,6 +167,7 @@ public class DBHandler extends SQLiteOpenHelper
                 CHAPTER_ID + " INTEGER, " +
                 CHAPTER_NAME + " TEXT, " +
                 CHAPTER_URL + " TEXT, " +
+                CHAPTER_PROGRESS + " INTEGER DEFAULT 0, " +
                 "FOREIGN KEY (" + BOOK_ID + ") REFERENCES " + LIBRARY_TABLE_NAME +"("+ ID +"));";
 
         SQLiteDB.execSQL(CreateChapters);
@@ -166,6 +182,29 @@ public class DBHandler extends SQLiteOpenHelper
                 "FOREIGN KEY (" + CHAPTER_ID + ") REFERENCES " + CHAPTERS_TABLE_NAME +"("+ CHAPTER_ID +"));";
 
         SQLiteDB.execSQL(CreateChapterParagraph);
+
+        // History_Library Database.
+        String CreateHistoryLibrary = "CREATE TABLE " + HISTORY_LIBRARY_TABLE_NAME +
+                " (" + ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                EXTERNAL_ID + " INTEGER NOT NULL, " +
+                TYPE + " INTEGER NOT NULL, " +
+                TITLE + " TEXT NOT NULL, " +
+                AUTHOR + " TEXT NOT NULL, " +
+                DESCRIPTION + " TEXT NOT NULL, " +
+                COVER_URL + " TEXT DEFAULT ''," +
+                CHAPTER_COUNT + " INTEGER NOT NULL, " +
+                PAGE_COUNT + " INTEGER NOT NULL, " +
+                FOLLOWERS + " NOT NULL, " +
+                FAVOURITES + " INTEGER NOT NULL, " +
+                RATING + " NUMERIC DEFAULT 0 NOT NULL, " +
+                CREATED_DATE_TIME + " TEXT NOT NULL, " +
+                LAST_READ_DATETIME + " TEXT NOT NULL, " +
+                UPDATED_DATE_TIME + " TEXT, " +
+                HAS_READ + " INTEGER DEFAULT 0, " +
+                HAS_DOWNLOADED + " INTEGER DEFAULT 0, " +
+                LAST_READ_CHAPTER + " INTEGER DEFAULT 0);";
+
+        SQLiteDB.execSQL(CreateHistoryLibrary);
     }
 
     @Override
@@ -197,6 +236,10 @@ public class DBHandler extends SQLiteOpenHelper
         String DropChapterParagraphQuery = "DROP TABLE IF EXISTS " + CHAPTER_PARAGRAPHS_TABLE_NAME;
         SQLiteDB.execSQL(DropChapterParagraphQuery);
 
+        // Drop History_Library Table.
+        String DropHistoryLibraryQuery = "DROP TABLE IF EXISTS " + HISTORY_LIBRARY_TABLE_NAME;
+        SQLiteDB.execSQL(DropHistoryLibraryQuery);
+
         // Recreate Tables.
         onCreate(SQLiteDB);
     }
@@ -204,7 +247,8 @@ public class DBHandler extends SQLiteOpenHelper
     public void AddBook(Book NewBook)
     {
         Log.println(Log.INFO, "Hi", "Adding " + NewBook.Title + " To DB.");
-        NotifyManager = context.getSystemService(NotificationManager.class);
+
+        NotifyManager = this.context.getSystemService(NotificationManager.class);
 
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O)
         {
@@ -317,11 +361,11 @@ public class DBHandler extends SQLiteOpenHelper
                         }
                     }
 
-
                     Result = db.insertOrThrow(GENRE_TABLE_NAME, null, GenresCV);
                     GenresCV.clear();
 
-                    if (Result == -1) {
+                    if (Result == -1)
+                    {
                         Toast.makeText(context, "Failed to Add Book Genres.", Toast.LENGTH_SHORT).show();
                     }
                     db.setTransactionSuccessful();
@@ -396,6 +440,7 @@ public class DBHandler extends SQLiteOpenHelper
                 ChapterCV.put(CHAPTER_ID, ThisChapter.ID);
                 ChapterCV.put(CHAPTER_NAME, ThisChapter.Name);
                 ChapterCV.put(CHAPTER_URL, ThisChapter.URL);
+                ChapterCV.put(CHAPTER_PROGRESS, ThisChapter.ChapterProgress);
 
                 Result = db.insertOrThrow(CHAPTERS_TABLE_NAME, null, ChapterCV);
 
@@ -436,20 +481,45 @@ public class DBHandler extends SQLiteOpenHelper
         finally
         {
             db.endTransaction();
+
+            Log.println(Log.INFO, "Hi", "Added Book " + NewBook.Title + " To DB");
+
+            Intent NotificationIntent = new Intent(context, ReadActivity.class);
+
+            for(Book.Chapter ThisChapter : NewBook.Chapters)
+            {
+                ThisChapter.Content = new ArrayList<>();
+            }
+
+            NotificationIntent.putExtra("Book", NewBook);
+            NotificationIntent.putExtra("HasDownloaded", true);
+            NotificationIntent.putExtra("FromNotification", true);
+
+            TaskStackBuilder NotificationTaskStack = TaskStackBuilder.create(context);
+            NotificationTaskStack.addNextIntentWithParentStack(NotificationIntent);
+
+            PendingIntent ReadPendingIntent = NotificationTaskStack.getPendingIntent(0,
+                    PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
+
+            Notification DownloadedNotification = new NotificationCompat.Builder(context, DOWNLOAD_CHANNEL)
+                    .setSmallIcon(R.mipmap.icon)
+                    .setContentTitle(NewBook.Title)
+                    .setContentText("Story Downloaded")
+                    .setPriority(NotificationCompat.PRIORITY_HIGH)
+                    .setCategory(Notification.CATEGORY_MESSAGE)
+                    .setContentIntent(ReadPendingIntent)
+                    .setWhen(System.currentTimeMillis())
+                    .setGroup(GROUP_KEY_STORY_NOTIFICATION)
+                    .setGroupSummary(true)
+                    .build();
+
+            NotifyManager.notify(NewBook.ExternalID, DownloadedNotification);
         }
+    }
 
-        Log.println(Log.INFO, "Hi", "Added Book " + NewBook.Title + " To DB");
+    public void AddToHistory(Book AddBook)
+    {
 
-        Notification DownloadedNotification = new NotificationCompat.Builder(context, DOWNLOAD_CHANNEL)
-                .setSmallIcon(R.mipmap.icon)
-                .setContentTitle(NewBook.Title)
-                .setContentText("Story Downloaded")
-                .setPriority(Notification.PRIORITY_DEFAULT)
-                .setCategory(Notification.CATEGORY_MESSAGE)
-                .setGroup(GROUP_KEY_STORY_NOTIFICATION)
-                .build();
-
-        NotifyManager.notify(NewBook.ExternalID, DownloadedNotification);
     }
 
     public Book GetBook(int InternalID)
@@ -508,6 +578,7 @@ public class DBHandler extends SQLiteOpenHelper
                         NewChapter.ID = Integer.parseInt(ChapterCursor.getString(1));
                         NewChapter.Name = ChapterCursor.getString(2);
                         NewChapter.URL = ChapterCursor.getString(3);
+                        NewChapter.ChapterProgress = Integer.parseInt(ChapterCursor.getString(4));
 
                         NewBook.Chapters.add(NewChapter);
 
@@ -714,8 +785,9 @@ public class DBHandler extends SQLiteOpenHelper
         cursor.moveToPosition(ChapterID);
 
         ChapterGot.ID = ChapterID;
-        ChapterGot.Name = cursor.getString(1);
-        ChapterGot.URL = cursor.getString(2);
+        ChapterGot.Name = cursor.getString(2);
+        ChapterGot.URL = cursor.getString(3);
+        ChapterGot.ChapterProgress = cursor.getInt(4);
 
         cursor.close();
         cursor = null;
@@ -745,6 +817,7 @@ public class DBHandler extends SQLiteOpenHelper
             Paragraph.Content = cursor.getString(3);
 
             ChapterGot.Content.add(Paragraph);
+
             cursor.moveToNext();
         }
 
@@ -752,12 +825,12 @@ public class DBHandler extends SQLiteOpenHelper
         return ChapterGot;
     }
 
-    public void CheckUpdate(Context ThisContext, Book ThisBook) throws InterruptedException
+    public void CheckUpdate(Activity activity, Book ThisBook) throws InterruptedException
     {
         boolean HasUpdated = false;
 
         String URL = "https://www.royalroad.com/fiction/" + ThisBook.ExternalID;
-        Book NewBook = new Book().CreateBook(ThisContext, ThisBook.ExternalID, false, false, false);
+        Book NewBook = new Book().CreateBook(activity, ThisBook.ExternalID, false, false, false);
 
         /*
         // Check to See if Anything has Updated.
@@ -1008,6 +1081,14 @@ public class DBHandler extends SQLiteOpenHelper
         }
     }
 
+    public void UpdateChapterProgress(Book.Chapter CurrentChapter, int BookID)
+    {
+        SQLiteDatabase db = this.getWritableDatabase();
+
+        db.execSQL("UPDATE " + CHAPTERS_TABLE_NAME + " SET " + CHAPTER_PROGRESS +" = "  + CurrentChapter.ChapterProgress
+                  + " WHERE " + BOOK_ID + " = " + BookID + " AND " + CHAPTER_ID + " = " + CurrentChapter.ID);
+    }
+
     public void DeleteBook(int ExternalID)
     {
         SQLiteDatabase db = this.getWritableDatabase();
@@ -1016,7 +1097,7 @@ public class DBHandler extends SQLiteOpenHelper
 
         db.delete(LIBRARY_TABLE_NAME, EXTERNAL_ID + " = " + ExternalID, null);
         db.delete(CHAPTERS_TABLE_NAME, BOOK_ID + " = " + BookID, null);
-        db.delete(CHAPTERS_TABLE_NAME, BOOK_ID + " = " + BookID, null);
+        db.delete(CHAPTER_PARAGRAPHS_TABLE_NAME, BOOK_ID + " = " + BookID, null);
     }
 
     public void DeleteChapter(int BookID, int ChapterID)

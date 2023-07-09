@@ -1,5 +1,6 @@
 package com.example.royalroad;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.graphics.Color;
@@ -19,6 +20,7 @@ import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QuerySnapshot;
 
+import org.checkerframework.checker.units.qual.Current;
 import org.checkerframework.common.returnsreceiver.qual.This;
 import org.jsoup.Connection;
 import org.jsoup.Jsoup;
@@ -141,15 +143,17 @@ public class Book implements Serializable
         public String Name;
         public String URL;
         public ArrayList<Paragraph> Content;
+
+        public int ChapterProgress;
     }
 
-    public static class Paragraph
+    public static class Paragraph implements Serializable
     {
         public int ParagraphID;
         public String Content;
     }
 
-    public static class Details
+    public static class Details implements Serializable
     {
         public Details(String text, Drawable icon, int strokeColor, int iconColor)
         {
@@ -206,48 +210,14 @@ public class Book implements Serializable
 
     private Document StoryDoc;
 
+    private boolean DeleteCharacters;
+
     private String[] RemoveTags = new String[] {
-            "</p>",
-            "<div>",
-            "</div>",
-            "<div class=\"chapter-inner chapter-content\">",
-            " &nbsp;",
-            "</em><em>",
-            "</strong><strong>",
-            "<span style=\"font-weight: 400\">",
-            "</span>",
-            "&nbsp;",
-            "<hr>",
-            "<p style=\"text-align: center\">",
-            " <div style=\"max-width: 100%; overflow:auto\">",
-            "<div style=\"max-width: 100%; overflow:auto\">",
-            "<table>",
-            "<tbody>",
-            "<tr>",
-            "<td width=\"623\">",
-            "</td>",
-            "</tr>",
-            "</tbody>",
-            "</table>",
-            "<br>",
-            "<p style=\"margin-bottom: 1em\">",
-            "<p style=\"margin-bottom: 2em\">",
-            "<span style=\"font-size: 1.3em\">",
-            "<span style=\"font-size: 1.1em\">",
-            "<span style=\"color: rgba(255, 255, 255, 1)\">",
-            "<td style=\"width: 0; height: 68px\">",
-            "</sup>",
-            "<sup>",
-            "<td style=\"text-align: center\">",
-            "<td style=\"text-align: left\">",
-            "<span style=\"text-decoration: underline;\">",
-            "</ul>",
-            "<li style=\"font-weight: 400\">",
-            "<span style=\"color: rgba(224, 62, 45, 1)\">",
-            "</li>",
-            "<ul>",
-            "<p style=\"font-style: normal; font-variant-caps: normal; font-weight: 400; letter-spacing: normal; text-indent: 0; text-transform: none; word-spacing: 0; text-decoration: none; margin: 0 0 12px; font-stretch: normal; font-family: Helvetica\">",
-            "<span style=\"font-family: &quot;Open Sans&quot;, sans-serif; font-size: 1.1em\">"
+            "</em>",
+            "<em>",
+            "</strong>",
+            "<strong>",
+            " &nbsp;"
     };
 
     private String[] ReplaceTags = new String[] {
@@ -328,13 +298,10 @@ public class Book implements Serializable
                     StoryDoc = null;
                     NewBook.IsCompleted = true;
 
-                    Log.println(Log.INFO, "Hi", "New Book: " + NewBook.Title);
-
                     if(AddToDB)
                     {
                         new AddToDBTask(context, NewBook).execute();
                     }
-
 
                     if(AddToFirebase)
                     {
@@ -387,10 +354,12 @@ public class Book implements Serializable
         return NewBook;
     }
 
-    private double CreateRating() {
+    private double CreateRating()
+    {
+        double Rating = 0.00;
+
         Log.println(Log.INFO, "Hi", "Getting Rating");
-        Elements RatingElements = StoryDoc.getElementsByClass("list-item");
-        double Rating = 0.0;
+        Elements RatingElements = this.StoryDoc.getElementsByClass("list-item");
 
         for (int i = 0; i < RatingElements.size(); i++)
         {
@@ -409,23 +378,23 @@ public class Book implements Serializable
         }
 
         RatingElements.clear();
+
         return Rating;
     }
 
-    private String CreateDescription() {
-        Log.println(Log.INFO, "Hi", "Getting Description");
-
-        Element DescriptionElement = this.StoryDoc.selectFirst(".description");
-        return DescriptionElement.text();
+    private String CreateDescription()
+    {
+        return this.StoryDoc.selectFirst(".description").text();
     }
 
-    private String[] CreateTitleAuthor() {
-        Log.println(Log.INFO, "Hi", "Getting Title and Author");
-
+    private String[] CreateTitleAuthor()
+    {
         String[] TitleAuthor = new String[2];
 
-        Element Title = this.StoryDoc.selectFirst("h1.font-white");
-        Element Author = this.StoryDoc.selectFirst("h4.font-white");
+        Log.println(Log.INFO, "Hi", "Getting Title and Author");
+
+        Element Title = StoryDoc.selectFirst("h1.font-white");
+        Element Author = StoryDoc.selectFirst("h4.font-white");
 
         String AuthorTXT = Author.text();
         AuthorTXT = AuthorTXT.substring(3);
@@ -436,46 +405,48 @@ public class Book implements Serializable
         return TitleAuthor;
     }
 
-    private ArrayList<Book.Chapter> CreateChapters() throws IOException {
+    private ArrayList<Book.Chapter> CreateChapters() throws IOException
+    {
         Log.println(Log.INFO, "Hi", "Getting Chapters");
 
         ArrayList<Book.Chapter> AllChapters = new ArrayList<>();
         Elements ChapterLinks = StoryDoc.select("td:not([class]) a");
 
-        int ChapterIndex = 0;
+        int[] ChapterIndex = {0};
 
         for (Element Link : ChapterLinks)
         {
+            Document ChapterContent = Jsoup.connect(Link.attr("abs:href")).get();
+
             Book.Chapter NewChapter = new Book.Chapter();
 
-            NewChapter.ID = ChapterIndex;
+            NewChapter.ID = ChapterIndex[0];
             NewChapter.Name = Link.text();
             NewChapter.URL = Link.attr("abs:href");
-
-            Document ChapterContent = Jsoup.connect(Link.attr("abs:href")).get();
+            NewChapter.ChapterProgress = 0;
 
             String RawChapter = ChapterContent.select(".chapter-content").first().toString();
             NewChapter.Content = CleanChapter(RawChapter);
 
-            int ChapterID = ChapterIndex + 1;
+            int ChapterID = ChapterIndex[0] + 1;
 
             Log.println(Log.INFO, "Hi", "Got Chapter " + ChapterID + " / " + ChapterLinks.size());
             ChapterContent = null;
 
             AllChapters.add(NewChapter);
-            ChapterIndex++;
+            ChapterIndex[0]++;
         }
 
-        ChapterLinks.clear();
-
         Log.println(Log.INFO, "Hi", "Finished Getting Chapters");
+
+        ChapterLinks.clear();
         return AllChapters;
     }
 
     private ArrayList<Paragraph> CleanChapter(String RawChapter)
     {
         ArrayList<Paragraph> Content = new ArrayList<>();
-        String[] Paragraphs = RawChapter.split("<p>");
+        String[] Paragraphs = RawChapter.split("</p>");
 
         for(int i = 0; i < Paragraphs.length; i++)
         {
@@ -484,30 +455,131 @@ public class Book implements Serializable
             ThisParagraph.ParagraphID = i;
             String AlteredParagraph = Paragraphs[i];
 
-            for(int j = 0; j < RemoveTags.length; j++)
+            AlteredParagraph = AlteredParagraph.replace("&nbsp;", "");
+
+            DeleteCharacters = false;
+            StringBuilder NewParagraph = new StringBuilder(AlteredParagraph);
+            ArrayList<Integer> DeltedIndexes = new ArrayList<Integer>();
+
+            for(int j = 0; j < AlteredParagraph.length(); j++)
             {
-                AlteredParagraph = AlteredParagraph.replace(RemoveTags[j], "");
+                if(AlteredParagraph.charAt(j) == '<')
+                {
+                    DeleteCharacters = true;
+                }
+
+                if(DeleteCharacters)
+                {
+                    boolean ProtectedTag = false;
+
+                    if(AlteredParagraph.length() > j + 1 && AlteredParagraph.charAt(j) == '<')
+                    {
+                        if(AlteredParagraph.charAt(j + 1) == 'e')
+                        {
+                            if(AlteredParagraph.charAt( j + 2) == 'm') // Protecting Italics.
+                            {
+                                ProtectedTag = true;
+                                DeleteCharacters = false;
+                            }
+                        }
+                        else if(AlteredParagraph.charAt(j + 1) == '/')
+                        {
+                            if(AlteredParagraph.charAt(j + 2) == 'e')
+                            {
+                                if(AlteredParagraph.charAt(j + 3) == 'm') // Protecting End Italics.
+                                {
+                                    ProtectedTag = true;
+                                    DeleteCharacters = false;
+                                }
+                            }
+
+                            else if(AlteredParagraph.charAt(j + 2) == 's')
+                            {
+                                if(AlteredParagraph.charAt(j + 3) == 't')
+                                {
+                                    if(AlteredParagraph.charAt(j + 4) == 'r')
+                                    {
+                                        if(AlteredParagraph.charAt(j + 5) == 'n')
+                                        {
+                                            if(AlteredParagraph.charAt(j + 6) == 'g') // Protecting End Bold.
+                                            {
+                                                ProtectedTag = true;
+                                                DeleteCharacters = false;
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+
+                        else if(AlteredParagraph.charAt(j + 1) == 'i')
+                        {
+                            if(AlteredParagraph.charAt(j + 2) == 'm')
+                            {
+                                if(AlteredParagraph.charAt(j + 3) == 'g') // Protecting Image Tag.
+                                {
+                                    ProtectedTag = true;
+                                    DeleteCharacters = false;
+                                }
+                            }
+                        }
+                        else if(AlteredParagraph.charAt(j + 1) == 's')
+                        {
+                            if(AlteredParagraph.charAt(j + 2) == 't')
+                            {
+                                if(AlteredParagraph.charAt(j + 3) == 'r')
+                                {
+                                    if(AlteredParagraph.charAt(j + 4) == 'n')
+                                    {
+                                        if(AlteredParagraph.charAt(j + 5) == 'g') // Protecting Bold Tag.
+                                        {
+                                            ProtectedTag = true;
+                                            DeleteCharacters = false;
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                        else if(AlteredParagraph.charAt(j + 1) == 'h')
+                        {
+                            if(AlteredParagraph.charAt(j + 2) == 'r')
+                            {
+                                if(AlteredParagraph.charAt(j + 3) == '>')
+                                {
+                                    ProtectedTag = true;
+                                    DeleteCharacters = false;
+                                }
+                            }
+                        }
+                    }
+
+                    if(!ProtectedTag)
+                    {
+                        DeltedIndexes.add(j);
+
+                        if(AlteredParagraph.charAt(j) == '>')
+                        {
+                            DeleteCharacters = false;
+                        }
+                    }
+                }
             }
 
-            //String[] BoldLines = AlteredParagraph.split("<strong>");
-            //String[] ItalicLines = AlteredParagraph.split("<em>");
+            int DeleteCounter = 0;
 
-            AlteredParagraph = AlteredParagraph.replace("<em>", "");
-            AlteredParagraph = AlteredParagraph.replace("</em>", "");
-            AlteredParagraph = AlteredParagraph.replace("<strong>", "");
-            AlteredParagraph = AlteredParagraph.replace("</strong>", "");
-
-            // No Bold or Italic Lines.
-            //if(BoldLines.length == 0 && ItalicLines.length == 0)
-            //{
-
-            //}
-
-            for(int j = AlteredParagraph.length(); j > 0; j--)
+            for(int Index : DeltedIndexes)
             {
-                if(AlteredParagraph.charAt(j - 1) == ' ')
+                Index -= DeleteCounter;
+                NewParagraph.deleteCharAt(Index);
+
+                DeleteCounter++;
+            }
+
+            for(int j = NewParagraph.length() - 1; j > 0; j--)
+            {
+                if(Character.isWhitespace(NewParagraph.charAt(j)))
                 {
-                    AlteredParagraph = AlteredParagraph.substring(0, AlteredParagraph.length() - 1);
+                    NewParagraph.deleteCharAt(j);
                 }
                 else
                 {
@@ -515,23 +587,30 @@ public class Book implements Serializable
                 }
             }
 
-            ThisParagraph.Content = AlteredParagraph;
+            int DeleteOffset = 0;
+            for(int j = 0; j < NewParagraph.toString().length(); j++)
+            {
+                if(Character.isWhitespace(NewParagraph.charAt(j)))
+                {
+                    NewParagraph.deleteCharAt(j - DeleteOffset);
+                    DeleteOffset++;
+                }
+                else
+                {
+                    break;
+                }
+            }
+
+            ThisParagraph.Content = NewParagraph.toString();
 
             Content.add(ThisParagraph);
         }
 
-        // Clean Chapter Here.
-        // Remove HTML Tags.
-        // Create Seperate Paragraphs.
-        // Check Which Parts of the Paragraph is in Bold, Italics and Italic Bold.
-        // Seperate These and create ID's For them
-        // Set Style to Default, Bold, Italics or Italic Bold.
-        // Remove All Other Tags.
-
         return Content;
     }
 
-    private ArrayList<Book.Warnings> CreateWarnings() {
+    private ArrayList<Book.Warnings> CreateWarnings()
+    {
         Log.println(Log.INFO, "Hi", "Getting Warnings");
 
         Elements WarningElements = StoryDoc.getElementsByClass("text-center font-red-sunglo");

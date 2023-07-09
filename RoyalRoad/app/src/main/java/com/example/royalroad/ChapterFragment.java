@@ -3,22 +3,32 @@ package com.example.royalroad;
 import static android.content.Context.MODE_PRIVATE;
 
 import android.content.SharedPreferences;
+import android.graphics.Typeface;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.widget.Toolbar;
+import androidx.core.content.res.ResourcesCompat;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.LinearLayout;
 import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
+
+import com.google.android.flexbox.FlexboxLayoutManager;
 
 import org.checkerframework.checker.units.qual.Current;
 
@@ -26,17 +36,27 @@ import java.util.ArrayList;
 
 public class ChapterFragment extends Fragment
 {
-    ListView StoryList;
+    RecyclerView StoryRV;
+    ParagraphLineAdapter adapter;
+
     ReadActivity readActivity;
     boolean IsDarkMode;
     boolean ToolbarShow;
 
     int ChapterID;
 
+    boolean FontDetails;
+
     public ChapterFragment(int chapterID)
     {
         this.ChapterID = chapterID;
     }
+
+    public ChapterFragment()
+    {
+
+    }
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         return inflater.inflate(R.layout.fragment_chapter, container, false);
@@ -48,6 +68,7 @@ public class ChapterFragment extends Fragment
 
         SharedPreferences Pref = getActivity().getSharedPreferences("Settings", MODE_PRIVATE);
         IsDarkMode = Pref.getBoolean("ReadingTheme", false);
+        FontDetails = false;
 
         readActivity = (ReadActivity)getActivity();
 
@@ -55,61 +76,108 @@ public class ChapterFragment extends Fragment
 
         int BookID = readActivity.ReadBook.GetInternalID();
 
-        DBHandler SQLiteDB = new DBHandler(getActivity().getApplicationContext());
-
+        DBHandler SQLiteDB = new DBHandler(getActivity());
         Book.Chapter CurrentChapter = SQLiteDB.GetChapter(BookID, ChapterID);
         SQLiteDB.close();
 
-        StoryList = (ListView) view.findViewById(R.id.ChapterContentList);
-        ArrayList<String> Paragraphs = new ArrayList<>();
+        StoryRV = (RecyclerView) view.findViewById(R.id.ChapterContentRV);
+
+        readActivity.TopToolbar.setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem item)
+            {
+                if(item.getOrder() == 1)
+                {
+                    ShowFontDetails();
+                }
+
+                return true;
+            }
+        });
 
         for(Book.Paragraph ThisParagraph : CurrentChapter.Content)
         {
-            if(!ThisParagraph.Content.isEmpty())
+
+            if(!ThisParagraph.Content.isEmpty() && ThisParagraph.Content.length() > 1)
             {
-                boolean AllSpaces = false;
+                boolean IsAllSpaces = false;
 
                 for(int i = 0; i < ThisParagraph.Content.length(); i++)
                 {
-                    if(ThisParagraph.Content.charAt(i) == ' ')
+                    if(ThisParagraph.Content.charAt(i) == ' ' || ThisParagraph.Content.charAt(i) == ' ')
                     {
-                        AllSpaces = true;
+                        IsAllSpaces = true;
                     }
                     else
                     {
-                        AllSpaces = false;
+                        IsAllSpaces = false;
+                        break;
                     }
                 }
 
-                if(!AllSpaces)
+                if(!IsAllSpaces)
                 {
-                    if(ThisParagraph.Content.length() > 1)
+                    StringBuilder AlteredString = new StringBuilder(ThisParagraph.Content);
+
+                    for(int i = ThisParagraph.Content.length() - 1; i > 0; i--)
                     {
-                        Paragraphs.add(ThisParagraph.Content);
+                        if(ThisParagraph.Content.charAt(i) == ' ')
+                        {
+                            AlteredString.deleteCharAt(i);
+                        }
+                        else
+                        {
+                            break;
+                        }
                     }
+
+
+                    ThisParagraph.Content = AlteredString.toString();
                 }
             }
         }
-        ArrayAdapter<String> ParagarphItems = new ArrayAdapter<String>(getActivity().getApplicationContext(), android.R.layout.simple_list_item_1, Paragraphs){
+
+        LinearLayoutManager LayoutManager = new LinearLayoutManager(getContext());
+
+        StoryRV.setLayoutManager(LayoutManager);
+        StoryRV.setHasFixedSize(true);
+
+        adapter = new ParagraphLineAdapter(CurrentChapter.Content);
+        StoryRV.setAdapter(adapter);
+
+        Log.println(Log.INFO, "Hi", String.valueOf(CurrentChapter.ChapterProgress));
+        LayoutManager.scrollToPosition(CurrentChapter.ChapterProgress);
+
+        StoryRV.addOnScrollListener(new RecyclerView.OnScrollListener()
+        {
             @Override
-            public View getView(int position, View convertView, ViewGroup parent)
+            public void onScrollStateChanged(@NonNull RecyclerView recyclerView, int newState)
             {
-                View view = super.getView(position, convertView, parent);
-
-                TextView textView = (TextView) view.findViewById(android.R.id.text1);
-                if(IsDarkMode)
-                {
-                    textView.setTextColor(getResources().getColor(R.color.DarkText));
-                }
-
-                return view;
+                super.onScrollStateChanged(recyclerView, newState);
             }
-        };
 
-        StoryList.setAdapter(ParagarphItems);
-        StoryList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
-            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+            public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy)
+            {
+                super.onScrolled(recyclerView, dx, dy);
+
+                if(CurrentChapter.ChapterProgress != ((LinearLayoutManager)StoryRV.getLayoutManager()).findFirstVisibleItemPosition())
+                {
+                    CurrentChapter.ChapterProgress = ((LinearLayoutManager)StoryRV.getLayoutManager()).findFirstVisibleItemPosition();
+
+                    // Update SQLite Database.
+                    DBHandler SQLiteDB = new DBHandler(getActivity());
+                    SQLiteDB.UpdateChapterProgress(CurrentChapter, readActivity.ReadBook.InternalID);
+                    SQLiteDB.close();
+                }
+            }
+        });
+
+        StoryRV.setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View view)
+            {
                 ShowHideToolbars(ToolbarShow);
             }
         });
@@ -120,12 +188,12 @@ public class ChapterFragment extends Fragment
     public void SwitchThemes(boolean DarkMode)
     {
         if(DarkMode)
-        {
-            StoryList.setBackgroundColor(getResources().getColor(R.color.DarkOuter));
+         {
+            StoryRV.setBackgroundColor(getResources().getColor(R.color.DarkInner));
         }
         else
         {
-            StoryList.setBackgroundColor(getResources().getColor(R.color.white));
+            StoryRV.setBackgroundColor(getResources().getColor(R.color.LightOuter));
         }
     }
 
@@ -138,7 +206,7 @@ public class ChapterFragment extends Fragment
             readActivity.BackBTN.setVisibility(View.GONE);
             readActivity.ChapterCount.setVisibility(View.GONE);
 
-            ToolbarShow = false;
+            readActivity.ToolbarAppeared = false;
         }
         else
         {
@@ -147,7 +215,22 @@ public class ChapterFragment extends Fragment
             readActivity.BackBTN.setVisibility(View.VISIBLE);
             readActivity.ChapterCount.setVisibility(View.VISIBLE);
 
-            ToolbarShow = true;
+            readActivity.ToolbarAppeared = true;
+
+        }
+    }
+
+    public void ShowFontDetails()
+    {
+        if(FontDetails)
+        {
+            Log.println(Log.INFO, "Hi", "Font Details Close");
+            FontDetails = false;
+        }
+        else
+        {
+            Log.println(Log.INFO, "Hi", "Font Details Open");
+            FontDetails = true;
         }
     }
 }

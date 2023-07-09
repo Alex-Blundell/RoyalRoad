@@ -8,13 +8,35 @@
 
     <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:smoothScrollbar="true"
+        >
 
         <RelativeLayout
             android:id="@+id/ForumHomeLayout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="@color/DarkOuter">
+
+            <androidx.appcompat.widget.Toolbar
+                android:id="@+id/ForumToolbar"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@color/ForumToolbar"
+                android:minHeight="?attr/actionBarSize"
+                android:theme="?attr/actionBarTheme"
+                />
+
+            <Button
+                android:id="@+id/BackBTN"
+                android:layout_width="150dp"
+                android:layout_height="wrap_content"
+                android:layout_alignBottom="@id/ForumToolbar"
+                android:layout_alignParentTop="true"
+                android:background="@color/Invis"
+                app:icon="@drawable/back"
+                app:iconSize="35dp"
+                />
 
             <ImageView
                 android:id="@+id/ForumHeader"
@@ -25,7 +47,8 @@
                 android:scaleType="centerInside"
                 android:scaleX="1"
                 android:scaleY="1"
-                android:src="@drawable/forumheader" />
+                android:src="@drawable/forumheaderlight"
+                android:layout_below="@id/ForumToolbar"/>
 
             <androidx.appcompat.widget.Toolbar
                 android:id="@+id/PopularThreadsToolbar"
@@ -44,21 +67,22 @@
                 app:titleTextColor="@color/DarkText" />
 
             <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/PopularThreads"
+                android:id="@+id/PopularThreadsRV"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_below="@id/PopularThreadsToolbar"
                 android:layout_marginLeft="25dp"
                 android:layout_marginRight="25dp"
                 android:background="@color/DarkInner"
-                android:entries="@array/PopularThreadArray"
-                android:scrollbars="none" />
+                android:scrollbars="none"
+                android:smoothScrollbar="true"
+                />
 
             <androidx.appcompat.widget.Toolbar
                 android:id="@+id/CommunityForumsToolbar"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_below="@id/PopularThreads"
+                android:layout_below="@id/PopularThreadsRV"
                 android:layout_marginLeft="25dp"
                 android:layout_marginTop="25dp"
                 android:layout_marginRight="25dp"
@@ -80,8 +104,9 @@
                 android:layout_marginLeft="25dp"
                 android:layout_marginRight="25dp"
                 android:background="@color/DarkInner"
-                android:entries="@array/CommunityThreadsArray"
-                android:scrollbars="none" />
+                android:scrollbars="none"
+                android:smoothScrollbar="true"
+                />
 
             <androidx.appcompat.widget.Toolbar
                 android:id="@+id/FictionsForumsToolbar"
@@ -107,8 +132,9 @@
                 android:layout_marginLeft="25dp"
                 android:layout_marginRight="25dp"
                 android:background="@color/DarkInner"
-                android:entries="@array/FictionsThreadsArray"
-                android:scrollbars="none" />
+                android:scrollbars="none"
+                android:smoothScrollbar="true"
+                />
 
             <androidx.appcompat.widget.Toolbar
                 android:id="@+id/TipsForumsToolbar"
@@ -134,8 +160,9 @@
                 android:layout_marginLeft="25dp"
                 android:layout_marginRight="25dp"
                 android:background="@color/DarkInner"
-                android:entries="@array/TipsThreadsList"
-                android:scrollbars="none" />
+                android:scrollbars="none"
+                android:smoothScrollbar="true"
+                />
 
             <androidx.appcompat.widget.Toolbar
                 android:id="@+id/ForumsForumsToolbar"
@@ -162,8 +189,9 @@
                 android:layout_marginRight="25dp"
                 android:layout_marginBottom="25dp"
                 android:background="@color/DarkInner"
-                android:entries="@array/ForumsThreadsArray"
-                android:scrollbars="none" />
+                android:scrollbars="none"
+                android:smoothScrollbar="true"
+                />
         </RelativeLayout>
     </ScrollView>
 </FrameLayout>

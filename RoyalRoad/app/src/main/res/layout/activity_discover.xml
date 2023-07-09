@@ -9,7 +9,8 @@
 
     <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:smoothScrollbar="true">
 
         <RelativeLayout
             android:layout_width="match_parent"
@@ -133,6 +134,7 @@
                 android:layout_marginLeft="25dp"
                 android:layout_marginRight="25dp"
                 android:layout_marginTop="5dp"
+                android:smoothScrollbar="true"
                 />
 
             <Button
@@ -164,7 +166,8 @@
                 android:layout_below="@id/RisingStarsTXT"
                 android:layout_marginLeft="25dp"
                 android:layout_marginRight="25dp"
-                android:layout_marginTop="5dp"/>
+                android:layout_marginTop="5dp"
+                android:smoothScrollbar="true"/>
 
             <Button
                 android:id="@+id/MoreRisingBTN"
@@ -196,7 +199,8 @@
                 android:layout_marginTop="5dp"
                 android:layout_marginRight="25dp"
                 android:layout_marginBottom="25dp"
-                android:layout_below="@id/WeeklyPopularTXT">
+                android:layout_below="@id/WeeklyPopularTXT"
+                android:smoothScrollbar="true">
 
                 <LinearLayout
                     android:layout_width="wrap_content"
@@ -287,7 +291,9 @@
                 android:layout_below="@id/BestCompletedTXT"
                 android:layout_marginLeft="25dp"
                 android:layout_marginRight="25dp"
-                android:layout_marginTop="5dp"/>
+                android:layout_marginTop="5dp"
+                android:smoothScrollbar="true"
+                />
 
             <Button
                 android:id="@+id/MoreBestCompletedBTN"
@@ -318,7 +324,9 @@
                 android:layout_below="@id/BestOngoingTXT"
                 android:layout_marginLeft="25dp"
                 android:layout_marginRight="25dp"
-                android:layout_marginTop="5dp"/>
+                android:layout_marginTop="5dp"
+                android:smoothScrollbar="true"
+                />
 
             <Button
                 android:id="@+id/MoreBestOngoingBTN"

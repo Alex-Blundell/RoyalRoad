@@ -1,23 +1,26 @@
 package com.example.royalroad;
 
+import android.app.Activity;
 import android.content.Context;
 import android.os.AsyncTask;
 
+import java.lang.ref.WeakReference;
+
 public class AddToDBTask extends AsyncTask<Void, Void, Void>
 {
-    Context ThisContext;
     Book AddBook;
+    Context Context;
 
     public AddToDBTask(Context context, Book NewBook)
     {
-        this.ThisContext = context;
+        this.Context = context;
         this.AddBook = NewBook;
     }
 
     @Override
     protected Void doInBackground(Void... voids)
     {
-        DBHandler SQLiteDB = new DBHandler(ThisContext);
+        DBHandler SQLiteDB = new DBHandler(Context);
         SQLiteDB.AddBook(AddBook);
         SQLiteDB.close();
 

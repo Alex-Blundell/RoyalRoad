@@ -419,6 +419,7 @@ public class LibraryActivity extends AppCompatActivity {
         vpAdapter.AddFragment(new LibraryFragment(LibraryType.Download_Manager));
 
         LibraryPager.setAdapter(vpAdapter);
+        LibraryPager.setOffscreenPageLimit(5);
         LibraryPager.setCurrentItem(0);
 
         LibraryPager.registerOnPageChangeCallback(new ViewPager2.OnPageChangeCallback()
@@ -571,5 +572,11 @@ public class LibraryActivity extends AppCompatActivity {
     {
         Intent SettingsIntent = new Intent(LibraryActivity.this, SettingsActivity.class);
         startActivity(SettingsIntent);
+    }
+
+    public void OpenDeletePrompt(boolean Open)
+    {
+        LibraryFragment CurrentFragment = (LibraryFragment)vpAdapter.GetFragment(LibraryPager.getCurrentItem());
+        CurrentFragment.OpenDeleteMenu(Open);
     }
 }

@@ -28,7 +28,12 @@ public class VPAdapter extends FragmentStateAdapter
     public void AddFragment(Fragment fragment)
     {
         fragmentList.add(fragment);
+    }
 
+    public void ReplaceFragment(int Position, Fragment fragment)
+    {
+        fragmentList.remove(Position);
+        fragmentList.add(Position, fragment);
     }
 
     @Override
@@ -40,5 +45,17 @@ public class VPAdapter extends FragmentStateAdapter
     public Fragment GetFragment(int position)
     {
         return fragmentList.get(position);
+    }
+
+    @Override
+    public long getItemId(int position)
+    {
+        return position;
+    }
+
+    @Override
+    public int getItemViewType(int position)
+    {
+        return position;
     }
 }
