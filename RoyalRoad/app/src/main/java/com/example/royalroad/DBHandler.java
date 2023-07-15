@@ -25,6 +25,8 @@ import org.checkerframework.common.returnsreceiver.qual.This;
 import org.jsoup.select.Evaluator;
 
 import java.lang.reflect.Type;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.GregorianCalendar;
@@ -34,7 +36,7 @@ public class DBHandler extends SQLiteOpenHelper
     // Database Variables.
     public static final String DB_NAME = "BookLibrary";
     Context context;
-    public static final int DB_VERSION = 35;
+    public static final int DB_VERSION = 36;
 
     // Tables.
     public static final String LIBRARY_TABLE_NAME = "Library";
@@ -64,6 +66,7 @@ public class DBHandler extends SQLiteOpenHelper
     public static final String DOWNLOADED_DATE_TIME = "DownloadedDateTime";
     public static final String HAS_READ = "HasRead";
     public static final String LAST_READ_CHAPTER = "LastReadChapter";
+    public static final String PROFILE_ID = "ProfileID";
 
     // Tag Columns
     public static final String BOOK_ID = "BookID";
@@ -127,7 +130,8 @@ public class DBHandler extends SQLiteOpenHelper
                 UPDATED_DATE_TIME + " TEXT, " +
                 DOWNLOADED_DATE_TIME + " TEXT NOT NULL, " +
                 HAS_READ + " INTEGER DEFAULT 0, " +
-                LAST_READ_CHAPTER + " INTEGER DEFAULT 0);";
+                LAST_READ_CHAPTER + " INTEGER DEFAULT 0, " +
+                PROFILE_ID + " INTEGER DEFAULT 0);";
 
         SQLiteDB.execSQL(CreateLibrary);
 
@@ -293,6 +297,7 @@ public class DBHandler extends SQLiteOpenHelper
             }
 
             LibraryCV.put(LAST_READ_CHAPTER, NewBook.LastReadChapter);
+            LibraryCV.put(PROFILE_ID, NewBook.ProfileID);
 
             Result = db.insertOrThrow(LIBRARY_TABLE_NAME, null, LibraryCV);
             LibraryCV.clear();
@@ -615,6 +620,7 @@ public class DBHandler extends SQLiteOpenHelper
                 }
 
                 NewBook.SetLastReadChapter(Integer.parseInt(cursor.getString(16)));
+                NewBook.ProfileID = Integer.parseInt(cursor.getString(17));
 
                 cursor.close();
 

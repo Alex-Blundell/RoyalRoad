@@ -5,7 +5,7 @@
     <item
         android:id="@+id/DownloadItem"
         android:orderInCategory="1"
-        android:icon="@drawable/font"
+        android:icon="@drawable/font_icon"
         android:title="Font"
         app:showAsAction="always"
         />

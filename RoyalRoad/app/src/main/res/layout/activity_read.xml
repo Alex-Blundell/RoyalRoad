@@ -21,7 +21,8 @@
         android:layout_alignParentBottom="true"
         android:background="@color/ToolbarBlue"
         android:minHeight="?attr/actionBarSize"
-        android:theme="?attr/actionBarTheme" />
+        android:theme="?attr/actionBarTheme"
+        />
 
     <androidx.viewpager2.widget.ViewPager2
         android:id="@+id/ReadPager"

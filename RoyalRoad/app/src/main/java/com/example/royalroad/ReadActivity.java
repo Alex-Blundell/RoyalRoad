@@ -5,9 +5,12 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
+import androidx.recyclerview.widget.RecyclerView;
+import androidx.viewpager.widget.ViewPager;
 import androidx.viewpager2.widget.ViewPager2;
 
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.MenuItem;
@@ -16,6 +19,8 @@ import android.widget.Button;
 import android.widget.FrameLayout;
 
 import com.google.firebase.firestore.FirebaseFirestore;
+
+import java.lang.reflect.Field;
 
 public class ReadActivity extends AppCompatActivity {
 
@@ -141,6 +146,8 @@ public class ReadActivity extends AppCompatActivity {
             }
         });
 
+        ReduceDragSensitivity(3);
+
         BackBTN.setOnClickListener(new View.OnClickListener()
         {
             @Override
@@ -171,6 +178,45 @@ public class ReadActivity extends AppCompatActivity {
             DBHandler SQLiteDB = new DBHandler(this);
             SQLiteDB.UpdateHasRead(ReadBook.GetExternalID());
             SQLiteDB.close();
+        }
+    }
+
+    @Override
+    protected void onNewIntent(Intent intent)
+    {
+        super.onNewIntent(intent);
+        HandleWebsiteLink();
+    }
+
+    private void HandleWebsiteLink()
+    {
+        // ATTENTION: This was auto-generated to handle app links.
+        Intent appLinkIntent = getIntent();
+        String appLinkAction = appLinkIntent.getAction();
+        Uri appLinkData = appLinkIntent.getData();
+    }
+
+    private void ReduceDragSensitivity(int Sensitivity)
+    {
+        try
+        {
+            Field FF = ViewPager2.class.getDeclaredField("mRecyclerView");
+            FF.setAccessible(true);
+
+            RecyclerView recyclerView = (RecyclerView) FF.get(BookPager);
+            Field TouchSlopField = RecyclerView.class.getDeclaredField("mTouchSlop");
+
+            TouchSlopField.setAccessible(true);
+            int TouchSlop = (int)TouchSlopField.get(recyclerView);
+            TouchSlopField.set(recyclerView, TouchSlop * Sensitivity);
+        }
+        catch (NoSuchFieldException e)
+        {
+            throw new RuntimeException(e);
+        }
+        catch (IllegalAccessException e)
+        {
+            throw new RuntimeException(e);
         }
     }
 
@@ -221,7 +267,10 @@ public class ReadActivity extends AppCompatActivity {
 
     public void OpenProfile()
     {
+        Intent ProfileIntent = new Intent(ReadActivity.this, ProfileActivity.class);
+        ProfileIntent.putExtra("ProfileID", ReadBook.ProfileID);
 
+        startActivity(ProfileIntent);
     }
 
     public void WriteReview()

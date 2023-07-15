@@ -63,11 +63,12 @@ public class ParagraphLineAdapter extends RecyclerView.Adapter<ParagraphLineAdap
         }
         else
         {
-
+            holder.Line.setTextColor(holder.itemView.getResources().getColor(R.color.black));
         }
 
-        // If Paragraph Type is Divider
-        //holder.Divider.setVisibility(View.VISIBLE);
+        Resources res = holder.itemView.getResources();
+        int ParagraphSpacing = (int)TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 10, res.getDisplayMetrics());
+        int StartSpacing = (int)TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 15, res.getDisplayMetrics());
 
         if(Data.get(position).Content.contains("<img src="))
         {
@@ -86,6 +87,19 @@ public class ParagraphLineAdapter extends RecyclerView.Adapter<ParagraphLineAdap
                     ((ReadActivity)holder.itemView.getContext()).HideToolbars();
                 }
             });
+
+            ViewGroup.MarginLayoutParams params = (ViewGroup.MarginLayoutParams)holder.Image.getLayoutParams();
+
+            if(position == 0)
+            {
+                params.setMargins(0, StartSpacing, 0, ParagraphSpacing);
+            }
+            else
+            {
+                params.setMargins(0, 0, 0, ParagraphSpacing);
+            }
+
+            holder.Image.setLayoutParams(params);
         }
         else if(Data.get(position).Content.contains("<img style="))
         {
@@ -104,19 +118,39 @@ public class ParagraphLineAdapter extends RecyclerView.Adapter<ParagraphLineAdap
                     ((ReadActivity)holder.itemView.getContext()).HideToolbars();
                 }
             });
+
+            ViewGroup.MarginLayoutParams params = (ViewGroup.MarginLayoutParams)holder.Image.getLayoutParams();
+
+            if(position == 0)
+            {
+                params.setMargins(0, StartSpacing, 0, ParagraphSpacing);
+            }
+            else
+            {
+                params.setMargins(0, 0, 0, ParagraphSpacing);
+            }
+
+            holder.Image.setLayoutParams(params);
         }
         else if(Data.get(position).Content.contains("<hr>"))
         {
             holder.Divider.setVisibility(View.VISIBLE);
+            int MarginSpacing = (int)TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 25, res.getDisplayMetrics());
+
+            ViewGroup.MarginLayoutParams params = (ViewGroup.MarginLayoutParams)holder.Divider.getLayoutParams();
+
+            if(position == 0)
+            {
+                params.setMargins(MarginSpacing, StartSpacing, MarginSpacing, ParagraphSpacing);
+            }
+            else
+            {
+                params.setMargins(MarginSpacing, 0, MarginSpacing, ParagraphSpacing);
+            }
         }
         else
         {
-            Resources res = holder.itemView.getResources();
-
-            int StartSpacing = (int)TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 15, res.getDisplayMetrics());
-            int ParagraphSpacing = (int)TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 10, res.getDisplayMetrics());
             int MarginSpacing = (int)TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 15, res.getDisplayMetrics());
-
             int LineSpacing = 5;
 
             // If Paragraph Type is any type of Text.
@@ -202,9 +236,9 @@ public class ParagraphLineAdapter extends RecyclerView.Adapter<ParagraphLineAdap
 
             String Paragraph = Data.get(position).Content;
 
-            Spannable AlteredParagraph = new SpannableStringBuilder(Paragraph);
-
             int DeleteOffset = 0;
+
+            Spannable AlteredParagraph = new SpannableStringBuilder(Paragraph);
 
             if(Paragraph.contains("<em>"))
             {
@@ -241,19 +275,18 @@ public class ParagraphLineAdapter extends RecyclerView.Adapter<ParagraphLineAdap
 
             if(Paragraph.contains("<strong>"))
             {
-                Pattern ItalicPattern = Pattern.compile("<strong>");
-                Matcher ItalicMatcher = ItalicPattern.matcher(Paragraph);
+                Pattern BoldPattern = Pattern.compile("<strong>");
+                Matcher BoldMatcher = BoldPattern.matcher(Paragraph);
 
                 int IndexOffset = 0;
 
-                while(ItalicMatcher.find())
+                while(BoldMatcher.find())
                 {
                     int Index = Paragraph.indexOf("<strong>", IndexOffset);
                     int EndIndex = Paragraph.indexOf("</strong>", Index);
 
                     ((SpannableStringBuilder) AlteredParagraph).delete(Index - DeleteOffset, Index - DeleteOffset + 8);
                     DeleteOffset += 8;
-                    EndIndex -= DeleteOffset;
 
                     ((SpannableStringBuilder) AlteredParagraph).delete(EndIndex - DeleteOffset, EndIndex - DeleteOffset + 9);
 
@@ -261,7 +294,7 @@ public class ParagraphLineAdapter extends RecyclerView.Adapter<ParagraphLineAdap
 
                     if(Index > 8)
                     {
-                        AlteredParagraph.setSpan(BoldSpan, Index - DeleteOffset + 7, EndIndex - DeleteOffset, Spannable.SPAN_INCLUSIVE_EXCLUSIVE);
+                        AlteredParagraph.setSpan(BoldSpan, Index - DeleteOffset + 8, EndIndex - DeleteOffset, Spannable.SPAN_INCLUSIVE_EXCLUSIVE);
                     }
                     else
                     {
@@ -283,13 +316,16 @@ public class ParagraphLineAdapter extends RecyclerView.Adapter<ParagraphLineAdap
                 {
                     params.setMargins(MarginSpacing, StartSpacing, MarginSpacing, ParagraphSpacing);
                 }
+                else if(position == Data.size())
+                {
+                    params.setMargins(MarginSpacing, 0, MarginSpacing, StartSpacing);
+                }
                 else
                 {
                     params.setMargins(MarginSpacing, 0, MarginSpacing, ParagraphSpacing);
                 }
 
                 holder.Line.setLayoutParams(params);
-
                 holder.Line.setTextSize(FontSize);
             }
             else

@@ -86,7 +86,7 @@ public class HomeActivity extends AppCompatActivity
 
         vpAdapter.AddFragment(new HomeFragment());
         vpAdapter.AddFragment(new WritingMainFragment());
-        vpAdapter.AddFragment(new ProfileFragment());
+        vpAdapter.AddFragment(new WritingMainFragment());
         vpAdapter.AddFragment(new BaseSettingsFragment());
 
         HomePager.setAdapter(vpAdapter);

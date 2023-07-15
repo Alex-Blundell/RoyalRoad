@@ -104,7 +104,7 @@ public class ChapterFragment extends Fragment
 
                 for(int i = 0; i < ThisParagraph.Content.length(); i++)
                 {
-                    if(ThisParagraph.Content.charAt(i) == ' ' || ThisParagraph.Content.charAt(i) == ' ')
+                    if(ThisParagraph.Content.charAt(i) == ' ' || Character.isWhitespace(ThisParagraph.Content.charAt(i)))
                     {
                         IsAllSpaces = true;
                     }

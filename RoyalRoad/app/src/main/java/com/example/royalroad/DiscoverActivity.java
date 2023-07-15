@@ -31,6 +31,7 @@ import org.jsoup.select.Elements;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
@@ -96,9 +97,9 @@ public class DiscoverActivity extends AppCompatActivity {
 
         DebugBook.SetRating(2.5);
 
-        DebugBook.SetCreatedDateTime(new GregorianCalendar());
-        DebugBook.SetLastUpdatedDateTime(new GregorianCalendar());
-        DebugBook.SetDownloadedDateTime(new GregorianCalendar());
+        DebugBook.SetCreatedDateTime(new Date());
+        DebugBook.SetLastUpdatedDateTime(new Date());
+        DebugBook.SetDownloadedDateTime(new Date());
 
         DebugBook.SetHasRead(false);
         DebugBook.SetLastReadChapter(0);

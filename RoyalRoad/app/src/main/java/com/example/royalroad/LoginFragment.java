@@ -50,6 +50,7 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
@@ -70,18 +71,17 @@ public class LoginFragment extends Fragment {
     Button LoginBTN;
     Button RegisterBTN;
 
-    TextView ErrorText;
-
     FirebaseFirestore db;
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
+    {
         return inflater.inflate(R.layout.fragment_login, container, false);
     }
 
     @Override
-    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState)
+    {
         super.onViewCreated(view, savedInstanceState);
 
         SharedPreferences Pref = getActivity().getSharedPreferences("Settings", MODE_PRIVATE);
@@ -93,14 +93,8 @@ public class LoginFragment extends Fragment {
         {
             Intent ThisIntent = new Intent(getActivity(), HomeActivity.class);
 
-            Log.println(Log.INFO, "Hi", "In Login");
-
             getActivity().finish();
             startActivity(ThisIntent);
-        }
-        else
-        {
-            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
         }
 
         db = FirebaseFirestore.getInstance();
@@ -111,19 +105,20 @@ public class LoginFragment extends Fragment {
         LoginBTN = view.findViewById(R.id.LoginBTN);
         RegisterBTN = view.findViewById(R.id.RegisterBTN);
 
-        ErrorText = view.findViewById(R.id.ErrorTextLogin);
-        ErrorText.setVisibility(View.GONE);
-
-        LoginBTN.setOnClickListener(new View.OnClickListener() {
+        LoginBTN.setOnClickListener(new View.OnClickListener()
+        {
             @Override
-            public void onClick(View view) {
+            public void onClick(View view)
+            {
                 ValidateUsername();
             }
         });
 
-        RegisterBTN.setOnClickListener(new View.OnClickListener() {
+        RegisterBTN.setOnClickListener(new View.OnClickListener()
+        {
             @Override
-            public void onClick(View view) {
+            public void onClick(View view)
+            {
                 RegisterUser();
             }
         });
@@ -136,19 +131,13 @@ public class LoginFragment extends Fragment {
     {
         if(UsernameField.getText().toString().isEmpty())
         {
-            // Show Username Is Empty Error.
-            Log.println(Log.INFO, "Login", "Username Field is Empty.");
-            ErrorText.setVisibility(View.VISIBLE);
-            ErrorText.setText("Username Field is Empty");
+            Toast.makeText(getContext(), "Username is Empty", Toast.LENGTH_SHORT).show();
         }
         else
         {
             if(PasswordField.getText().toString().isEmpty())
             {
-                // Show Password is Empty Error
-                Log.println(Log.INFO, "Login", "Password Field is Empty.");
-                ErrorText.setVisibility(View.VISIBLE);
-                ErrorText.setText("Password Field is Empty");
+                Toast.makeText(getContext(), "Password is Empty", Toast.LENGTH_SHORT).show();
             }
             else
             {
@@ -165,16 +154,13 @@ public class LoginFragment extends Fragment {
                                     if(task.getResult().size() == 1)
                                     {
                                         ValidatePassword();
-                                        Log.println(Log.INFO, "Login", "Username Exists, Checking Password.");
                                     }
                                     else if (task.getResult().size() == 0)
                                     {
                                         // Show Incorrect Username Error Message.
                                         PasswordField.setText("");
-                                        Log.println(Log.INFO, "Login", "Username was Incorrect, try again.");
 
-                                        ErrorText.setVisibility(View.VISIBLE);
-                                        ErrorText.setText("Username was Incorrect, try again.");
+                                        Toast.makeText(getContext(), "Username was Incorrect, try again.", Toast.LENGTH_SHORT).show();
                                     }
                                 }
                             }
@@ -204,8 +190,6 @@ public class LoginFragment extends Fragment {
                                 int UserID = Integer.parseInt(task.getResult().getDocuments().get(0).get("UserID").toString());
                                 String AvatarURL = task.getResult().getDocuments().get(0).get("AvatarURL").toString();
 
-                                Log.println(Log.INFO, "Login", "Password was correct, Transitioning to Home Activity.");
-
                                 PrefEditor.putBoolean("IsLoggedIn", true);
                                 PrefEditor.putInt("UserID", UserID);
                                 PrefEditor.putString("UserAvatarURL", AvatarURL);
@@ -220,9 +204,7 @@ public class LoginFragment extends Fragment {
                             else if(task.getResult().size() == 0)
                             {
                                 // Show Incorrect Password Error Message.
-                                Log.println(Log.INFO, "Login", "Password was Incorrect.");
-                                ErrorText.setVisibility(View.VISIBLE);
-                                ErrorText.setText("Password was Incorrect");
+                                Toast.makeText(getContext(), "Password was Incorrect, try again.", Toast.LENGTH_SHORT).show();
                             }
                         }
                     }
@@ -248,6 +230,8 @@ public class LoginFragment extends Fragment {
 
         if(DarkTheme)
         {
+            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
+
             Background.setBackgroundColor(getResources().getColor(R.color.DarkOuter));
             Background.setStrokeColor(ColorStateList.valueOf(getResources().getColor(R.color.DarkBorder)));
 
@@ -262,6 +246,8 @@ public class LoginFragment extends Fragment {
         }
         else
         {
+            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
+
             Background.setBackgroundColor(getResources().getColor(R.color.LightOuter));
 
             UsernameField.setBackgroundColor(getResources().getColor(R.color.white));

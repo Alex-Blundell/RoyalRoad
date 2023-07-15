@@ -11,7 +11,7 @@
         android:layout_height="match_parent"
         android:layout_alignParentStart="true"
         android:layout_alignParentTop="true"
-        android:layout_above="@id/ProfileTabs">
+        >
 
         <RelativeLayout
             android:layout_width="match_parent"
@@ -20,7 +20,9 @@
             <ImageView
                 android:id="@+id/BlurryBackground"
                 android:layout_width="match_parent"
-                android:layout_height="140dp" />
+                android:layout_height="140dp"
+                android:scaleType="centerCrop"
+                />
 
             <ImageView
                 android:id="@+id/ProfileIcon"
@@ -153,6 +155,7 @@
                 android:layout_marginTop="5dp"
                 android:layout_marginRight="75dp"
                 android:layout_toLeftOf="@id/FictionsNumTXT"
+
                 android:text="Num" />
 
             <TextView
@@ -183,7 +186,7 @@
                 android:layout_marginLeft="25dp"
                 android:layout_marginTop="15dp"
                 android:layout_marginRight="25dp"
-                android:text="Joined:" />
+                android:text="Joined: " />
 
             <TextView
                 android:id="@+id/LastActiveDate"
@@ -193,7 +196,7 @@
                 android:layout_marginLeft="25dp"
                 android:layout_marginTop="10dp"
                 android:layout_marginRight="25dp"
-                android:text="Last Active:" />
+                android:text="Last Active: " />
 
             <TextView
                 android:id="@+id/GenderTXT"
@@ -203,7 +206,7 @@
                 android:layout_marginLeft="25dp"
                 android:layout_marginTop="10dp"
                 android:layout_marginRight="25dp"
-                android:text="Gender:" />
+                android:text="Gender: " />
 
             <TextView
                 android:id="@+id/LocationTXT"
@@ -213,7 +216,7 @@
                 android:layout_marginLeft="25dp"
                 android:layout_marginTop="10dp"
                 android:layout_marginRight="25dp"
-                android:text="Location:" />
+                android:text="Location: " />
 
             <TextView
                 android:id="@+id/WebsiteTXT"
@@ -223,7 +226,7 @@
                 android:layout_marginLeft="25dp"
                 android:layout_marginTop="10dp"
                 android:layout_marginRight="25dp"
-                android:text="Website:" />
+                android:text="Website: " />
 
             <TextView
                 android:id="@+id/BioTXT"
@@ -233,41 +236,7 @@
                 android:layout_marginLeft="25dp"
                 android:layout_marginTop="10dp"
                 android:layout_marginRight="25dp"
-                android:text="Bio:" />
+                android:text="Bio: " />
         </RelativeLayout>
     </ScrollView>
-
-    <com.google.android.material.tabs.TabLayout
-        android:id="@+id/ProfileTabs"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        app:tabMode="fixed">
-
-        <com.google.android.material.tabs.TabItem
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:icon="@drawable/profile" />
-
-        <com.google.android.material.tabs.TabItem
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:icon="@drawable/book" />
-
-        <com.google.android.material.tabs.TabItem
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:icon="@drawable/favourite" />
-
-        <com.google.android.material.tabs.TabItem
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:icon="@drawable/follow" />
-
-        <com.google.android.material.tabs.TabItem
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:icon="@drawable/forum_icon" />
-    </com.google.android.material.tabs.TabLayout>
-
 </RelativeLayout>

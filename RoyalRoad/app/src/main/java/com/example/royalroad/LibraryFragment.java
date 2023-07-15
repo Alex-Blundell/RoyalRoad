@@ -71,13 +71,13 @@ public class LibraryFragment extends Fragment
         LibraryRecyclerview = view.findViewById(R.id.LibraryRecyclerview);
         NoBookTXT = view.findViewById(R.id.NoBooksTXT);
 
-        InitializeLibrary();
+        InitializeLibrary(' ');
         SwitchTheme(IsDarkMode);
 
         DeleteMode = false;
     }
 
-    public void InitializeLibrary()
+    public void InitializeLibrary(char RestrictedLetter)
     {
         SharedPreferences Pref = getActivity().getSharedPreferences("Settings", MODE_PRIVATE);
         IsDarkMode = Pref.getBoolean("AppTheme", false);
@@ -99,14 +99,32 @@ public class LibraryFragment extends Fragment
             {
                 Book NewBook = SQLiteDB.GetBook(i + 1);
 
-                if(Type == LibraryType.History && NewBook.HasRead)
+                boolean AddBook = true;
+
+                if(RestrictedLetter != ' ')
                 {
-                    BookList.add(NewBook);
+                    if(NewBook.Title.charAt(0) != RestrictedLetter)
+                    {
+                        AddBook = false;
+                    }
                 }
 
-                if(Type == LibraryType.Downloaded)
+                if(AddBook)
                 {
-                    BookList.add(NewBook);
+                    if(Type == LibraryType.History && NewBook.HasRead)
+                    {
+                        BookList.add(NewBook);
+                    }
+
+                    if(Type == LibraryType.Downloaded)
+                    {
+                        BookList.add(NewBook);
+                    }
+
+                    if(Type == LibraryType.Read_Later)
+                    {
+
+                    }
                 }
             }
         }
@@ -157,6 +175,29 @@ public class LibraryFragment extends Fragment
         {
             LibraryRecyclerview.getLayoutManager().scrollToPosition(ContinueIndex);
         }
+    }
+
+    public void RenewLibrary(boolean IsFocus)
+    {
+        // Get Current Location in Library.
+        int CurrentItem = 0;
+
+        if(IsFocus)
+        {
+            CurrentItem = ((LinearLayoutManager)LibraryRecyclerview.getLayoutManager()).findFirstCompletelyVisibleItemPosition();
+        }
+
+        InitializeLibrary(' ');
+
+        if(IsFocus)
+        {
+            LibraryRecyclerview.scrollToPosition(CurrentItem);
+        }
+    }
+
+    public void RestrictLibrary(char RestricLetter)
+    {
+        InitializeLibrary(RestricLetter);
     }
 
     public void OpenDeleteMenu(boolean Delete)

@@ -35,17 +35,8 @@
         android:layout_centerHorizontal="true"
         android:layout_marginTop="300dp"
         android:text="Username:"
-        android:textSize="18dp" />
-
-    <TextView
-        android:id="@+id/ErrorTextLogin"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="150dp"
-        android:text="ERROR"
         android:textSize="18dp"
-        android:visibility="gone"/>
+        />
 
     <EditText
         android:id="@+id/UsernameField"
@@ -65,7 +56,8 @@
         android:layout_centerHorizontal="true"
         android:layout_marginTop="10dp"
         android:text="Password:"
-        android:textSize="18sp" />
+        android:textSize="18sp"
+        />
 
     <EditText
         android:id="@+id/PasswordField"
@@ -75,7 +67,8 @@
         android:layout_centerHorizontal="true"
         android:layout_marginTop="10dp"
         android:inputType="textPassword"
-        android:paddingLeft="10dp" />
+        android:paddingLeft="10dp"
+        />
 
     <Button
         android:id="@+id/LoginBTN"
@@ -85,7 +78,8 @@
         android:layout_centerHorizontal="true"
         android:layout_marginTop="20dp"
         android:backgroundTint="@color/ButtonInner"
-        android:text="Login" />
+        android:text="Login"
+        />
 
     <Button
         android:id="@+id/RegisterBTN"

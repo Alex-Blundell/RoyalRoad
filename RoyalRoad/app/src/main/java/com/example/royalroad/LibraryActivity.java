@@ -28,6 +28,7 @@ import com.google.android.material.tabs.TabLayoutMediator;
 
 import org.checkerframework.common.subtyping.qual.Bottom;
 
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -51,6 +52,7 @@ public class LibraryActivity extends AppCompatActivity {
     ScrollView AlphabetLayout;
 
     boolean IsRestricted;
+    boolean RenewLibraries = false;
 
     char RestrictedLetter;
 
@@ -100,6 +102,8 @@ public class LibraryActivity extends AppCompatActivity {
     {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_library);
+
+        RenewLibraries = false;
 
         IsRestricted = false;
 
@@ -431,6 +435,8 @@ public class LibraryActivity extends AppCompatActivity {
             }
         });
 
+        ReduceDragSensitivity(3);
+
         BottomTabs.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener()
         {
             @Override
@@ -487,6 +493,30 @@ public class LibraryActivity extends AppCompatActivity {
         AlphabetLayout = (ScrollView) findViewById(R.id.AlphabeticalLayout);
     }
 
+    private void ReduceDragSensitivity(int Sensitivity)
+    {
+        try
+        {
+            Field FF = ViewPager2.class.getDeclaredField("mRecyclerView");
+            FF.setAccessible(true);
+
+            RecyclerView recyclerView = (RecyclerView) FF.get(LibraryPager);
+            Field TouchSlopField = RecyclerView.class.getDeclaredField("mTouchSlop");
+
+            TouchSlopField.setAccessible(true);
+            int TouchSlop = (int)TouchSlopField.get(recyclerView);
+            TouchSlopField.set(recyclerView, TouchSlop * Sensitivity);
+        }
+        catch (NoSuchFieldException e)
+        {
+            throw new RuntimeException(e);
+        }
+        catch (IllegalAccessException e)
+        {
+            throw new RuntimeException(e);
+        }
+    }
+
     public void SyncLibrary()
     {
         DBHandler SQLiteDB = new DBHandler(this);
@@ -509,6 +539,33 @@ public class LibraryActivity extends AppCompatActivity {
         SQLiteDB.close();
 
         Toast.makeText(this, "Sync Completed", Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    protected void onResume()
+    {
+        super.onResume();
+
+        if(RenewLibraries)
+        {
+            for(int i = 0; i < 5; i++)
+            {
+                LibraryFragment SelectedFragment = (LibraryFragment)vpAdapter.GetFragment(i);
+
+                if(i == LibraryPager.getCurrentItem())
+                {
+                    SelectedFragment.RenewLibrary(true);
+                }
+                else
+                {
+                    SelectedFragment.RenewLibrary(false);
+                }
+            }
+        }
+        else
+        {
+            RenewLibraries = true;
+        }
     }
 
     public void Sort()
@@ -537,8 +594,8 @@ public class LibraryActivity extends AppCompatActivity {
 
         Log.println(Log.INFO, "Hi", "Restricting By Letter: " + RestrictedLetter);
 
-        // Empty Library.
-        // Only Fill Library with Books Begining with the Selected Letter.
+        LibraryFragment CurrentFragment = (LibraryFragment)vpAdapter.GetFragment(LibraryPager.getCurrentItem());
+        CurrentFragment.RestrictLibrary(RestrictedLetter);
     }
 
     public void RestrictByNumbers()
@@ -558,8 +615,8 @@ public class LibraryActivity extends AppCompatActivity {
         {
             IsRestricted = false;
 
-            // If it is Already Restricted.
-            // Dump Library and Fill it up with all Books.
+            LibraryFragment CurrentFragment = (LibraryFragment)vpAdapter.GetFragment(LibraryPager.getCurrentItem());
+            CurrentFragment.RestrictLibrary(' ');
         }
     }
 

@@ -33,7 +33,9 @@
         android:text="Discover"
         android:textColor="@color/DarkText"
         app:strokeColor="@color/ButtonBorder"
-        app:strokeWidth="4dp" />
+        app:strokeWidth="4dp"
+        android:textAllCaps="false"
+        />
 
     <TextView
         android:id="@+id/LastReadTXT"
@@ -62,76 +64,93 @@
         app:strokeWidth="4dp"
         />
 
-    <Button
-        android:id="@+id/LibraryBTN"
-        android:layout_width="wrap_content"
-        android:layout_height="100dp"
+    <LinearLayout
+        android:id="@+id/LibraryLinearLayout"
+        android:layout_height="wrap_content"
+        android:layout_width="match_parent"
         android:layout_below="@id/DiscoverBTN"
-        android:layout_marginTop="10dp"
-        android:layout_marginLeft="10dp"
-        android:layout_alignParentLeft="true"
-        android:backgroundTint="@color/ButtonInner"
-        android:text="Library"
-        android:textColor="@color/DarkText"
-        app:icon="@drawable/book"
-        app:iconSize="40dp"
-        app:strokeColor="@color/ButtonBorder"
-        app:strokeWidth="4dp"
-        android:layout_toLeftOf="@id/ForumsBTN"
-        />
+        android:layout_marginTop="10dp">
 
-    <Button
-        android:id="@+id/ForumsBTN"
-        android:layout_width="wrap_content"
-        android:layout_height="100dp"
-        android:layout_below="@+id/DiscoverBTN"
-        android:layout_marginLeft="10dp"
-        android:layout_marginTop="10dp"
-        android:layout_marginRight="10dp"
-        android:backgroundTint="@color/ButtonInner"
-        android:text="Forums"
-        android:textColor="@color/DarkText"
-        app:icon="@drawable/forum_icon"
-        app:iconSize="40dp"
-        app:strokeColor="@color/ButtonBorder"
-        app:strokeWidth="4dp"
-        android:layout_alignParentRight="true"
-        />
+        <Button
+            android:id="@+id/LibraryBTN"
+            android:layout_width="match_parent"
+            android:layout_height="100dp"
+            android:layout_marginLeft="10dp"
+            android:layout_alignParentLeft="true"
+            android:backgroundTint="@color/ButtonInner"
+            android:text="Library"
+            android:textColor="@color/DarkText"
+            app:icon="@drawable/book"
+            app:iconSize="40dp"
+            app:strokeColor="@color/ButtonBorder"
+            app:strokeWidth="4dp"
+            android:layout_toLeftOf="@id/ForumsBTN"
+            android:layout_weight="1"
+            android:textAllCaps="false"
+            />
 
+        <Button
+            android:id="@+id/ForumsBTN"
+            android:layout_width="match_parent"
+            android:layout_height="100dp"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
+            android:backgroundTint="@color/ButtonInner"
+            android:text="Forums"
+            android:textColor="@color/DarkText"
+            app:icon="@drawable/forum_icon"
+            app:iconSize="40dp"
+            app:strokeColor="@color/ButtonBorder"
+            app:strokeWidth="4dp"
+            android:layout_alignParentRight="true"
+            android:layout_weight="1"
+            android:textAllCaps="false"
+            />
+    </LinearLayout>
 
-    <Button
-        android:id="@+id/FriendsBTN"
+    <LinearLayout
+        android:id="@+id/FriendsLinearLayout"
+        android:layout_height="wrap_content"
         android:layout_width="match_parent"
-        android:layout_height="100dp"
-        android:layout_below="@id/ForumsBTN"
-        android:layout_marginLeft="10dp"
-        android:layout_marginTop="10dp"
-        android:backgroundTint="@color/ButtonInner"
-        android:text="Friends"
-        android:textColor="@color/DarkText"
-        app:icon="@drawable/friends_icon"
-        app:iconSize="40dp"
-        app:strokeColor="@color/ButtonBorder"
-        app:strokeWidth="4dp"
-        android:layout_alignParentLeft="true"
-        android:layout_toLeftOf="@id/SettingsBTN"
-        />
+        android:layout_below="@id/LibraryLinearLayout"
+        android:layout_marginTop="10dp">
 
+        <Button
+            android:id="@+id/FriendsBTN"
+            android:layout_width="match_parent"
+            android:layout_height="100dp"
+            android:layout_marginLeft="10dp"
+            android:layout_alignParentLeft="true"
+            android:backgroundTint="@color/ButtonInner"
+            android:text="Friends"
+            android:textColor="@color/DarkText"
+            app:icon="@drawable/book"
+            app:iconSize="40dp"
+            app:strokeColor="@color/ButtonBorder"
+            app:strokeWidth="4dp"
+            android:layout_toLeftOf="@id/ForumsBTN"
+            android:layout_weight="1"
+            android:textAllCaps="false"
+            />
 
-    <Button
-        android:id="@+id/SettingsBTN"
-        android:layout_width="match_parent"
-        android:layout_height="100dp"
-        android:layout_below="@id/LibraryBTN"
-        android:layout_alignParentRight="true"
-        android:layout_marginTop="10dp"
-        android:layout_marginRight="10dp"
-        android:layout_marginLeft="10dp"
-        android:backgroundTint="@color/ButtonInner"
-        android:text="UNKNOWN BUTTON"
-        android:textColor="@color/DarkText"
-        app:strokeColor="@color/ButtonBorder"
-        app:strokeWidth="4dp" />
+        <Button
+            android:id="@+id/SettingsBTN"
+            android:layout_width="match_parent"
+            android:layout_height="100dp"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
+            android:backgroundTint="@color/ButtonInner"
+            android:text="Unknown"
+            android:textColor="@color/DarkText"
+            app:icon="@drawable/forum_icon"
+            app:iconSize="40dp"
+            app:strokeColor="@color/ButtonBorder"
+            app:strokeWidth="4dp"
+            android:layout_alignParentRight="true"
+            android:layout_weight="1"
+            android:textAllCaps="false"
+            />
+    </LinearLayout>
 
     <TextView
         android:id="@+id/Username"

@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
+import android.text.SpannableStringBuilder;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
@@ -31,7 +32,11 @@ import org.jsoup.select.Elements;
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.GregorianCalendar;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class Book implements Serializable
 {
@@ -169,7 +174,6 @@ public class Book implements Serializable
             this.StrokeID = strokeID;
         }
 
-
         public String Text;
         public Drawable Icon;
         public int IconColor;
@@ -197,14 +201,16 @@ public class Book implements Serializable
     public int Followers;
     public int Favourites;
     public double Rating;
-    public GregorianCalendar CreatedDatetime;
-    public GregorianCalendar LastUpdatedDatetime;
-    public GregorianCalendar DownloadedDatetime;
+    public Date CreatedDatetime;
+    public Date LastUpdatedDatetime;
+    public Date DownloadedDatetime;
     public ArrayList<Chapter> Chapters;
     public ArrayList<Tags> TagsList;
     public ArrayList<Warnings> ContentWarnings;
     public boolean HasRead;
     public int LastReadChapter;
+
+    public int ProfileID;
 
     public boolean IsCompleted = false;
 
@@ -220,8 +226,9 @@ public class Book implements Serializable
             " &nbsp;"
     };
 
-    private String[] ReplaceTags = new String[] {
-            "<p style=\"text-align: center\">",
+    private String[] ReplaceTags = new String[]
+    {
+        "<p style=\"text-align: center\">",
     };
 
 
@@ -259,6 +266,7 @@ public class Book implements Serializable
 
                     NewBook.SetTitle(TitleAuthor[0]);
                     NewBook.SetAuthor(TitleAuthor[1]);
+                    NewBook.ProfileID = Integer.parseInt(TitleAuthor[2]);
 
                     NewBook.SetDescription(CreateDescription());
 
@@ -277,9 +285,9 @@ public class Book implements Serializable
                     NewBook.SetRating(CreateRating());
 
                     // DateTimes.
-                    NewBook.SetCreatedDateTime(new GregorianCalendar());
-                    NewBook.SetLastUpdatedDateTime(new GregorianCalendar());
-                    NewBook.SetDownloadedDateTime(new GregorianCalendar());
+                    NewBook.SetCreatedDateTime(Calendar.getInstance().getTime());
+                    NewBook.SetLastUpdatedDateTime(Calendar.getInstance().getTime());
+                    NewBook.SetDownloadedDateTime(Calendar.getInstance().getTime());
 
                     if (GetChapterContent)
                     {
@@ -389,7 +397,7 @@ public class Book implements Serializable
 
     private String[] CreateTitleAuthor()
     {
-        String[] TitleAuthor = new String[2];
+        String[] TitleAuthor = new String[3];
 
         Log.println(Log.INFO, "Hi", "Getting Title and Author");
 
@@ -401,6 +409,7 @@ public class Book implements Serializable
 
         TitleAuthor[0] = Title.text();
         TitleAuthor[1] = AuthorTXT;
+        TitleAuthor[2] = Author.getElementsByTag("a").get(0).attr("href").split("/")[2];
 
         return TitleAuthor;
     }
@@ -446,17 +455,31 @@ public class Book implements Serializable
     private ArrayList<Paragraph> CleanChapter(String RawChapter)
     {
         ArrayList<Paragraph> Content = new ArrayList<>();
-        String[] Paragraphs = RawChapter.split("</p>");
+        String[] Paragraphs = new String[0];
+
+        int ParagraphID = 0;
+
+        if(RawChapter.contains("<br><br>"))
+        {
+            RawChapter.replace("<br><br>", "<br>");
+            Paragraphs = RawChapter.split("<br>");
+        }
+        else
+        {
+            Paragraphs = RawChapter.split("</p>");
+        }
 
         for(int i = 0; i < Paragraphs.length; i++)
         {
             Paragraph ThisParagraph = new Paragraph();
 
-            ThisParagraph.ParagraphID = i;
+            ThisParagraph.ParagraphID = ParagraphID;
             String AlteredParagraph = Paragraphs[i];
 
             AlteredParagraph = AlteredParagraph.replace("&nbsp;", "");
             AlteredParagraph = AlteredParagraph.replace("&amp;", "&");
+            AlteredParagraph = AlteredParagraph.replace("<em></em>", "");
+            AlteredParagraph = AlteredParagraph.replace("<em> </em>", "");
 
             DeleteCharacters = false;
             StringBuilder NewParagraph = new StringBuilder(AlteredParagraph);
@@ -483,7 +506,7 @@ public class Book implements Serializable
                                 DeleteCharacters = false;
                             }
                         }
-                        else if(AlteredParagraph.charAt(j + 1) == '/')
+                        else if(AlteredParagraph.charAt(j + 1) == '/' && j != 0)
                         {
                             if(AlteredParagraph.charAt(j + 2) == 'e')
                             {
@@ -524,7 +547,7 @@ public class Book implements Serializable
                                 }
                             }
                         }
-                        else if(AlteredParagraph.charAt(j + 1) == 's')
+                        else if(AlteredParagraph.charAt(j + 1) == 's'  && j != 0)
                         {
                             if(AlteredParagraph.charAt(j + 2) == 't')
                             {
@@ -549,6 +572,17 @@ public class Book implements Serializable
                                 {
                                     ProtectedTag = true;
                                     DeleteCharacters = false;
+                                }
+                            }
+                        }
+                        else if(AlteredParagraph.charAt(j + 1) == 'b')
+                        {
+                            if(AlteredParagraph.charAt(j + 2) == 'r')
+                            {
+                                if(AlteredParagraph.charAt( j + 3) == '>')
+                                {
+                                    ProtectedTag = true;
+                                    DeleteCharacters = true;
                                 }
                             }
                         }
@@ -578,7 +612,7 @@ public class Book implements Serializable
 
             for(int j = NewParagraph.length() - 1; j > 0; j--)
             {
-                if(Character.isWhitespace(NewParagraph.charAt(j)))
+                if(Character.isWhitespace(NewParagraph.charAt(j)) || NewParagraph.charAt(j) == ' ')
                 {
                     NewParagraph.deleteCharAt(j);
                 }
@@ -591,7 +625,7 @@ public class Book implements Serializable
             int DeleteOffset = 0;
             for(int j = 0; j < NewParagraph.toString().length(); j++)
             {
-                if(Character.isWhitespace(NewParagraph.charAt(j)))
+                if(Character.isWhitespace(NewParagraph.charAt(j)) || NewParagraph.charAt(j) == ' ')
                 {
                     NewParagraph.deleteCharAt(j - DeleteOffset);
                     DeleteOffset++;
@@ -602,9 +636,75 @@ public class Book implements Serializable
                 }
             }
 
-            ThisParagraph.Content = NewParagraph.toString();
+            if(!NewParagraph.toString().isEmpty())
+            {
+                if(NewParagraph.charAt(0) == ' ')
+                {
+                    NewParagraph.delete(0, 1);
+                }
 
-            Content.add(ThisParagraph);
+                /*
+                int IndexOffset = 0;
+                DeleteOffset = 0;
+
+                if(NewParagraph.toString().contains("<hr>") && NewParagraph.toString().length() > 4)
+                {
+                    Pattern HRPattern = Pattern.compile("<hr>");
+                    Matcher HRMatcher = HRPattern.matcher(NewParagraph.toString());
+
+                    while(HRMatcher.find())
+                    {
+                        int Index = NewParagraph.toString().indexOf("<hr>", IndexOffset);
+
+                        ParagraphID++;
+
+                        Paragraph HRParagraph = new Paragraph();
+
+                        HRParagraph.ParagraphID = ParagraphID;
+                        HRParagraph.Content = "<hr>";
+
+                        Content.add(HRParagraph);
+
+                        NewParagraph.delete(Index, Index + 3);
+
+                        DeleteOffset += 3;
+                        IndexOffset = Index + 3;
+                    }
+                }
+
+                if(NewParagraph.toString().contains("<br>") && NewParagraph.toString().length() > 4)
+                {
+                    Pattern BRPattern = Pattern.compile("<br>");
+                    Matcher BRMatcher = BRPattern.matcher(NewParagraph.toString());
+
+                    while(BRMatcher.find())
+                    {
+                        int Index = NewParagraph.toString().indexOf("<br>", IndexOffset);
+
+                        ParagraphID++;
+
+                        Paragraph BRParagraph = new Paragraph();
+
+                        BRParagraph.ParagraphID = ParagraphID;
+                        BRParagraph.Content = "<br>";
+
+                        Content.add(BRParagraph);
+
+                        Index -= DeleteOffset;
+
+                        NewParagraph.delete(Index, Index + 4);
+                        DeleteOffset += 4;
+
+                        IndexOffset = Index + 4;
+                    }
+                }
+                */
+
+                ThisParagraph.Content = NewParagraph.toString();
+                Content.add(ThisParagraph);
+
+                ParagraphID++;
+            }
         }
 
         return Content;
@@ -1089,32 +1189,32 @@ public class Book implements Serializable
         this.Rating = rating;
     }
 
-    public GregorianCalendar GetCreatedDateTime()
+    public Date GetCreatedDateTime()
     {
         return this.CreatedDatetime;
     }
 
-    public void SetCreatedDateTime(GregorianCalendar DateTime)
+    public void SetCreatedDateTime(Date DateTime)
     {
         this.CreatedDatetime = DateTime;
     }
 
-    public GregorianCalendar GetLastUpdatedDateTime()
+    public Date GetLastUpdatedDateTime()
     {
         return this.LastUpdatedDatetime;
     }
 
-    public void SetLastUpdatedDateTime(GregorianCalendar DateTime)
+    public void SetLastUpdatedDateTime(Date DateTime)
     {
         this.LastUpdatedDatetime = DateTime;
     }
 
-    public GregorianCalendar GetDownloadedDateTime()
+    public Date GetDownloadedDateTime()
     {
         return this.DownloadedDatetime;
     }
 
-    public void SetDownloadedDateTime(GregorianCalendar DateTime)
+    public void SetDownloadedDateTime(Date DateTime)
     {
         this.DownloadedDatetime = DateTime;
     }
