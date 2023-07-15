@@ -1,3 +1,24 @@
 Things I have to do:
 
+UPDATE:
+- Fix Update so that it checks if any Changes have happened to the Chapters.
+- Fix Update so that it checks if any Changes have happened to the Contents of Each Individual Chapter.
+- Fix Update so that it automatically runs every time the User enters the HomeActivity.
+
+READ:
+- Remove HasRead and LastReadChapter from Library Database.
+- Add History Library Connections to the History Tab.
+- Add any Books the User Opens to the History Library ( This Will include Books that are NOT downloaded ), Keeps a consistent History log.
+- Update History Library to Sort the Books by Order of Last Read.
+- Update Downloaded Library to Sort the Books in Reverse Order. ( Since the Order they are added to DB is the Order that they were Downloaded and Newer Downloads should show before old ones ).
+- Update Downloaded Library to Check if any of these Books have an UnreadDownload (Make those appear at the Very TOP of the List.)
+- Add UnreadDownload as a boolean to the Book and DB.
+- In BookAdapater Have the UpdateImage Show if the Book has UnreadDownload as True.
+- In Library Have a Toolbar appear when I start Settings Books for Deletion, Have it have a Delete Icon.
+- Tie Delete Icon in Toolbar to actually Deleting Stories.
+
+NEW FEATURES:
+-
+
+FIXES:
 - 
