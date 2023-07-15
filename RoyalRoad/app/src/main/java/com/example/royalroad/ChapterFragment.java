@@ -31,7 +31,10 @@ import android.widget.TextView;
 import com.google.android.flexbox.FlexboxLayoutManager;
 
 import org.checkerframework.checker.units.qual.Current;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
 
+import java.io.IOException;
 import java.util.ArrayList;
 
 public class ChapterFragment extends Fragment
@@ -46,6 +49,8 @@ public class ChapterFragment extends Fragment
     int ChapterID;
 
     boolean FontDetails;
+
+    Book.Chapter CurrentChapter;
 
     public ChapterFragment(int chapterID)
     {
@@ -75,10 +80,48 @@ public class ChapterFragment extends Fragment
         ToolbarShow = readActivity.ToolbarAppeared;
 
         int BookID = readActivity.ReadBook.GetInternalID();
+        boolean IsDownloaded = readActivity.HasDownloaded;
 
-        DBHandler SQLiteDB = new DBHandler(getActivity());
-        Book.Chapter CurrentChapter = SQLiteDB.GetChapter(BookID, ChapterID);
-        SQLiteDB.close();
+        if(IsDownloaded)
+        {
+            DBHandler SQLiteDB = new DBHandler(getActivity());
+            CurrentChapter = SQLiteDB.GetChapter(BookID, ChapterID);
+            SQLiteDB.close();
+        }
+        else
+        {
+            int CurrentFragmentID = readActivity.BookPager.getCurrentItem();
+            CurrentChapter = new Book().CreateChapter(readActivity.ReadBook.ExternalID, CurrentFragmentID);
+
+            Thread ChapterThread = new Thread(new Runnable() {
+                @Override
+                public void run()
+                {
+                    try
+                    {
+                        Document ChapterDoc = Jsoup.connect(CurrentChapter.URL).get();
+
+                        String RawChapter = ChapterDoc.select(".chapter-content").first().toString();
+
+                        CurrentChapter.Content = new Book().CleanChapter(RawChapter);
+                    }
+                    catch (IOException e)
+                    {
+                        throw new RuntimeException(e);
+                    }
+                }
+            });
+
+            ChapterThread.start();
+            try
+            {
+                ChapterThread.join();
+            }
+            catch (InterruptedException e)
+            {
+                throw new RuntimeException(e);
+            }
+        }
 
         StoryRV = (RecyclerView) view.findViewById(R.id.ChapterContentRV);
 
@@ -94,6 +137,7 @@ public class ChapterFragment extends Fragment
                 return true;
             }
         });
+
 
         for(Book.Paragraph ThisParagraph : CurrentChapter.Content)
         {

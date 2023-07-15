@@ -27,11 +27,13 @@ public class ReadActivity extends AppCompatActivity {
     Toolbar BottomToolbar;
     Toolbar TopToolbar;
 
-    private ViewPager2 BookPager;
+    public ViewPager2 BookPager;
     boolean ToolbarAppeared;
     public Book ReadBook;
     public Button BackBTN;
     public Button ChapterCount;
+
+    public boolean HasDownloaded;
 
     private VPAdapter vpAdapter;
 
@@ -42,7 +44,8 @@ public class ReadActivity extends AppCompatActivity {
 
         Intent ThisIntent = getIntent();
         ReadBook = (Book)ThisIntent.getExtras().getSerializable("Book");
-        boolean HasDownloaded = ThisIntent.getBooleanExtra("HasDownloaded", false);
+
+        HasDownloaded = ThisIntent.getBooleanExtra("HasDownloaded", false);
         boolean FromNotification = ThisIntent.getBooleanExtra("FromNotification", false);
 
         BackBTN = findViewById(R.id.BackBTN);
@@ -159,7 +162,7 @@ public class ReadActivity extends AppCompatActivity {
 
         BackBTN.setText(ReadBook.Title);
 
-        if(ReadBook.HasRead)
+        if(ReadBook.HasRead && HasDownloaded)
         {
             if(ReadBook.LastReadChapter >= 0)
             {
@@ -175,9 +178,12 @@ public class ReadActivity extends AppCompatActivity {
         {
             BookPager.setCurrentItem(0);
 
-            DBHandler SQLiteDB = new DBHandler(this);
-            SQLiteDB.UpdateHasRead(ReadBook.GetExternalID());
-            SQLiteDB.close();
+            if(HasDownloaded)
+            {
+                DBHandler SQLiteDB = new DBHandler(this);
+                SQLiteDB.UpdateHasRead(ReadBook.GetExternalID());
+                SQLiteDB.close();
+            }
         }
     }
 

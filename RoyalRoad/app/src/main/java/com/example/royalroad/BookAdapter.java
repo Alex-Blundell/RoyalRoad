@@ -243,6 +243,7 @@ public class BookAdapter extends RecyclerView.Adapter<BookAdapter.bookviewholder
                 if(!CanDestroy)
                 {
                     Intent ThisIntent = new Intent(v.getContext(), ReadActivity.class);
+
                     ThisIntent.putExtra("Book", Data.get(Position));
 
                     DBHandler SQLiteDB = new DBHandler((Activity)holder.itemView.getContext());

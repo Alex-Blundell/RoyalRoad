@@ -36,7 +36,7 @@ public class DBHandler extends SQLiteOpenHelper
     // Database Variables.
     public static final String DB_NAME = "BookLibrary";
     Context context;
-    public static final int DB_VERSION = 36;
+    public static final int DB_VERSION = 37;
 
     // Tables.
     public static final String LIBRARY_TABLE_NAME = "Library";
@@ -449,6 +449,8 @@ public class DBHandler extends SQLiteOpenHelper
 
                 Result = db.insertOrThrow(CHAPTERS_TABLE_NAME, null, ChapterCV);
 
+                ChapterCV.clear();
+
                 db.beginTransaction();
                 try
                 {
@@ -472,8 +474,6 @@ public class DBHandler extends SQLiteOpenHelper
                 {
                     db.endTransaction();
                 }
-
-                ChapterCV.clear();
 
                 if (Result == -1)
                 {
@@ -510,7 +510,7 @@ public class DBHandler extends SQLiteOpenHelper
                     .setSmallIcon(R.mipmap.icon)
                     .setContentTitle(NewBook.Title)
                     .setContentText("Story Downloaded")
-                    .setPriority(NotificationCompat.PRIORITY_HIGH)
+                    .setPriority(NotificationCompat.PRIORITY_DEFAULT)
                     .setCategory(Notification.CATEGORY_MESSAGE)
                     .setContentIntent(ReadPendingIntent)
                     .setWhen(System.currentTimeMillis())
@@ -698,26 +698,26 @@ public class DBHandler extends SQLiteOpenHelper
         return CursorNum;
     }
 
-    public long[] GetExternalIDs()
+    public int[] GetExternalIDs()
     {
         int BookCount = GetLibraryCount();
 
         SQLiteDatabase db = this.getReadableDatabase();
-        long[] ExternalIDs = new long[BookCount];
+        int[] ExternalIDs = new int[BookCount];
 
         String Query = "SELECT " + EXTERNAL_ID + " FROM " + LIBRARY_TABLE_NAME;
-        Cursor cursor = null;
 
+        Cursor cursor = null;
         if(db != null)
         {
             cursor = db.rawQuery(Query, null);
         }
 
         cursor.moveToFirst();
-
         for(int i = 0; i < BookCount; i++)
         {
-            ExternalIDs[i] = cursor.getLong(i);
+            ExternalIDs[i] = cursor.getInt(0);
+            cursor.moveToNext();
         }
 
         cursor.close();
@@ -831,118 +831,12 @@ public class DBHandler extends SQLiteOpenHelper
         return ChapterGot;
     }
 
-    public void CheckUpdate(Activity activity, Book ThisBook) throws InterruptedException
-    {
-        boolean HasUpdated = false;
-
-        String URL = "https://www.royalroad.com/fiction/" + ThisBook.ExternalID;
-        Book NewBook = new Book().CreateBook(activity, ThisBook.ExternalID, false, false, false);
-
-        /*
-        // Check to See if Anything has Updated.
-        if(NewBook.GetType() != ThisBook.GetType())
-        {
-            UpdateBookType(ThisBook.GetExternalID(), NewBook.GetType());
-        }
-
-        if(NewBook.GetTitle() != ThisBook.GetTitle())
-        {
-            UpdateTitle(ThisBook.GetExternalID(), NewBook.GetTitle());
-        }
-
-        if(NewBook.GetDescription() != ThisBook.GetDescription())
-        {
-            UpdateDescription(ThisBook.GetExternalID(), NewBook.GetDescription());
-        }
-
-        if(NewBook.GetCover() != ThisBook.GetCover())
-        {
-            UpdateCoverURL(ThisBook.GetExternalID(), NewBook.GetCover());
-        }
-
-        if(NewBook.GetGenres().size() != ThisBook.GetGenres().size())
-        {
-            //UpdateGenres(ThisBook.GetExternalID(), NewBook.GetPageCount());
-        }
-
-        boolean PageCountChanged = false;
-
-        if(NewBook.GetPageCount() != ThisBook.GetPageCount())
-        {
-            UpdatePageCount(ThisBook.GetExternalID(), NewBook.GetPageCount());
-
-            PageCountChanged = true;
-        }
-
-        if(NewBook.GetFollowerCount() != ThisBook.GetFollowerCount())
-        {
-            UpdateFollowers(ThisBook.GetExternalID(), NewBook.GetFollowerCount());
-        }
-
-        if(NewBook.GetFavouriteCount() != ThisBook.GetFavouriteCount())
-        {
-            UpdateFavourites(ThisBook.GetExternalID(), NewBook.GetFavouriteCount());
-        }
-
-        if(NewBook.GetRating() != ThisBook.GetRating())
-        {
-            UpdateRating(ThisBook.GetExternalID(), NewBook.GetRating());
-        }
-
-        /*
-        if(NewBook.GetLastUpdatedDateTime().toString() != ThisBook.GetLastUpdatedDateTime().toString())
-        {
-            HasUpdated = true;
-            UpdateLastUpdateDateTime();
-        }
-
-
-        if(NewBook.GetAllChapters().size() != ThisBook.GetAllChapters().size())
-        {
-            HasUpdated = true;
-
-            // Ammount of Chapters in NewBook is Less than ThisBook, Remove Chapter.
-            if(ThisBook.GetAllChapters().size() > ThisBook.GetAllChapters().size())
-            {
-                //RemoveChapter();
-            }
-            else if(ThisBook.GetAllChapters().size() < ThisBook.GetAllChapters().size()) // Ammount of Chapters in NewBook is Greater than ThisBook, Add NewChapter
-            {
-                //AddChapter();
-            }
-        }
-        else
-        {
-            // No New or Removed Chapters, But PageCount Has Changed, Thus Chapter Has been Modified.
-            if(PageCountChanged)
-            {
-                //ReplaceChapter();
-            }
-        }
-
-        if(NewBook.GetTags().size() != ThisBook.GetTags().size())
-        {
-            //UpdateTags();
-        }
-
-        if(NewBook.GetWarnings().size() != ThisBook.GetWarnings().size())
-        {
-            //UpdateWarnings();
-        }
-
-        if(HasUpdated)
-        {
-            // Send Update Notification.
-        }
-        */
-    }
-
     public void UpdateBookType(int ExternalID, Book.BookType NewType)
     {
         SQLiteDatabase db = this.getWritableDatabase();
 
         ContentValues TypeCV = new ContentValues();
-        TypeCV.put(TYPE, NewType.toString());
+        TypeCV.put(TYPE, NewType.ordinal());
 
         db.update(LIBRARY_TABLE_NAME, TypeCV,EXTERNAL_ID + " = " + ExternalID, null);
     }
@@ -953,6 +847,16 @@ public class DBHandler extends SQLiteOpenHelper
 
         ContentValues TitleCV = new ContentValues();
         TitleCV.put(TITLE, NewTitle);
+
+        db.update(LIBRARY_TABLE_NAME, TitleCV,EXTERNAL_ID + " = " + ExternalID, null);
+    }
+
+    public void UpdateAuthor(int ExternalID, String NewAuthor)
+    {
+        SQLiteDatabase db = this.getWritableDatabase();
+
+        ContentValues TitleCV = new ContentValues();
+        TitleCV.put(AUTHOR, NewAuthor);
 
         db.update(LIBRARY_TABLE_NAME, TitleCV,EXTERNAL_ID + " = " + ExternalID, null);
     }

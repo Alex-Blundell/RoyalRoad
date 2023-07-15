@@ -301,8 +301,8 @@ public class ParagraphLineAdapter extends RecyclerView.Adapter<ParagraphLineAdap
                         AlteredParagraph.setSpan(BoldSpan, Index, EndIndex - DeleteOffset, Spannable.SPAN_INCLUSIVE_EXCLUSIVE);
                     }
 
-                    IndexOffset = EndIndex;
                     DeleteOffset += 9;
+                    IndexOffset = EndIndex;
                 }
             }
 

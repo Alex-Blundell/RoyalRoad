@@ -295,7 +295,24 @@ public class Book implements Serializable
                     }
                     else
                     {
-                        NewBook.SetAllChapters(new ArrayList<>());
+                        ArrayList<Chapter> AllChapters = new ArrayList<>();
+                        Elements ChapterLinks = StoryDoc.select("td:not([class]) a");
+
+                        int Index = 0;
+                        for(Element Link : ChapterLinks)
+                        {
+                            Chapter NewChapter = new Chapter();
+
+                            NewChapter.ID = Index;
+                            NewChapter.Name = Link.text();
+                            NewChapter.URL = Link.attr("abs:href");
+                            NewChapter.ChapterProgress = 0;
+
+                            AllChapters.add(new Chapter());
+                            Index++;
+                        }
+
+                        NewBook.SetAllChapters(AllChapters);
                     }
 
                     Log.println(Log.INFO, "Hi", "Setting HasRead and LastReadChapter to 0");
@@ -452,22 +469,26 @@ public class Book implements Serializable
         return AllChapters;
     }
 
-    private ArrayList<Paragraph> CleanChapter(String RawChapter)
+    public ArrayList<Paragraph> CleanChapter(String RawChapter)
     {
         ArrayList<Paragraph> Content = new ArrayList<>();
-        String[] Paragraphs = new String[0];
+        String[] Paragraphs;
 
         int ParagraphID = 0;
 
-        if(RawChapter.contains("<br><br>"))
-        {
-            RawChapter.replace("<br><br>", "<br>");
-            Paragraphs = RawChapter.split("<br>");
-        }
-        else
-        {
-            Paragraphs = RawChapter.split("</p>");
-        }
+        // A Fix that seems to happen in some stories where they have two break tags next to each other.
+        RawChapter = RawChapter.replace("<br><br>", "<br>");
+
+        // This is a Fix for something that happens sometimes in the HTML Code, the Break comes before the end of a Bold or Italic Line.
+        RawChapter = RawChapter.replace("<br></strong>", "</strong><br>");
+        RawChapter = RawChapter.replace("<br></em>", "</em><br>");
+
+        // Replacing HTML Tags that break a Text into seperate Paragraphs.
+        RawChapter = RawChapter.replace("</p>", "<RR_APP_PARAGRAPH_BREAK>");
+        RawChapter = RawChapter.replace("<br>", "<RR_APP_PARAGRAPH_BREAK>");
+
+        // Split Chapter into Seperate Paragraphs.
+        Paragraphs = RawChapter.split("<RR_APP_PARAGRAPH_BREAK>");
 
         for(int i = 0; i < Paragraphs.length; i++)
         {
@@ -480,6 +501,12 @@ public class Book implements Serializable
             AlteredParagraph = AlteredParagraph.replace("&amp;", "&");
             AlteredParagraph = AlteredParagraph.replace("<em></em>", "");
             AlteredParagraph = AlteredParagraph.replace("<em> </em>", "");
+
+            AlteredParagraph = AlteredParagraph.replace("<p style=\"text-align: center\">", "<RR_APP_PARAGRAPH_ALIGN_CENTER>");
+            AlteredParagraph = AlteredParagraph.replace("<p style=\"text-align: left\">", "<RR_APP_PARAGRAPH_ALIGN_LEFT>");
+            AlteredParagraph = AlteredParagraph.replace("<p style=\"text-align: right\">", "<RR_APP_PARAGRAPH_ALIGN_RIGHT>");
+            AlteredParagraph = AlteredParagraph.replace("<p style=\"text-align: justify\">", "<RR_APP_PARAGRAPH_ALIGN_JUSTIFY>");
+            AlteredParagraph = AlteredParagraph.replace("<span style=\"text-decoration: underline\">", "<RR_APP_PARAGRAPH_UNDERLINE>");
 
             DeleteCharacters = false;
             StringBuilder NewParagraph = new StringBuilder(AlteredParagraph);
@@ -516,26 +543,30 @@ public class Book implements Serializable
                                     DeleteCharacters = false;
                                 }
                             }
-
                             else if(AlteredParagraph.charAt(j + 2) == 's')
                             {
                                 if(AlteredParagraph.charAt(j + 3) == 't')
                                 {
                                     if(AlteredParagraph.charAt(j + 4) == 'r')
                                     {
-                                        if(AlteredParagraph.charAt(j + 5) == 'n')
+                                        if(AlteredParagraph.charAt(j + 5) == 'o')
                                         {
-                                            if(AlteredParagraph.charAt(j + 6) == 'g') // Protecting End Bold.
+                                            if(AlteredParagraph.charAt(j + 6) == 'n')
                                             {
-                                                ProtectedTag = true;
-                                                DeleteCharacters = false;
+                                                if(AlteredParagraph.charAt(j + 7) == 'g')
+                                                {
+                                                    if(AlteredParagraph.charAt(j + 8) == '>') // Protecting End Bold.
+                                                    {
+                                                        ProtectedTag = true;
+                                                        DeleteCharacters = false;
+                                                    }
+                                                }
                                             }
                                         }
                                     }
                                 }
                             }
                         }
-
                         else if(AlteredParagraph.charAt(j + 1) == 'i')
                         {
                             if(AlteredParagraph.charAt(j + 2) == 'm')
@@ -547,18 +578,24 @@ public class Book implements Serializable
                                 }
                             }
                         }
-                        else if(AlteredParagraph.charAt(j + 1) == 's'  && j != 0)
+                        else if(AlteredParagraph.charAt(j + 1) == 's')
                         {
                             if(AlteredParagraph.charAt(j + 2) == 't')
                             {
                                 if(AlteredParagraph.charAt(j + 3) == 'r')
                                 {
-                                    if(AlteredParagraph.charAt(j + 4) == 'n')
+                                    if(AlteredParagraph.charAt(j + 4) == 'o')
                                     {
-                                        if(AlteredParagraph.charAt(j + 5) == 'g') // Protecting Bold Tag.
+                                        if(AlteredParagraph.charAt(j + 5) == 'n')
                                         {
-                                            ProtectedTag = true;
-                                            DeleteCharacters = false;
+                                            if(AlteredParagraph.charAt(j + 6) == 'g')
+                                            {
+                                                if(AlteredParagraph.charAt(j + 7) == '>') // Protecting Bold Tag.
+                                                {
+                                                    ProtectedTag = true;
+                                                    DeleteCharacters = false;
+                                                }
+                                            }
                                         }
                                     }
                                 }
@@ -583,6 +620,26 @@ public class Book implements Serializable
                                 {
                                     ProtectedTag = true;
                                     DeleteCharacters = true;
+                                }
+                            }
+                        }
+                        else if(AlteredParagraph.charAt(j + 1) == 'R')
+                        {
+                            if(AlteredParagraph.charAt(j + 2) == 'R')
+                            {
+                                if(AlteredParagraph.charAt(j + 3) == '_')
+                                {
+                                    if(AlteredParagraph.charAt(j + 4) == 'A')
+                                    {
+                                        if(AlteredParagraph.charAt(j + 5) == 'P')
+                                        {
+                                            if(AlteredParagraph.charAt(j + 6) == 'P')
+                                            {
+                                                ProtectedTag = true;
+                                                DeleteCharacters = false;
+                                            }
+                                        }
+                                    }
                                 }
                             }
                         }
@@ -642,63 +699,6 @@ public class Book implements Serializable
                 {
                     NewParagraph.delete(0, 1);
                 }
-
-                /*
-                int IndexOffset = 0;
-                DeleteOffset = 0;
-
-                if(NewParagraph.toString().contains("<hr>") && NewParagraph.toString().length() > 4)
-                {
-                    Pattern HRPattern = Pattern.compile("<hr>");
-                    Matcher HRMatcher = HRPattern.matcher(NewParagraph.toString());
-
-                    while(HRMatcher.find())
-                    {
-                        int Index = NewParagraph.toString().indexOf("<hr>", IndexOffset);
-
-                        ParagraphID++;
-
-                        Paragraph HRParagraph = new Paragraph();
-
-                        HRParagraph.ParagraphID = ParagraphID;
-                        HRParagraph.Content = "<hr>";
-
-                        Content.add(HRParagraph);
-
-                        NewParagraph.delete(Index, Index + 3);
-
-                        DeleteOffset += 3;
-                        IndexOffset = Index + 3;
-                    }
-                }
-
-                if(NewParagraph.toString().contains("<br>") && NewParagraph.toString().length() > 4)
-                {
-                    Pattern BRPattern = Pattern.compile("<br>");
-                    Matcher BRMatcher = BRPattern.matcher(NewParagraph.toString());
-
-                    while(BRMatcher.find())
-                    {
-                        int Index = NewParagraph.toString().indexOf("<br>", IndexOffset);
-
-                        ParagraphID++;
-
-                        Paragraph BRParagraph = new Paragraph();
-
-                        BRParagraph.ParagraphID = ParagraphID;
-                        BRParagraph.Content = "<br>";
-
-                        Content.add(BRParagraph);
-
-                        Index -= DeleteOffset;
-
-                        NewParagraph.delete(Index, Index + 4);
-                        DeleteOffset += 4;
-
-                        IndexOffset = Index + 4;
-                    }
-                }
-                */
 
                 ThisParagraph.Content = NewParagraph.toString();
                 Content.add(ThisParagraph);
@@ -1074,6 +1074,55 @@ public class Book implements Serializable
 
         CountElements.clear();
         return Counts;
+    }
+
+    public Chapter CreateChapter(int ExternalID, int ChapterID)
+    {
+        Chapter NewChapter = new Chapter();
+
+        Thread CreateThread = new Thread(new Runnable()
+        {
+            @Override
+            public void run()
+            {
+                String URL = "https://www.royalroad.com/fiction/" + ExternalID + "/";
+                try
+                {
+                    Document StoryDoc2 = Jsoup.connect(URL).get();
+                    Elements ChapterLinks = StoryDoc2.select("td:not([class]) a");
+
+                    int Index = 0;
+                    for(Element Link : ChapterLinks)
+                    {
+                        if(Index == ChapterID)
+                        {
+                            NewChapter.ID = Index;
+                            NewChapter.Name = Link.text();
+                            NewChapter.URL = Link.attr("abs:href");
+                            NewChapter.ChapterProgress = 0;
+                        }
+
+                        Index++;
+                    }
+                }
+                catch (IOException e)
+                {
+                    throw new RuntimeException(e);
+                }
+            }
+        });
+
+        CreateThread.start();
+        try
+        {
+            CreateThread.join();
+        }
+        catch (InterruptedException e)
+        {
+            throw new RuntimeException(e);
+        }
+
+        return NewChapter;
     }
 
     public int GetInternalID()

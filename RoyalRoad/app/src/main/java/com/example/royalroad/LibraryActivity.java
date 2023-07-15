@@ -2,12 +2,18 @@ package com.example.royalroad;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.core.app.NotificationCompat;
 import androidx.fragment.app.FragmentPagerAdapter;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewpager.widget.ViewPager;
 import androidx.viewpager2.widget.ViewPager2;
 
+import android.app.Notification;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
+import android.app.TaskStackBuilder;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.ColorStateList;
@@ -31,6 +37,8 @@ import org.checkerframework.common.subtyping.qual.Bottom;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
+import java.util.concurrent.ExecutionException;
 
 
 public class LibraryActivity extends AppCompatActivity {
@@ -519,25 +527,292 @@ public class LibraryActivity extends AppCompatActivity {
 
     public void SyncLibrary()
     {
-        DBHandler SQLiteDB = new DBHandler(this);
+        DBHandler SQLiteDB = new DBHandler(getApplicationContext());
+
         int LibraryCount = SQLiteDB.GetLibraryCount();
+
+        int[] ExternalIDs = SQLiteDB.GetExternalIDs();
+        Book[] SQLiteBooks = new Book[LibraryCount];
 
         for(int i = 0; i < LibraryCount; i++)
         {
-            Book ThisBook = SQLiteDB.GetBook(i);
-
-            try
-            {
-                SQLiteDB.CheckUpdate(this, ThisBook);
-            }
-            catch (InterruptedException e)
-            {
-                throw new RuntimeException(e);
-            }
+            SQLiteBooks[i] = SQLiteDB.GetBook(i + 1);
         }
 
-        SQLiteDB.close();
+        try
+        {
+            Book[] CompareBooks = new Book[ExternalIDs.length];
 
+            for(int i = 0; i < CompareBooks.length; i++)
+            {
+                CompareBooks[i] = new Book();
+            }
+
+            Thread BookThread = new Thread(new Runnable()
+            {
+                @Override
+                public void run()
+                {
+                    for(int i = 0; i < ExternalIDs.length; i++)
+                    {
+                        try
+                        {
+                            CompareBooks[i] = new Book().CreateBook(getApplicationContext(), ExternalIDs[i], false, false, false);
+                        }
+                        catch (InterruptedException e)
+                        {
+                            throw new RuntimeException(e);
+                        }
+                    }
+                }
+            })  ;
+
+            BookThread.start();
+
+            Thread BookCheck = new Thread(new Runnable() {
+                @Override
+                public void run()
+                {
+                    for(int i = 0; i < ExternalIDs.length; i++)
+                    {
+                        while(!CompareBooks[i].IsCompleted)
+                        {
+                            try
+                            {
+                                Thread.sleep(50);
+                            }
+                            catch (InterruptedException e)
+                            {
+                                throw new RuntimeException(e);
+                            }
+                        }
+                    }
+
+                }
+            });
+
+            BookCheck.start();
+            BookCheck.join();
+
+            int Index = 0;
+
+            for(Book CurrentBook : SQLiteBooks)
+            {
+                Book CompareBook = CompareBooks[Index];
+
+                boolean HasUpdated = false;
+                ArrayList<String> UpdatedNames = new ArrayList<>();
+
+                // Check Book Type.
+                if(CurrentBook.Type.ordinal() != CompareBook.Type.ordinal())
+                {
+                    if(!HasUpdated)
+                    {
+                        HasUpdated = true;
+                    }
+
+                    UpdatedNames.add("Type");
+                }
+
+                if(!Objects.equals(CurrentBook.Title, CompareBook.Title))
+                {
+                    if(!HasUpdated)
+                    {
+                        HasUpdated = true;
+                    }
+
+                    UpdatedNames.add("Title");
+                }
+
+                if(!Objects.equals(CurrentBook.Author, CompareBook.Author))
+                {
+                    if(!HasUpdated)
+                    {
+                        HasUpdated = true;
+                    }
+
+                    UpdatedNames.add("Author");
+                }
+
+                if(!Objects.equals(CurrentBook.Description, CompareBook.Description))
+                {
+                    if(!HasUpdated)
+                    {
+                        HasUpdated = true;
+                    }
+
+                    UpdatedNames.add("Description");
+                }
+
+                if(!Objects.equals(CurrentBook.CoverURL, CompareBook.CoverURL))
+                {
+                    if(!HasUpdated)
+                    {
+                        HasUpdated = true;
+                    }
+
+                    UpdatedNames.add("CoverURL");
+                }
+
+                // Check if Warnings have Changed.
+                /*
+                if(CurrentBook.Type != CompareBook.Type)
+                {
+                    if(!HasUpdated)
+                    {
+                        HasUpdated = true;
+                    }
+
+                    UpdatedNames.add("Type");
+                }
+                */
+
+                // Check if Genres have Changed.
+                /*
+                if(CurrentBook.Type != CompareBook.Type)
+                {
+                    if(!HasUpdated)
+                    {
+                        HasUpdated = true;
+                    }
+
+                    UpdatedNames.add("Type");
+                }
+                */
+
+                // Check if Tags have Changed.
+                /*
+                if(CurrentBook.Type != CompareBook.Type)
+                {
+                    if(!HasUpdated)
+                    {
+                        HasUpdated = true;
+                    }
+
+                    UpdatedNames.add("Type");
+                }
+                */
+
+                // Check to See if Chapters Have Changed.
+                /*
+                if(CurrentBook.Chapters.size() != CompareBook.Chapters.size())
+                {
+                    if(!HasUpdated)
+                    {
+                        HasUpdated = true;
+                    }
+
+                    // New Book Has More Chapters than the old one.
+                    if(CompareBook.Chapters.size() > CurrentBook.Chapters.size())
+                    {
+                        UpdatedNames.add("ChapterAdded");
+                    }
+                    else
+                    {
+                        UpdatedNames.add("ChapterRemoved");
+                    }
+                }
+                else
+                {
+                    // Check to see if anything has changed in Chapter Contents.
+                }
+                */
+
+                if(HasUpdated)
+                {
+                    for(String UpdateKey : UpdatedNames)
+                    {
+                        switch(UpdateKey)
+                        {
+                            case "Type":
+                                SQLiteDB.UpdateBookType(CurrentBook.ExternalID, CompareBook.Type);
+                                break;
+
+                            case "Title":
+                                SQLiteDB.UpdateTitle(CurrentBook.ExternalID, CompareBook.Title);
+                                break;
+
+                            case "Author":
+                                SQLiteDB.UpdateAuthor(CurrentBook.ExternalID, CompareBook.Author);
+                                break;
+
+                            case "Description":
+                                SQLiteDB.UpdateDescription(CurrentBook.ExternalID, CompareBook.Description);
+                                break;
+
+                            case "CoverURL":
+                                SQLiteDB.UpdateCoverURL(CurrentBook.ExternalID, CompareBook.CoverURL);
+                                break;
+
+                            case "Warnings":
+                                break;
+
+                            case "Genres":
+                                break;
+
+                            case "Tags":
+                                break;
+
+                            case "ChapterAdded":
+                                break;
+
+                            case "ChapterRemoved":
+                                break;
+
+                            case "ChapterModified":
+                                break;
+                        }
+                    }
+
+                    // Send Update Notification.
+                    String DOWNLOAD_CHANNEL = "downloadchannel";
+                    String GROUP_KEY_STORY_NOTIFICATION = "com.android.example.STORY_NOTIFICATION";
+
+                    NotificationManager NotifyManager = getSystemService(NotificationManager.class);
+
+                    if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O)
+                    {
+                        NotificationChannel DownloadChannel = new NotificationChannel(DOWNLOAD_CHANNEL, "Download Channel", NotificationManager.IMPORTANCE_DEFAULT);
+                        NotifyManager.createNotificationChannel(DownloadChannel);
+                    }
+
+                    Intent NotificationIntent = new Intent(getApplicationContext(), ReadActivity.class);
+
+                    NotificationIntent.putExtra("Book", CompareBook);
+                    NotificationIntent.putExtra("HasDownloaded", true);
+                    NotificationIntent.putExtra("FromNotification", true);
+
+                    TaskStackBuilder NotificationTaskStack = TaskStackBuilder.create(getApplicationContext());
+                    NotificationTaskStack.addNextIntentWithParentStack(NotificationIntent);
+
+                    PendingIntent ReadPendingIntent = NotificationTaskStack.getPendingIntent(0,
+                            PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
+
+                    Notification DownloadedNotification = new NotificationCompat.Builder(getApplicationContext(), DOWNLOAD_CHANNEL)
+                            .setSmallIcon(R.mipmap.icon)
+                            .setContentTitle(CompareBook.Title)
+                            .setContentText("Story Updated")
+                            .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+                            .setCategory(Notification.CATEGORY_MESSAGE)
+                            .setContentIntent(ReadPendingIntent)
+                            .setWhen(System.currentTimeMillis())
+                            .setGroup(GROUP_KEY_STORY_NOTIFICATION)
+                            .setGroupSummary(true)
+                            .build();
+
+                    NotifyManager.notify(CompareBook.ExternalID, DownloadedNotification);
+                }
+
+                Index++;
+            }
+        }
+        catch (InterruptedException e)
+        {
+            throw new RuntimeException(e);
+        }
+
+
+        
         Toast.makeText(this, "Sync Completed", Toast.LENGTH_SHORT).show();
     }
 

@@ -54,7 +54,7 @@ public class GetBooks extends AsyncTask<Book[], Void, Book[]>
             {
                 for(int i = 0; i < ExternalIDs.length; i++)
                 {
-                    while(!BookList[i].IsCompleted)
+                    while(BookList[i] != null && !BookList[i].IsCompleted)
                     {
                         try
                         {
