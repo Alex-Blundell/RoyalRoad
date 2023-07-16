@@ -251,6 +251,12 @@ public class ChapterFragment extends Fragment
             readActivity.ChapterCount.setVisibility(View.GONE);
 
             readActivity.ToolbarAppeared = false;
+
+            if(FontDetails)
+            {
+                FontDetails = false;
+                readActivity.FontSettingsLayout.setVisibility(View.GONE);
+            }
         }
         else
         {
@@ -261,6 +267,11 @@ public class ChapterFragment extends Fragment
 
             readActivity.ToolbarAppeared = true;
 
+            if(FontDetails)
+            {
+                FontDetails = false;
+                readActivity.FontSettingsLayout.setVisibility(View.GONE);
+            }
         }
     }
 
@@ -268,13 +279,20 @@ public class ChapterFragment extends Fragment
     {
         if(FontDetails)
         {
-            Log.println(Log.INFO, "Hi", "Font Details Close");
             FontDetails = false;
+            readActivity.FontSettingsLayout.setVisibility(View.GONE);
         }
         else
         {
-            Log.println(Log.INFO, "Hi", "Font Details Open");
             FontDetails = true;
+            readActivity.FontSettingsLayout.setVisibility(View.VISIBLE);
+
+            readActivity.TopToolbar.setVisibility(View.GONE);
+            readActivity.BottomToolbar.setVisibility(View.GONE);
+            readActivity.BackBTN.setVisibility(View.GONE);
+            readActivity.ChapterCount.setVisibility(View.GONE);
+
+            readActivity.ToolbarAppeared = false;
         }
     }
 }

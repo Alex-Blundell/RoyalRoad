@@ -10,6 +10,7 @@ import androidx.viewpager.widget.ViewPager;
 import androidx.viewpager2.widget.ViewPager2;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
@@ -17,8 +18,12 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.FrameLayout;
+import android.widget.RelativeLayout;
 
+import com.google.android.material.tabs.TabLayout;
 import com.google.firebase.firestore.FirebaseFirestore;
+
+import org.checkerframework.checker.units.qual.Current;
 
 import java.lang.reflect.Field;
 
@@ -37,6 +42,32 @@ public class ReadActivity extends AppCompatActivity {
 
     private VPAdapter vpAdapter;
 
+    public RelativeLayout FontSettingsLayout;
+    public RelativeLayout FontSettings;
+
+    Button ArialBTN;
+    Button AtkinsonBTN;
+    Button CaslonBTN;
+    Button ComicSansBTN;
+    Button FranklinBTN;
+    Button GaramondBTN;
+    Button LucidaBTN;
+    Button MinionBTN;
+    Button DyslexicBTN;
+    Button OpenSansBTN;
+    Button RobotoBTN;
+    Button SansSerifBTN;
+    Button UbuntuBTN;
+    Button UbuntuCondesnedBTN;
+    Button VerdanaBTN;
+
+    public RelativeLayout ParagraphSettings;
+    public RelativeLayout BrightnessSettings;
+
+    public TabLayout FontSettingsTabs;
+    private boolean IsDarkMode;
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -54,6 +85,210 @@ public class ReadActivity extends AppCompatActivity {
         ToolbarAppeared = true;
 
         BottomToolbar = (Toolbar) findViewById(R.id.BookBottomToolbar);
+
+        SharedPreferences Pref = getSharedPreferences("Settings", MODE_PRIVATE);
+        IsDarkMode = Pref.getBoolean("ReadingTheme", true);
+        int FontType = Pref.getInt("ReadingFont", BaseSettingsFragment.FontStyle.Open_Sans.ordinal());
+
+        FontSettingsLayout = findViewById(R.id.FontSettings);
+        FontSettingsTabs = findViewById(R.id.FontTabs);
+        FontSettings = findViewById(R.id.FontSettingsLayout);
+
+        ArialBTN = findViewById(R.id.ArialBTN);
+        AtkinsonBTN = findViewById(R.id.AtkinsonBTN);
+        CaslonBTN = findViewById(R.id.CaslonBTN);
+        ComicSansBTN = findViewById(R.id.ComicSansBTN);
+        FranklinBTN = findViewById(R.id.FranklinBTN);
+        GaramondBTN = findViewById(R.id.GaramondBTN);
+        LucidaBTN = findViewById(R.id.LucidaBTN);
+        MinionBTN = findViewById(R.id.MinionBTN);
+        DyslexicBTN = findViewById(R.id.DyslexicBTN);
+        OpenSansBTN = findViewById(R.id.OpenSansBTN);
+        RobotoBTN = findViewById(R.id.RobotoBTN);
+        SansSerifBTN = findViewById(R.id.SansSerifBTN);
+        UbuntuBTN = findViewById(R.id.UbuntuBTN);
+        UbuntuCondesnedBTN = findViewById(R.id.UbuntuCondensedBTN);
+        VerdanaBTN = findViewById(R.id.VerdanaBTN);
+
+        FontSettings.setVisibility(View.VISIBLE);
+
+        SwitchThemes(IsDarkMode);
+        ChangeFont(BaseSettingsFragment.FontStyle.fromOrdinal(FontType));
+
+        FontSettingsTabs.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
+            @Override
+            public void onTabSelected(TabLayout.Tab tab)
+            {
+                if(tab.getPosition() == 0)
+                {
+                    if(FontSettings.getVisibility() == View.GONE)
+                    {
+                        FontSettings.setVisibility(View.VISIBLE);
+                    }
+                }
+                else if(tab.getPosition() == 1)
+                {
+                    if(FontSettings.getVisibility() == View.VISIBLE)
+                    {
+                        FontSettings.setVisibility(View.GONE);
+                    }
+                }
+                else if(tab.getPosition() == 2)
+                {
+                    if(FontSettings.getVisibility() == View.VISIBLE)
+                    {
+                        FontSettings.setVisibility(View.GONE);
+                    }
+                }
+            }
+
+            @Override
+            public void onTabUnselected(TabLayout.Tab tab) {
+
+            }
+
+            @Override
+            public void onTabReselected(TabLayout.Tab tab) {
+
+            }
+        });
+
+        ArialBTN.setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View v)
+            {
+                ChangeFont(BaseSettingsFragment.FontStyle.Arial);
+            }
+        });
+
+        AtkinsonBTN.setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View v)
+            {
+                ChangeFont(BaseSettingsFragment.FontStyle.Atkinson_Hyperlegible);
+            }
+        });
+
+        CaslonBTN.setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View v)
+            {
+                ChangeFont(BaseSettingsFragment.FontStyle.Caslon);
+            }
+        });
+
+        ComicSansBTN.setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View v)
+            {
+                ChangeFont(BaseSettingsFragment.FontStyle.Comic_Sans);
+            }
+        });
+
+        FranklinBTN.setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View v)
+            {
+                ChangeFont(BaseSettingsFragment.FontStyle.Franklin_Gothic);
+            }
+        });
+
+        GaramondBTN.setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View v)
+            {
+                ChangeFont(BaseSettingsFragment.FontStyle.Garamond);
+            }
+        });
+
+        LucidaBTN.setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View v)
+            {
+                ChangeFont(BaseSettingsFragment.FontStyle.Lucida);
+            }
+        });
+
+        MinionBTN.setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View v)
+            {
+                ChangeFont(BaseSettingsFragment.FontStyle.Minion);
+            }
+        });
+
+        DyslexicBTN.setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View v)
+            {
+                ChangeFont(BaseSettingsFragment.FontStyle.Open_Dyslexic);
+            }
+        });
+
+        OpenSansBTN.setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View v)
+            {
+                ChangeFont(BaseSettingsFragment.FontStyle.Open_Sans);
+            }
+        });
+
+        RobotoBTN.setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View v)
+            {
+                ChangeFont(BaseSettingsFragment.FontStyle.Roboto);
+            }
+        });
+
+        SansSerifBTN.setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View v)
+            {
+                ChangeFont(BaseSettingsFragment.FontStyle.Sans_Serif);
+            }
+        });
+
+        UbuntuBTN.setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View v)
+            {
+                ChangeFont(BaseSettingsFragment.FontStyle.Ubuntu);
+            }
+        });
+
+        UbuntuCondesnedBTN.setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View v)
+            {
+                ChangeFont(BaseSettingsFragment.FontStyle.Ubuntu_Condensed);
+            }
+        });
+
+        VerdanaBTN.setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View v)
+            {
+                ChangeFont(BaseSettingsFragment.FontStyle.Verdanda);
+            }
+        });
+
+        FontSettingsLayout.setVisibility(View.GONE);
 
         if(FromNotification)
         {
@@ -146,6 +381,11 @@ public class ReadActivity extends AppCompatActivity {
                         TopToolbar.getMenu().getItem(0).setVisible(true);
                     }
                 }
+
+                if(FontSettingsLayout.getVisibility() == View.VISIBLE)
+                {
+                    FontSettingsLayout.setVisibility(View.GONE);
+                }
             }
         });
 
@@ -192,6 +432,122 @@ public class ReadActivity extends AppCompatActivity {
     {
         super.onNewIntent(intent);
         HandleWebsiteLink();
+    }
+
+    public void SwitchThemes(boolean DarkMode)
+    {
+        if(DarkMode)
+        {
+            ArialBTN.setTextColor(getResources().getColor(R.color.DarkText));
+            AtkinsonBTN.setTextColor(getResources().getColor(R.color.DarkText));
+            CaslonBTN.setTextColor(getResources().getColor(R.color.DarkText));
+            ComicSansBTN.setTextColor(getResources().getColor(R.color.DarkText));
+            FranklinBTN.setTextColor(getResources().getColor(R.color.DarkText));
+            GaramondBTN.setTextColor(getResources().getColor(R.color.DarkText));
+            LucidaBTN.setTextColor(getResources().getColor(R.color.DarkText));
+            MinionBTN.setTextColor(getResources().getColor(R.color.DarkText));
+            DyslexicBTN.setTextColor(getResources().getColor(R.color.DarkText));
+            OpenSansBTN.setTextColor(getResources().getColor(R.color.DarkText));
+            RobotoBTN.setTextColor(getResources().getColor(R.color.DarkText));
+            SansSerifBTN.setTextColor(getResources().getColor(R.color.DarkText));
+            UbuntuBTN.setTextColor(getResources().getColor(R.color.DarkText));
+            UbuntuCondesnedBTN.setTextColor(getResources().getColor(R.color.DarkText));
+            VerdanaBTN.setTextColor(getResources().getColor(R.color.DarkText));
+
+            BackBTN.setTextColor(getResources().getColor(R.color.ToolbarItem));
+            ChapterCount.setTextColor(getResources().getColor(R.color.ToolbarItem));
+        }
+        else
+        {
+
+        }
+    }
+
+    public void ChangeFont(BaseSettingsFragment.FontStyle CurrentStyle)
+    {
+        SharedPreferences Pref = getSharedPreferences("Settings", MODE_PRIVATE);
+        SharedPreferences.Editor PrefEditor = Pref.edit();
+
+        //PrefEditor.putInt("ReadingFont", CurrentStyle.ordinal());
+
+        ArialBTN.setBackgroundColor(getResources().getColor(R.color.Invis));
+        AtkinsonBTN.setBackgroundColor(getResources().getColor(R.color.Invis));
+        CaslonBTN.setBackgroundColor(getResources().getColor(R.color.Invis));
+        ComicSansBTN.setBackgroundColor(getResources().getColor(R.color.Invis));
+        FranklinBTN.setBackgroundColor(getResources().getColor(R.color.Invis));
+        GaramondBTN.setBackgroundColor(getResources().getColor(R.color.Invis));
+        LucidaBTN.setBackgroundColor(getResources().getColor(R.color.Invis));
+        MinionBTN.setBackgroundColor(getResources().getColor(R.color.Invis));
+        DyslexicBTN.setBackgroundColor(getResources().getColor(R.color.Invis));
+        OpenSansBTN.setBackgroundColor(getResources().getColor(R.color.Invis));
+        RobotoBTN.setBackgroundColor(getResources().getColor(R.color.Invis));
+        SansSerifBTN.setBackgroundColor(getResources().getColor(R.color.Invis));
+        UbuntuBTN.setBackgroundColor(getResources().getColor(R.color.Invis));
+        UbuntuCondesnedBTN.setBackgroundColor(getResources().getColor(R.color.Invis));
+        VerdanaBTN.setBackgroundColor(getResources().getColor(R.color.Invis));
+
+        switch (CurrentStyle)
+        {
+            case Arial:
+                ArialBTN.setBackgroundColor(getResources().getColor(R.color.ButtonItem));
+                break;
+
+            case Atkinson_Hyperlegible:
+                AtkinsonBTN.setBackgroundColor(getResources().getColor(R.color.ButtonItem));
+                break;
+
+            case Caslon:
+                CaslonBTN.setBackgroundColor(getResources().getColor(R.color.ButtonItem));
+                break;
+
+            case Comic_Sans:
+                ComicSansBTN.setBackgroundColor(getResources().getColor(R.color.ButtonItem));
+                break;
+
+            case Franklin_Gothic:
+                FranklinBTN.setBackgroundColor(getResources().getColor(R.color.ButtonItem));
+                break;
+
+            case Garamond:
+                GaramondBTN.setBackgroundColor(getResources().getColor(R.color.ButtonItem));
+                break;
+
+            case Lucida:
+                LucidaBTN.setBackgroundColor(getResources().getColor(R.color.ButtonItem));
+                break;
+
+            case Minion:
+                MinionBTN.setBackgroundColor(getResources().getColor(R.color.ButtonItem));
+                break;
+
+            case Open_Dyslexic:
+                DyslexicBTN.setBackgroundColor(getResources().getColor(R.color.ButtonItem));
+                break;
+
+            case Open_Sans:
+                OpenSansBTN.setBackgroundColor(getResources().getColor(R.color.ButtonItem));
+                break;
+
+            case Roboto:
+                RobotoBTN.setBackgroundColor(getResources().getColor(R.color.ButtonItem));
+                break;
+
+            case Sans_Serif:
+                SansSerifBTN.setBackgroundColor(getResources().getColor(R.color.ButtonItem));
+                break;
+
+            case Ubuntu:
+                UbuntuBTN.setBackgroundColor(getResources().getColor(R.color.ButtonItem));
+                break;
+
+            case Ubuntu_Condensed:
+                UbuntuCondesnedBTN.setBackgroundColor(getResources().getColor(R.color.ButtonItem));
+                break;
+
+            case Verdanda:
+                VerdanaBTN.setBackgroundColor(getResources().getColor(R.color.ButtonItem));
+                break;
+        }
     }
 
     private void HandleWebsiteLink()

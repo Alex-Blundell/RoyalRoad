@@ -55,4 +55,317 @@
         android:text=""
         />
 
+    <RelativeLayout
+        android:id="@+id/FontSettings"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        >
+
+        <ImageView
+            android:id="@+id/FontSettingsBackground"
+            android:layout_width="match_parent"
+            android:layout_height="267.5dp"
+            android:background="@color/DarkBackground"
+            />
+
+        <com.google.android.material.tabs.TabLayout
+            android:id="@+id/FontTabs"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignBottom="@id/FontSettingsBackground"
+            app:tabIconTint="@color/ToolbarItem"
+            app:tabIndicatorColor="@color/ToolbarItem"
+            app:tabTextColor="@color/ToolbarItem">
+
+            <com.google.android.material.tabs.TabItem
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:icon="@drawable/baseline_font_download_24" />
+
+            <com.google.android.material.tabs.TabItem
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:icon="@drawable/line_spacing" />
+
+            <com.google.android.material.tabs.TabItem
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:icon="@drawable/light_mode" />
+        </com.google.android.material.tabs.TabLayout>
+
+        <RelativeLayout
+            android:id="@+id/FontSettingsLayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:visibility="gone"
+            >
+
+            <Button
+                android:id="@+id/ArialBTN"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="45dp"
+                android:layout_marginTop="5dp"
+                android:minWidth="40dp"
+                android:minHeight="45dp"
+                android:paddingLeft="10dp"
+                android:paddingRight="10dp"
+                android:text="Arial"
+                android:textAllCaps="false"
+                android:textSize="13sp"
+                app:strokeColor="#00B59F"
+                app:strokeWidth="2dp" />
+
+            <Button
+                android:id="@+id/AtkinsonBTN"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="5dp"
+                android:layout_marginTop="5dp"
+                android:layout_toRightOf="@id/ArialBTN"
+                android:text="Akinson"
+                android:textAllCaps="false"
+                android:minWidth="40dp"
+                android:minHeight="45dp"
+                android:paddingLeft="10dp"
+                android:paddingRight="10dp"
+                android:textSize="13sp"
+                app:strokeColor="#00B59F"
+                app:strokeWidth="2dp" />
+
+            <Button
+                android:id="@+id/CaslonBTN"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="5dp"
+                android:layout_marginTop="5dp"
+                android:layout_toRightOf="@id/AtkinsonBTN"
+                android:text="Caslon"
+                android:textAllCaps="false"
+                android:minWidth="40dp"
+                android:minHeight="45dp"
+                android:paddingLeft="10dp"
+                android:paddingRight="10dp"
+                android:textSize="13sp"
+                app:strokeColor="#00B59F"
+                app:strokeWidth="2dp" />
+
+            <Button
+                android:id="@+id/ComicSansBTN"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="5dp"
+                android:layout_marginTop="5dp"
+                android:layout_toRightOf="@id/CaslonBTN"
+                android:text="Comic Sans"
+                android:textAllCaps="false"
+                android:minWidth="40dp"
+                android:minHeight="45dp"
+                android:paddingLeft="10dp"
+                android:paddingRight="10dp"
+                android:textSize="13sp"
+                app:strokeColor="#00B59F"
+                app:strokeWidth="2dp" />
+
+            <Button
+                android:id="@+id/FranklinBTN"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/ArialBTN"
+                android:layout_marginLeft="25dp"
+                android:layout_marginTop="5dp"
+                android:text="Franklin Gothic"
+                android:textAllCaps="false"
+                android:minWidth="40dp"
+                android:minHeight="45dp"
+                android:paddingLeft="10dp"
+                android:paddingRight="10dp"
+                android:textSize="13sp"
+                app:strokeColor="#00B59F"
+                app:strokeWidth="2dp" />
+
+            <Button
+                android:id="@+id/GaramondBTN"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/ArialBTN"
+                android:layout_marginLeft="5dp"
+                android:layout_marginTop="5dp"
+                android:layout_toRightOf="@id/FranklinBTN"
+                android:text="Gramond"
+                android:textAllCaps="false"
+                android:minWidth="40dp"
+                android:minHeight="45dp"
+                android:paddingLeft="10dp"
+                android:paddingRight="10dp"
+                android:textSize="13sp"
+                app:strokeColor="#00B59F"
+                app:strokeWidth="2dp" />
+
+            <Button
+                android:id="@+id/LucidaBTN"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/ArialBTN"
+                android:layout_marginLeft="5dp"
+                android:layout_marginTop="5dp"
+                android:layout_toRightOf="@id/GaramondBTN"
+                android:text="Lucida"
+                android:textAllCaps="false"
+                android:minWidth="40dp"
+                android:minHeight="45dp"
+                android:paddingLeft="10dp"
+                android:paddingRight="10dp"
+                android:textSize="13sp"
+                app:strokeColor="#00B59F"
+                app:strokeWidth="2dp" />
+
+            <Button
+                android:id="@+id/MinionBTN"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/ArialBTN"
+                android:layout_marginLeft="5dp"
+                android:layout_marginTop="5dp"
+                android:layout_toRightOf="@id/LucidaBTN"
+                android:text="Minion"
+                android:textAllCaps="false"
+                android:minWidth="40dp"
+                android:minHeight="45dp"
+                android:paddingLeft="10dp"
+                android:paddingRight="10dp"
+                android:textSize="13sp"
+                app:strokeColor="#00B59F"
+                app:strokeWidth="2dp" />
+
+            <Button
+                android:id="@+id/DyslexicBTN"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/FranklinBTN"
+                android:layout_marginLeft="15dp"
+                android:layout_marginTop="5dp"
+                android:text="Open Dyslexic"
+                android:textAllCaps="false"
+                android:minWidth="40dp"
+                android:minHeight="45dp"
+                android:paddingLeft="10dp"
+                android:paddingRight="10dp"
+                android:textSize="13sp"
+                app:strokeColor="#00B59F"
+                app:strokeWidth="2dp" />
+
+            <Button
+                android:id="@+id/OpenSansBTN"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/FranklinBTN"
+                android:layout_marginLeft="5dp"
+                android:layout_marginTop="5dp"
+                android:layout_toRightOf="@id/DyslexicBTN"
+                android:text="Open Sans"
+                android:textAllCaps="false"
+                android:minWidth="40dp"
+                android:minHeight="45dp"
+                android:paddingLeft="10dp"
+                android:paddingRight="10dp"
+                android:textSize="13sp"
+                app:strokeColor="#00B59F"
+                app:strokeWidth="2dp" />
+
+            <Button
+                android:id="@+id/RobotoBTN"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/FranklinBTN"
+                android:layout_marginLeft="5dp"
+                android:layout_marginTop="5dp"
+                android:layout_toRightOf="@id/OpenSansBTN"
+                android:text="Roboto"
+                android:textAllCaps="false"
+                android:minWidth="40dp"
+                android:minHeight="45dp"
+                android:paddingLeft="10dp"
+                android:paddingRight="10dp"
+                android:textSize="13sp"
+                app:strokeColor="#00B59F"
+                app:strokeWidth="2dp" />
+
+            <Button
+                android:id="@+id/SansSerifBTN"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/FranklinBTN"
+                android:layout_marginLeft="5dp"
+                android:layout_marginTop="5dp"
+                android:text="Sans Serif"
+                android:textAllCaps="false"
+                android:minWidth="40dp"
+                android:minHeight="45dp"
+                android:paddingLeft="10dp"
+                android:paddingRight="10dp"
+                android:textSize="13sp"
+                android:layout_toRightOf="@id/RobotoBTN"
+                app:strokeColor="#00B59F"
+                app:strokeWidth="2dp" />
+
+            <Button
+                android:id="@+id/UbuntuBTN"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/RobotoBTN"
+                android:layout_marginLeft="45dp"
+                android:layout_marginTop="5dp"
+                android:text="Ubuntu"
+                android:textAllCaps="false"
+                android:minWidth="40dp"
+                android:minHeight="45dp"
+                android:paddingLeft="10dp"
+                android:paddingRight="10dp"
+                android:textSize="13sp"
+                app:strokeColor="#00B59F"
+                app:strokeWidth="2dp" />
+
+            <Button
+                android:id="@+id/UbuntuCondensedBTN"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/RobotoBTN"
+                android:layout_marginLeft="5dp"
+                android:layout_marginTop="5dp"
+                android:layout_toRightOf="@id/UbuntuBTN"
+                android:text="Ubuntu Condensed"
+                android:textAllCaps="false"
+                android:minWidth="40dp"
+                android:minHeight="45dp"
+                android:paddingLeft="10dp"
+                android:paddingRight="10dp"
+                android:textSize="13sp"
+                app:strokeColor="#00B59F"
+                app:strokeWidth="2dp" />
+
+            <Button
+                android:id="@+id/VerdanaBTN"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/RobotoBTN"
+                android:layout_marginLeft="5dp"
+                android:layout_marginTop="5dp"
+                android:layout_toRightOf="@id/UbuntuCondensedBTN"
+                android:text="Verdana"
+                android:textAllCaps="false"
+                android:minWidth="40dp"
+                android:minHeight="45dp"
+                android:paddingLeft="10dp"
+                android:paddingRight="10dp"
+                android:textSize="13sp"
+                app:strokeColor="#00B59F"
+                app:strokeWidth="2dp" />
+
+        </RelativeLayout>
+
+
+
+    </RelativeLayout>
 </RelativeLayout>

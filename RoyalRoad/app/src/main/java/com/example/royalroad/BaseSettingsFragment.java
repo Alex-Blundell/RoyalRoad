@@ -77,7 +77,7 @@ public class BaseSettingsFragment extends Fragment
 
     public enum FontStyle
     {
-        Ariel,
+        Arial,
         Atkinson_Hyperlegible,
         Caslon,
         Comic_Sans,
@@ -91,12 +91,15 @@ public class BaseSettingsFragment extends Fragment
         Sans_Serif,
         Verdanda,
         Ubuntu,
-        Ubuntu_Condensed
+        Ubuntu_Condensed;
+
+        private static FontStyle[] allValues = values();
+        public static FontStyle fromOrdinal(int n) {return allValues[n];}
     }
 
     public enum AppFontStyle
     {
-        Ariel,
+        Arial,
         Lucida,
         Open_Sans,
         Roboto

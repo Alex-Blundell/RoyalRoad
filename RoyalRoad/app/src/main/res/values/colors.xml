@@ -45,4 +45,7 @@
 
     <color name="Red">#FFCC2222</color>
     <color name="Orange">#FFFF8822</color>
+    <color name="Darker">#E0181818</color>
+
+    <color name="ButtonItem">#FF008C7B</color>
 </resources>
