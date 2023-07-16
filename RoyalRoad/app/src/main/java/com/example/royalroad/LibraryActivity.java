@@ -31,6 +31,7 @@ import android.widget.Toast;
 
 import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.tabs.TabLayoutMediator;
+import com.google.firebase.annotations.concurrent.Background;
 
 import org.checkerframework.common.subtyping.qual.Bottom;
 
@@ -525,6 +526,7 @@ public class LibraryActivity extends AppCompatActivity {
         }
     }
 
+    @Background
     public void SyncLibrary()
     {
         DBHandler SQLiteDB = new DBHandler(getApplicationContext());
@@ -694,7 +696,7 @@ public class LibraryActivity extends AppCompatActivity {
                 */
 
                 // Check to See if Chapters Have Changed.
-                /*
+
                 if(CurrentBook.Chapters.size() != CompareBook.Chapters.size())
                 {
                     if(!HasUpdated)
@@ -716,7 +718,7 @@ public class LibraryActivity extends AppCompatActivity {
                 {
                     // Check to see if anything has changed in Chapter Contents.
                 }
-                */
+
 
                 if(HasUpdated)
                 {
@@ -754,6 +756,10 @@ public class LibraryActivity extends AppCompatActivity {
                                 break;
 
                             case "ChapterAdded":
+                                for(int i = CurrentBook.Chapters.size(); i < CompareBook.Chapters.size(); i++)
+                                {
+                                    SQLiteDB.AddChapter(CompareBook.InternalID, CompareBook.Chapters.get(i));
+                                }
                                 break;
 
                             case "ChapterRemoved":
