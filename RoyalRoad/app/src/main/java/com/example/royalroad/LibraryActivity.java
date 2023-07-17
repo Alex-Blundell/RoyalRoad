@@ -102,8 +102,7 @@ public class LibraryActivity extends AppCompatActivity {
         History,
         Downloaded,
         Read_Later,
-        Folders,
-        Download_Manager
+        Folders
     }
 
     @Override
@@ -429,10 +428,9 @@ public class LibraryActivity extends AppCompatActivity {
         vpAdapter.AddFragment(new LibraryFragment(LibraryType.Downloaded));
         vpAdapter.AddFragment(new LibraryFragment(LibraryType.Read_Later));
         vpAdapter.AddFragment(new LibraryFragment(LibraryType.Folders));
-        vpAdapter.AddFragment(new LibraryFragment(LibraryType.Download_Manager));
 
         LibraryPager.setAdapter(vpAdapter);
-        LibraryPager.setOffscreenPageLimit(5);
+        LibraryPager.setOffscreenPageLimit(4);
         LibraryPager.setCurrentItem(0);
 
         LibraryPager.registerOnPageChangeCallback(new ViewPager2.OnPageChangeCallback()
@@ -807,6 +805,9 @@ public class LibraryActivity extends AppCompatActivity {
                             .build();
 
                     NotifyManager.notify(CompareBook.ExternalID, DownloadedNotification);
+
+                    SQLiteDB.UpdateHasUnreadUpdate(CompareBook.ExternalID, true);
+                    ((LibraryFragment)vpAdapter.GetFragment(LibraryPager.getCurrentItem())).bookAdapter.SetUpdated(CompareBook.ExternalID);
                 }
 
                 Index++;
@@ -829,7 +830,7 @@ public class LibraryActivity extends AppCompatActivity {
 
         if(RenewLibraries)
         {
-            for(int i = 0; i < 5; i++)
+            for(int i = 0; i < 4; i++)
             {
                 LibraryFragment SelectedFragment = (LibraryFragment)vpAdapter.GetFragment(i);
 

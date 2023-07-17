@@ -35,6 +35,8 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -212,6 +214,8 @@ public class Book implements Serializable
 
     public int ProfileID;
 
+    public boolean HasUnreadUpdate = false;
+
     public boolean IsCompleted = false;
 
     private Document StoryDoc;
@@ -319,6 +323,7 @@ public class Book implements Serializable
 
                     NewBook.SetHasRead(false);
                     NewBook.SetLastReadChapter(0);
+                    NewBook.HasUnreadUpdate = false;
 
                     StoryDoc = null;
                     NewBook.IsCompleted = true;
@@ -345,11 +350,29 @@ public class Book implements Serializable
                                     @Override
                                     public void onSuccess(QuerySnapshot queryDocumentSnapshots)
                                     {
-                                        DocumentReference Update = queryDocumentSnapshots.getDocuments().get(0).getReference();
+                                        if(queryDocumentSnapshots.getDocuments().isEmpty())
+                                        {
+                                            Log.println(Log.INFO, "Hi", "Creating New Document");
+                                            // Can't Find a User_Book Entry for this User. Create One.
 
-                                        finalFireDB.collection("User_Books")
-                                                .document(Update.getId())
-                                                .update("ExternalID", FieldValue.arrayUnion(ExternalID));
+                                            Map<String, Object> User = new HashMap<>();
+                                            ArrayList<Integer> ExternalIDs = new ArrayList<>();
+
+                                            ExternalIDs.add((int) ExternalID);
+
+                                            User.put("UserID", UserID);
+                                            User.put("ExternalID", ExternalIDs);
+
+                                            finalFireDB.collection("User_Books").add(User);
+                                        }
+                                        else
+                                        {
+                                            DocumentReference Update = queryDocumentSnapshots.getDocuments().get(0).getReference();
+
+                                            finalFireDB.collection("User_Books")
+                                                    .document(Update.getId())
+                                                    .update("ExternalID", FieldValue.arrayUnion(ExternalID));
+                                        }
                                     }
                                 })
                                 .addOnFailureListener(new OnFailureListener()
@@ -357,7 +380,7 @@ public class Book implements Serializable
                                     @Override
                                     public void onFailure(@NonNull Exception e)
                                     {
-                                        // Can't Find a User_Book Entry for this User. Create One.
+
                                     }
                                 });
 

@@ -308,6 +308,13 @@ public class ReadActivity extends AppCompatActivity {
             SQLiteDB.close();
         }
 
+        if(ReadBook.HasUnreadUpdate)
+        {
+            DBHandler SQLiteDB = new DBHandler(this);
+            SQLiteDB.UpdateHasUnreadUpdate(ReadBook.ExternalID, false);
+            SQLiteDB.close();
+        }
+
         if(HasDownloaded)
         {
             BottomToolbar.inflateMenu(R.menu.bookbottommenudownloaded);
@@ -431,7 +438,7 @@ public class ReadActivity extends AppCompatActivity {
             if(HasDownloaded)
             {
                 DBHandler SQLiteDB = new DBHandler(this);
-                SQLiteDB.UpdateHasRead(ReadBook.GetExternalID());
+                SQLiteDB.UpdateHasRead(ReadBook.GetExternalID(), true);
                 SQLiteDB.close();
             }
         }
@@ -560,6 +567,8 @@ public class ReadActivity extends AppCompatActivity {
         if(AlterFont)
         {
             PrefEditor.putInt("ReadingFont", CurrentStyle.ordinal());
+            PrefEditor.apply();
+
             ChapterFragment CurrentChapter = (ChapterFragment)vpAdapter.GetFragment(BookPager.getCurrentItem());
             CurrentChapter.adapter.AlterFont(CurrentStyle);
         }

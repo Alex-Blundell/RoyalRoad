@@ -322,9 +322,19 @@ public class HomeFragment extends Fragment
 
         SettingsBTN.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View view) {
-                Intent SettingsIntent = new Intent(getActivity(), SettingsActivity.class);
-                startActivity(SettingsIntent);
+            public void onClick(View view)
+            {
+                SharedPreferences.Editor PrefEditor = Pref.edit();
+
+                PrefEditor.putBoolean("IsLoggedIn", false);
+                PrefEditor.putInt("UserID", 0);
+
+                PrefEditor.apply();
+
+                Intent LoginIntent = new Intent(getActivity(), MainActivity.class);
+                startActivity(LoginIntent);
+
+                getActivity().finish();
             }
         });
 

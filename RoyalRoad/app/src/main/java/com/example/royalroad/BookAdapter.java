@@ -40,10 +40,12 @@ public class BookAdapter extends RecyclerView.Adapter<BookAdapter.bookviewholder
 {
     List<Book> Data;
     private boolean CanDestroy = false;
+    public ArrayList<bookviewholder> BookHolders;
 
     public BookAdapter (List<Book> ThisData)
     {
         this.Data = ThisData;
+        this.BookHolders = new ArrayList<>();
     }
 
     @NonNull
@@ -58,6 +60,8 @@ public class BookAdapter extends RecyclerView.Adapter<BookAdapter.bookviewholder
     public void onBindViewHolder(@NonNull bookviewholder holder, @SuppressLint("RecyclerView") int Position)
     {
         ArrayList<Book.Details> AllDetails = new ArrayList<>();
+
+        holder.BoundBook = Data.get(Position);
 
         SharedPreferences Pref = holder.itemView.getContext().getSharedPreferences("Settings", Context.MODE_PRIVATE);
         boolean IsDarkMode = Pref.getBoolean("AppTheme", false);
@@ -77,7 +81,11 @@ public class BookAdapter extends RecyclerView.Adapter<BookAdapter.bookviewholder
             holder.Description.setTextColor(holder.itemView.getResources().getColor(R.color.black));
         }
 
-        holder.UpdatedImage.setVisibility(View.GONE);
+        if(!Data.get(Position).HasUnreadUpdate)
+        {
+            holder.UpdatedImage.setVisibility(View.GONE);
+        }
+
         holder.DeleteBTN.setVisibility(View.GONE);
 
         holder.Title.setText(Data.get(Position).GetTitle());
@@ -314,6 +322,26 @@ public class BookAdapter extends RecyclerView.Adapter<BookAdapter.bookviewholder
 
         DetailAdapter adpater = new DetailAdapter(AllDetails);
         holder.DetailsRV.setAdapter(adpater);
+
+        BookHolders.add(holder);
+    }
+
+    public void SetUpdated(int ExternalID)
+    {
+        int Index = 0;
+
+        for(bookviewholder CurrentHolder : BookHolders)
+        {
+            if(CurrentHolder.BoundBook.ExternalID == ExternalID)
+            {
+                BookHolders.get(Index).UpdatedImage.setVisibility(View.VISIBLE);
+
+                Data.get(Index).HasUnreadUpdate = true;
+                CurrentHolder.BoundBook.HasUnreadUpdate = true;
+            }
+
+            Index++;
+        }
     }
 
     @Override
@@ -324,6 +352,7 @@ public class BookAdapter extends RecyclerView.Adapter<BookAdapter.bookviewholder
 
     public class bookviewholder extends RecyclerView.ViewHolder
     {
+        Book BoundBook;
         ImageView Cover,
                   UpdatedImage;
         TextView Title,

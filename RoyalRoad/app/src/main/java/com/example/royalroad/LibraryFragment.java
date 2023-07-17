@@ -19,6 +19,7 @@ import android.widget.TextView;
 
 import com.example.royalroad.LibraryActivity.LibraryType;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Collections;
 
@@ -32,7 +33,7 @@ public class LibraryFragment extends Fragment
 
     LibraryActivity libraryActivity;
 
-    private BookAdapter bookAdapter;
+    public BookAdapter bookAdapter;
     private boolean IsDarkMode;
 
     boolean DeleteMode;
@@ -99,8 +100,12 @@ public class LibraryFragment extends Fragment
             for(int i = 0; i < LibraryCount; i++)
             {
                 Book NewBook = SQLiteDB.GetBook(i + 1);
-
                 boolean AddBook = true;
+
+                if(NewBook == null)
+                {
+                    AddBook = false;
+                }
 
                 if(RestrictedLetter != ' ')
                 {
@@ -116,12 +121,10 @@ public class LibraryFragment extends Fragment
                     {
                         BookList.add(NewBook);
                     }
-
                     if(Type == LibraryType.Downloaded)
                     {
                         BookList.add(NewBook);
                     }
-
                     if(Type == LibraryType.Read_Later)
                     {
 
@@ -148,6 +151,36 @@ public class LibraryFragment extends Fragment
             if(libraryActivity.DownloadedCount > 0)
                 libraryActivity.BottomTabs.getTabAt(1).setText("Downloaded" + " ( " + BookList.size() + " )");
 
+            ArrayList<Book> AlteredBookList = new ArrayList<>();
+            ArrayList<Book> CorrectedBookList = new ArrayList<>();
+
+            // Finding All Books that have an Unread Update.
+            for(int i = 0; i < BookList.size(); i++)
+            {
+                Book CurrentBook = BookList.get(i);
+
+                // Check to see if the CurrentBook.HasUnreadUpdate is set to true.
+                if(CurrentBook.HasUnreadUpdate)
+                {
+                    BookList.remove(CurrentBook);
+                    AlteredBookList.add(CurrentBook);
+                }
+            }
+
+            // Order Books that have an Unread Update by the Latest Updates.
+            for(Book CurrentBook : AlteredBookList)
+            {
+                // Add to CorrectedBookList.
+                CorrectedBookList.add(CurrentBook);
+            }
+
+            // Reverse the BookList, The remaining Books that do not have an Update. (This is Done so that the BookList shows the Latest Downloaded First).
+            Collections.reverse(BookList);
+
+            // Add the Reversed BookList to the CorrectedBookList, This will have all of the Updated Books First,
+            // In their Order of Updates, followed by any Non-Updated Books in order of Last Download.
+            CorrectedBookList.addAll(BookList);
+            BookList = CorrectedBookList;
         }
         else if(Type == LibraryType.Read_Later)
         {
@@ -161,21 +194,12 @@ public class LibraryFragment extends Fragment
         {
 
         }
-        else if(Type == LibraryType.Download_Manager)
+
+        if(!BookList.isEmpty())
         {
-            libraryActivity.DownloadManagerCount = BookList.size();
-
-            if(libraryActivity.DownloadManagerCount > 0)
-                libraryActivity.BottomTabs.getTabAt(4).setText("Downloaded" + " ( " + BookList.size() + " )");
+            bookAdapter = new BookAdapter(BookList);
+            LibraryRecyclerview.setAdapter(bookAdapter);
         }
-
-        if(Type == LibraryType.Downloaded)
-        {
-            Collections.reverse(BookList);
-        }
-
-        bookAdapter = new BookAdapter(BookList);
-        LibraryRecyclerview.setAdapter(bookAdapter);
 
         if(ContinueIndex != 0)
         {

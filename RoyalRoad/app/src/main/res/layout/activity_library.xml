@@ -672,7 +672,6 @@
         android:layout_alignParentBottom="true"
         android:background="@color/ToolbarBlue"
         app:tabIndicatorColor="@color/ToolbarItem"
-        app:tabMode="scrollable"
         app:tabTextColor="@color/ToolbarItem"
         app:tabTextAppearance="@style/MyCustomTextAppearance"
         >
@@ -697,10 +696,5 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Folders" />
-
-        <com.google.android.material.tabs.TabItem
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Download Manager" />
     </com.google.android.material.tabs.TabLayout>
 </RelativeLayout>

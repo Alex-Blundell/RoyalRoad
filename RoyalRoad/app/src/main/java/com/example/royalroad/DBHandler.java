@@ -1,5 +1,7 @@
 package com.example.royalroad;
 
+import static android.content.Context.MODE_PRIVATE;
+
 import android.app.Activity;
 import android.app.Notification;
 import android.app.NotificationChannel;
@@ -9,6 +11,7 @@ import android.app.TaskStackBuilder;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
@@ -17,8 +20,17 @@ import android.os.Looper;
 import android.util.Log;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.app.NotificationCompat;
+
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.FieldValue;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QuerySnapshot;
 
 import org.checkerframework.checker.units.qual.Current;
 import org.checkerframework.common.returnsreceiver.qual.This;
@@ -51,6 +63,7 @@ public class DBHandler extends SQLiteOpenHelper
     // Library Columns.
     public static final String ID = "ID";
     public static final String EXTERNAL_ID = "ExternalID";
+    public static final String USER_ID = "UserID";
     public static final String TYPE = "Type";
     public static final String TITLE = "Title";
     public static final String AUTHOR = "Author";
@@ -67,6 +80,7 @@ public class DBHandler extends SQLiteOpenHelper
     public static final String HAS_READ = "HasRead";
     public static final String LAST_READ_CHAPTER = "LastReadChapter";
     public static final String PROFILE_ID = "ProfileID";
+    public static final String HAS_UNREAD_UPDATE = "HasUnreadUpdate";
 
     // Tag Columns
     public static final String BOOK_ID = "BookID";
@@ -116,6 +130,7 @@ public class DBHandler extends SQLiteOpenHelper
         String CreateLibrary = "CREATE TABLE " + LIBRARY_TABLE_NAME +
                 " (" + ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
                 EXTERNAL_ID + " INTEGER NOT NULL, " +
+                USER_ID + " INTEGER NOT NULL, " +
                 TYPE + " INTEGER NOT NULL, " +
                 TITLE + " TEXT NOT NULL, " +
                 AUTHOR + " TEXT NOT NULL, " +
@@ -123,7 +138,7 @@ public class DBHandler extends SQLiteOpenHelper
                 COVER_URL + " TEXT DEFAULT ''," +
                 CHAPTER_COUNT + " INTEGER NOT NULL, " +
                 PAGE_COUNT + " INTEGER NOT NULL, " +
-                FOLLOWERS + " NOT NULL, " +
+                FOLLOWERS + " INTEGER NOT NULL, " +
                 FAVOURITES + " INTEGER NOT NULL, " +
                 RATING + " NUMERIC DEFAULT 0 NOT NULL, " +
                 CREATED_DATE_TIME + " TEXT NOT NULL, " +
@@ -131,7 +146,8 @@ public class DBHandler extends SQLiteOpenHelper
                 DOWNLOADED_DATE_TIME + " TEXT NOT NULL, " +
                 HAS_READ + " INTEGER DEFAULT 0, " +
                 LAST_READ_CHAPTER + " INTEGER DEFAULT 0, " +
-                PROFILE_ID + " INTEGER DEFAULT 0);";
+                PROFILE_ID + " INTEGER DEFAULT 0, " +
+                HAS_UNREAD_UPDATE + " INTEGER DEFAULT 0);";
 
         SQLiteDB.execSQL(CreateLibrary);
 
@@ -267,9 +283,12 @@ public class DBHandler extends SQLiteOpenHelper
         db.beginTransaction();
         try
         {
+            SharedPreferences Pref = context.getSharedPreferences("Settings", MODE_PRIVATE);
+
             ContentValues LibraryCV = new ContentValues();
 
             LibraryCV.put(EXTERNAL_ID, NewBook.ExternalID);
+            LibraryCV.put(USER_ID, Pref.getInt("UserID", 1));
             LibraryCV.put(TYPE, NewBook.Type.ordinal());
 
             LibraryCV.put(TITLE, NewBook.Title);
@@ -298,6 +317,15 @@ public class DBHandler extends SQLiteOpenHelper
 
             LibraryCV.put(LAST_READ_CHAPTER, NewBook.LastReadChapter);
             LibraryCV.put(PROFILE_ID, NewBook.ProfileID);
+
+            if(NewBook.HasUnreadUpdate)
+            {
+                LibraryCV.put(HAS_UNREAD_UPDATE, 1);
+            }
+            else
+            {
+                LibraryCV.put(HAS_UNREAD_UPDATE, 0);
+            }
 
             Result = db.insertOrThrow(LIBRARY_TABLE_NAME, null, LibraryCV);
             LibraryCV.clear();
@@ -437,7 +465,9 @@ public class DBHandler extends SQLiteOpenHelper
         {
             for (Book.Chapter ThisChapter : NewBook.Chapters)
             {
-                Log.println(Log.INFO, "Hi", "Adding Chapter " + ThisChapter.ID + 1 + " / " + NewBook.Chapters.size() + " To DB.");
+                int CurrentID = ThisChapter.ID + 1;
+
+                Log.println(Log.INFO, "Hi", "Adding Chapter " + CurrentID + " / " + NewBook.Chapters.size() + " To DB.");
 
                 ContentValues ChapterCV = new ContentValues();
 
@@ -543,87 +573,108 @@ public class DBHandler extends SQLiteOpenHelper
             try
             {
                 cursor.moveToFirst();
+                SharedPreferences Pref = context.getSharedPreferences("Settings", MODE_PRIVATE);
 
-                NewBook.InternalID = Integer.parseInt(cursor.getString(0));
-                NewBook.ExternalID = Integer.parseInt(cursor.getString(1));
+                int CurrentUserID = Pref.getInt("UserID", 1);
+                int BookUserID = NewBook.ExternalID = Integer.parseInt(cursor.getString(2));
 
-                int TypeCaster = Integer.parseInt(cursor.getString(2));
-
-                if(TypeCaster == 0)
+                if(CurrentUserID == BookUserID)
                 {
-                    NewBook.Type = Book.BookType.Original;
-                }
-                else if(TypeCaster == 1)
-                {
-                    NewBook.Type = Book.BookType.Fanfiction;
-                }
+                    NewBook.InternalID = Integer.parseInt(cursor.getString(0));
+                    NewBook.ExternalID = Integer.parseInt(cursor.getString(1));
 
-                NewBook.Title = cursor.getString(3);
-                NewBook.Author = cursor.getString(4);
-                NewBook.Description = cursor.getString(5);
+                    int TypeCaster = Integer.parseInt(cursor.getString(3));
 
-                NewBook.CoverURL = cursor.getString(6);
-
-                int ChapterCount = Integer.parseInt(cursor.getString(7));
-
-                NewBook.Chapters = new ArrayList<>();
-
-                db.beginTransaction();
-                try
-                {
-                    String ChapterQuery = "SELECT * FROM " + CHAPTERS_TABLE_NAME + " WHERE " + BOOK_ID + " = " + NewBook.InternalID;
-
-                    Cursor ChapterCursor = db.rawQuery(ChapterQuery, null);
-                    ChapterCursor.moveToFirst();
-
-                    for(int i = 0; i < ChapterCount; i++)
+                    if(TypeCaster == 0)
                     {
-                        Book.Chapter NewChapter = new Book.Chapter();
-
-                        NewChapter.ID = Integer.parseInt(ChapterCursor.getString(1));
-                        NewChapter.Name = ChapterCursor.getString(2);
-                        NewChapter.URL = ChapterCursor.getString(3);
-                        NewChapter.ChapterProgress = Integer.parseInt(ChapterCursor.getString(4));
-
-                        NewBook.Chapters.add(NewChapter);
-
-                        ChapterCursor.moveToNext();
+                        NewBook.Type = Book.BookType.Original;
+                    }
+                    else if(TypeCaster == 1)
+                    {
+                        NewBook.Type = Book.BookType.Fanfiction;
                     }
 
-                    ChapterCursor.close();
+                    NewBook.Title = cursor.getString(4);
+                    NewBook.Author = cursor.getString(5);
+                    NewBook.Description = cursor.getString(6);
 
-                    db.setTransactionSuccessful();
+                    NewBook.CoverURL = cursor.getString(7);
+
+                    int ChapterCount = Integer.parseInt(cursor.getString(8));
+
+                    NewBook.Chapters = new ArrayList<>();
+
+                    db.beginTransaction();
+                    try
+                    {
+                        String ChapterQuery = "SELECT * FROM " + CHAPTERS_TABLE_NAME + " WHERE " + BOOK_ID + " = " + NewBook.InternalID;
+
+                        Cursor ChapterCursor = db.rawQuery(ChapterQuery, null);
+                        ChapterCursor.moveToFirst();
+
+                        for(int i = 0; i < ChapterCount; i++)
+                        {
+                            Book.Chapter NewChapter = new Book.Chapter();
+
+                            NewChapter.ID = Integer.parseInt(ChapterCursor.getString(1));
+                            NewChapter.Name = ChapterCursor.getString(2);
+                            NewChapter.URL = ChapterCursor.getString(3);
+                            NewChapter.ChapterProgress = Integer.parseInt(ChapterCursor.getString(4));
+
+                            NewBook.Chapters.add(NewChapter);
+
+                            ChapterCursor.moveToNext();
+                        }
+
+                        ChapterCursor.close();
+
+                        db.setTransactionSuccessful();
+                    }
+                    finally
+                    {
+                        db.endTransaction();
+                    }
+
+                    NewBook.PageCount = Integer.parseInt(cursor.getString(9));
+                    NewBook.Followers = Integer.parseInt(cursor.getString(10));
+                    NewBook.Favourites = Integer.parseInt(cursor.getString(11));
+                    NewBook.Rating = Double.parseDouble(cursor.getString(12));
+
+                    //NewBook.CreatedDatetime = cursor.getString(13);
+                    //NewBook.LastUpdatedDatetime = Double.parseDouble(cursor.getString(14));
+                    //NewBook.DownloadedDatetime = Double.parseDouble(cursor.getString(15));
+
+                    int HasReadCaster = Integer.parseInt(cursor.getString(16));
+
+                    if(HasReadCaster == 0)
+                    {
+                        NewBook.SetHasRead(false);
+                    }
+                    else if(HasReadCaster == 1)
+                    {
+                        NewBook.SetHasRead(true);
+                    }
+
+                    NewBook.SetLastReadChapter(Integer.parseInt(cursor.getString(17)));
+                    NewBook.ProfileID = Integer.parseInt(cursor.getString(18));
+
+                    int HasUnreadUpdate = Integer.parseInt(cursor.getString(19));
+
+                    if(HasUnreadUpdate == 0)
+                    {
+                        NewBook.HasUnreadUpdate = false;
+                    }
+                    else if(HasUnreadUpdate == 1)
+                    {
+                        NewBook.HasUnreadUpdate = true;
+                    }
                 }
-                finally
+                else
                 {
-                    db.endTransaction();
+                    NewBook = null;
                 }
-
-                NewBook.PageCount = Integer.parseInt(cursor.getString(8));
-                NewBook.Followers = Integer.parseInt(cursor.getString(9));
-                NewBook.Favourites = Integer.parseInt(cursor.getString(10));
-                NewBook.Rating = Double.parseDouble(cursor.getString(11));
-
-                //NewBook.CreatedDatetime = cursor.getString(12);
-                //NewBook.LastUpdatedDatetime = Double.parseDouble(cursor.getString(13));
-                //NewBook.DownloadedDatetime = Double.parseDouble(cursor.getString(14));
-
-                int HasReadCaster = Integer.parseInt(cursor.getString(15));
-
-                if(HasReadCaster == 0)
-                {
-                    NewBook.SetHasRead(false);
-                }
-                else if(HasReadCaster == 1)
-                {
-                    NewBook.SetHasRead(true);
-                }
-
-                NewBook.SetLastReadChapter(Integer.parseInt(cursor.getString(16)));
-                NewBook.ProfileID = Integer.parseInt(cursor.getString(17));
 
                 cursor.close();
-
                 db.setTransactionSuccessful();
             }
             finally
@@ -955,10 +1006,19 @@ public class DBHandler extends SQLiteOpenHelper
 
     }
 
-    public void UpdateHasRead(int ExternalID)
+
+    public void UpdateHasRead(int ExternalID, boolean HasRead)
     {
         SQLiteDatabase db = this.getWritableDatabase();
-        db.execSQL("UPDATE " + LIBRARY_TABLE_NAME + " SET " + HAS_READ +" = '1' WHERE " + EXTERNAL_ID + " = " + ExternalID);
+
+        if(HasRead)
+        {
+            db.execSQL("UPDATE " + LIBRARY_TABLE_NAME + " SET " + HAS_READ +" = '1' WHERE " + EXTERNAL_ID + " = " + ExternalID);
+        }
+        else
+        {
+            db.execSQL("UPDATE " + LIBRARY_TABLE_NAME + " SET " + HAS_READ +" = '0' WHERE " + EXTERNAL_ID + " = " + ExternalID);
+        }
     }
 
     public void UpdateLastReadChapter(int ExternalID, int ChapterID)
@@ -999,15 +1059,49 @@ public class DBHandler extends SQLiteOpenHelper
                   + " WHERE " + BOOK_ID + " = " + BookID + " AND " + CHAPTER_ID + " = " + CurrentChapter.ID);
     }
 
-    public void DeleteBook(int ExternalID)
+    public void UpdateHasUnreadUpdate(int ExternalID, boolean HasUnreadUpdate)
     {
         SQLiteDatabase db = this.getWritableDatabase();
 
+        if(HasUnreadUpdate)
+        {
+            db.execSQL("UPDATE " + LIBRARY_TABLE_NAME + " SET " + HAS_UNREAD_UPDATE +" = '1' WHERE " + EXTERNAL_ID + " = " + ExternalID);
+        }
+        else
+        {
+            db.execSQL("UPDATE " + LIBRARY_TABLE_NAME + " SET " + HAS_UNREAD_UPDATE +" = '0' WHERE " + EXTERNAL_ID + " = " + ExternalID);
+        }
+    }
+
+    public void DeleteBook(int ExternalID)
+    {
+        SQLiteDatabase db = this.getWritableDatabase();
         int BookID = GetBookID(ExternalID);
 
         db.delete(LIBRARY_TABLE_NAME, EXTERNAL_ID + " = " + ExternalID, null);
         db.delete(CHAPTERS_TABLE_NAME, BOOK_ID + " = " + BookID, null);
         db.delete(CHAPTER_PARAGRAPHS_TABLE_NAME, BOOK_ID + " = " + BookID, null);
+
+        SharedPreferences Pref = context.getSharedPreferences("Settings", MODE_PRIVATE);
+        int UserID = Pref.getInt("UserID", 1);
+
+        // Remove from the Firebase Database.
+        FirebaseFirestore FirebaseDB = FirebaseFirestore.getInstance();
+        FirebaseDB.collection("User_Books")
+                .whereEqualTo("UserID", UserID)
+                .get()
+                .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>()
+                {
+                    @Override
+                    public void onSuccess(QuerySnapshot queryDocumentSnapshots)
+                    {
+                        DocumentReference Delete = queryDocumentSnapshots.getDocuments().get(0).getReference();
+
+                        FirebaseDB.collection("User_Books")
+                                .document(Delete.getId())
+                                .update("ExternalID", FieldValue.arrayRemove(ExternalID));
+                    }
+                });
     }
 
     public void DeleteChapter(int BookID, int ChapterID)
