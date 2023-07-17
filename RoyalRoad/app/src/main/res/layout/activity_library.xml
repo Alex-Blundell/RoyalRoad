@@ -6,41 +6,25 @@
     android:layout_height="match_parent"
     tools:context=".LibraryActivity">
 
-    <com.google.android.material.tabs.TabLayout
-        android:id="@+id/TabLayout"
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/TopToolbar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
         android:background="@color/ToolbarBlue"
-        app:tabIndicatorColor="@color/ToolbarItem"
-        app:tabMode="scrollable"
-        app:tabTextColor="@color/ToolbarItem">
+        android:minHeight="?attr/actionBarSize"
+        android:theme="?actionBarTheme"
+        />
 
-        <com.google.android.material.tabs.TabItem
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="History" />
-
-        <com.google.android.material.tabs.TabItem
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Downloaded" />
-
-        <com.google.android.material.tabs.TabItem
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Read Later" />
-
-        <com.google.android.material.tabs.TabItem
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Folders" />
-
-        <com.google.android.material.tabs.TabItem
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Download Manager" />
-    </com.google.android.material.tabs.TabLayout>
+    <Button
+        android:id="@+id/BackBTN"
+        android:layout_width="150dp"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@id/TopToolbar"
+        android:layout_alignParentTop="true"
+        android:background="@color/Invis"
+        app:icon="@drawable/back"
+        app:iconSize="30dp"
+        app:iconTint="@color/ToolbarItem" />
 
     <ScrollView
         android:id="@+id/AlphabeticalLayout"
@@ -672,24 +656,6 @@
         </LinearLayout>
     </ScrollView>
 
-    <androidx.appcompat.widget.Toolbar
-        android:id="@+id/TopToolbar"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@color/ToolbarBlue"
-        android:minHeight="?attr/actionBarSize"
-        android:theme="?attr/actionBarTheme"
-        />
-
-    <Button
-        android:id="@+id/BackBTN"
-        android:layout_width="200dp"
-        android:layout_height="match_parent"
-        android:layout_alignBottom="@id/TopToolbar"
-        app:icon="@drawable/back"
-        app:iconSize="40dp"
-        android:background="@color/Invis"/>
-
     <androidx.viewpager2.widget.ViewPager2
         android:id="@+id/LibraryPager"
         android:layout_width="match_parent"
@@ -697,6 +663,44 @@
         android:layout_above="@id/TabLayout"
         android:layout_below="@id/TopToolbar"
         android:layout_marginTop="0dp"
-        android:layout_marginBottom="0dp" />
+        android:layout_marginBottom="0dp"/>
 
+    <com.google.android.material.tabs.TabLayout
+        android:id="@+id/TabLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:background="@color/ToolbarBlue"
+        app:tabIndicatorColor="@color/ToolbarItem"
+        app:tabMode="scrollable"
+        app:tabTextColor="@color/ToolbarItem"
+        app:tabTextAppearance="@style/MyCustomTextAppearance"
+        >
+
+        <com.google.android.material.tabs.TabItem
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="History"
+            />
+
+        <com.google.android.material.tabs.TabItem
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Downloaded" />
+
+        <com.google.android.material.tabs.TabItem
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Read Later" />
+
+        <com.google.android.material.tabs.TabItem
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Folders" />
+
+        <com.google.android.material.tabs.TabItem
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Download Manager" />
+    </com.google.android.material.tabs.TabLayout>
 </RelativeLayout>

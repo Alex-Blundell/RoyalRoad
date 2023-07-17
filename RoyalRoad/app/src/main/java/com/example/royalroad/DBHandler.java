@@ -437,7 +437,7 @@ public class DBHandler extends SQLiteOpenHelper
         {
             for (Book.Chapter ThisChapter : NewBook.Chapters)
             {
-                Log.println(Log.INFO, "Hi", "Adding Chapter " + ThisChapter.ID + " / " + NewBook.Chapters.size() + " To DB.");
+                Log.println(Log.INFO, "Hi", "Adding Chapter " + ThisChapter.ID + 1 + " / " + NewBook.Chapters.size() + " To DB.");
 
                 ContentValues ChapterCV = new ContentValues();
 

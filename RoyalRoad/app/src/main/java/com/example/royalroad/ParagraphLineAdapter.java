@@ -36,10 +36,12 @@ import java.util.regex.Pattern;
 public class ParagraphLineAdapter extends RecyclerView.Adapter<ParagraphLineAdapter.ParagraphLineViewHolder>
 {
     ArrayList<Book.Paragraph> Data;
+    ArrayList<ParagraphLineViewHolder> LineHolders;
 
     public ParagraphLineAdapter(ArrayList<Book.Paragraph> data)
     {
         this.Data = data;
+        LineHolders = new ArrayList<>();
     }
 
     @NonNull
@@ -150,6 +152,8 @@ public class ParagraphLineAdapter extends RecyclerView.Adapter<ParagraphLineAdap
         }
         else
         {
+            LineHolders.add(holder);
+
             int MarginSpacing = (int)TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 15, res.getDisplayMetrics());
             int LineSpacing = 5;
 
@@ -332,6 +336,79 @@ public class ParagraphLineAdapter extends RecyclerView.Adapter<ParagraphLineAdap
             {
                 holder.Line.setVisibility(View.GONE);
             }
+        }
+    }
+
+    public void AlterFont(BaseSettingsFragment.FontStyle NewFont)
+    {
+        Typeface Font = null;
+
+        switch (NewFont)
+        {
+            case Arial:
+                Font = ResourcesCompat.getFont(LineHolders.get(0).itemView.getContext(), R.font.arial);
+                break;
+
+            case Atkinson_Hyperlegible:
+                Font = ResourcesCompat.getFont(LineHolders.get(0).itemView.getContext(), R.font.atkinson_hyperlegible);
+                break;
+
+            case Caslon:
+                Font = ResourcesCompat.getFont(LineHolders.get(0).itemView.getContext(), R.font.caslon);
+                break;
+
+            case Comic_Sans:
+                Font = ResourcesCompat.getFont(LineHolders.get(0).itemView.getContext(), R.font.comic_sans);
+                break;
+
+            case Franklin_Gothic:
+                Font = ResourcesCompat.getFont(LineHolders.get(0).itemView.getContext(), R.font.franklin_gothic);
+                break;
+
+            case Garamond:
+                Font = ResourcesCompat.getFont(LineHolders.get(0).itemView.getContext(), R.font.garamond);
+                break;
+
+            case Lucida:
+                Font = ResourcesCompat.getFont(LineHolders.get(0).itemView.getContext(), R.font.lucida);
+                break;
+
+            case Minion:
+                Font = ResourcesCompat.getFont(LineHolders.get(0).itemView.getContext(), R.font.minion);
+                break;
+
+            case Open_Dyslexic:
+                Font = ResourcesCompat.getFont(LineHolders.get(0).itemView.getContext(), R.font.open_dyslexic);
+                break;
+
+            case Open_Sans:
+                Font = ResourcesCompat.getFont(LineHolders.get(0).itemView.getContext(), R.font.open_sans);
+                break;
+
+            case Roboto:
+                Font = ResourcesCompat.getFont(LineHolders.get(0).itemView.getContext(), R.font.roboto);
+                break;
+
+            case Sans_Serif:
+                Font = ResourcesCompat.getFont(LineHolders.get(0).itemView.getContext(), R.font.sans_serif);
+                break;
+
+            case Ubuntu:
+                Font = ResourcesCompat.getFont(LineHolders.get(0).itemView.getContext(), R.font.ubuntu);
+                break;
+
+            case Ubuntu_Condensed:
+                Font = ResourcesCompat.getFont(LineHolders.get(0).itemView.getContext(), R.font.ubuntu_condensed_regular);
+                break;
+
+            case Verdanda:
+                Font = ResourcesCompat.getFont(LineHolders.get(0).itemView.getContext(), R.font.verdana);
+                break;
+        }
+
+        for(ParagraphLineViewHolder holder : LineHolders)
+        {
+            holder.Line.setTypeface(Font);
         }
     }
 

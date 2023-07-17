@@ -20,6 +20,7 @@ import android.widget.TextView;
 import com.example.royalroad.LibraryActivity.LibraryType;
 
 import java.util.ArrayList;
+import java.util.Collections;
 
 public class LibraryFragment extends Fragment
 {
@@ -166,6 +167,11 @@ public class LibraryFragment extends Fragment
 
             if(libraryActivity.DownloadManagerCount > 0)
                 libraryActivity.BottomTabs.getTabAt(4).setText("Downloaded" + " ( " + BookList.size() + " )");
+        }
+
+        if(Type == LibraryType.Downloaded)
+        {
+            Collections.reverse(BookList);
         }
 
         bookAdapter = new BookAdapter(BookList);

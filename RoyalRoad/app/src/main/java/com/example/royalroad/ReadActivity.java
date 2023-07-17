@@ -1,7 +1,10 @@
 package com.example.royalroad;
 
+import androidx.annotation.ColorInt;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.DrawableUtils;
 import androidx.appcompat.widget.Toolbar;
+import androidx.core.graphics.drawable.DrawableCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
@@ -11,9 +14,14 @@ import androidx.viewpager2.widget.ViewPager2;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Color;
+import android.graphics.PorterDuff;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.ContextMenu;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
@@ -67,7 +75,6 @@ public class ReadActivity extends AppCompatActivity {
     public TabLayout FontSettingsTabs;
     private boolean IsDarkMode;
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -87,8 +94,8 @@ public class ReadActivity extends AppCompatActivity {
         BottomToolbar = (Toolbar) findViewById(R.id.BookBottomToolbar);
 
         SharedPreferences Pref = getSharedPreferences("Settings", MODE_PRIVATE);
+
         IsDarkMode = Pref.getBoolean("ReadingTheme", true);
-        int FontType = Pref.getInt("ReadingFont", BaseSettingsFragment.FontStyle.Open_Sans.ordinal());
 
         FontSettingsLayout = findViewById(R.id.FontSettings);
         FontSettingsTabs = findViewById(R.id.FontTabs);
@@ -113,7 +120,6 @@ public class ReadActivity extends AppCompatActivity {
         FontSettings.setVisibility(View.VISIBLE);
 
         SwitchThemes(IsDarkMode);
-        ChangeFont(BaseSettingsFragment.FontStyle.fromOrdinal(FontType));
 
         FontSettingsTabs.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
             @Override
@@ -158,7 +164,7 @@ public class ReadActivity extends AppCompatActivity {
             @Override
             public void onClick(View v)
             {
-                ChangeFont(BaseSettingsFragment.FontStyle.Arial);
+                ChangeFont(BaseSettingsFragment.FontStyle.Arial, true);
             }
         });
 
@@ -167,7 +173,7 @@ public class ReadActivity extends AppCompatActivity {
             @Override
             public void onClick(View v)
             {
-                ChangeFont(BaseSettingsFragment.FontStyle.Atkinson_Hyperlegible);
+                ChangeFont(BaseSettingsFragment.FontStyle.Atkinson_Hyperlegible, true);
             }
         });
 
@@ -176,7 +182,7 @@ public class ReadActivity extends AppCompatActivity {
             @Override
             public void onClick(View v)
             {
-                ChangeFont(BaseSettingsFragment.FontStyle.Caslon);
+                ChangeFont(BaseSettingsFragment.FontStyle.Caslon, true);
             }
         });
 
@@ -185,7 +191,7 @@ public class ReadActivity extends AppCompatActivity {
             @Override
             public void onClick(View v)
             {
-                ChangeFont(BaseSettingsFragment.FontStyle.Comic_Sans);
+                ChangeFont(BaseSettingsFragment.FontStyle.Comic_Sans, true);
             }
         });
 
@@ -194,7 +200,7 @@ public class ReadActivity extends AppCompatActivity {
             @Override
             public void onClick(View v)
             {
-                ChangeFont(BaseSettingsFragment.FontStyle.Franklin_Gothic);
+                ChangeFont(BaseSettingsFragment.FontStyle.Franklin_Gothic, true);
             }
         });
 
@@ -203,7 +209,7 @@ public class ReadActivity extends AppCompatActivity {
             @Override
             public void onClick(View v)
             {
-                ChangeFont(BaseSettingsFragment.FontStyle.Garamond);
+                ChangeFont(BaseSettingsFragment.FontStyle.Garamond, true);
             }
         });
 
@@ -212,7 +218,7 @@ public class ReadActivity extends AppCompatActivity {
             @Override
             public void onClick(View v)
             {
-                ChangeFont(BaseSettingsFragment.FontStyle.Lucida);
+                ChangeFont(BaseSettingsFragment.FontStyle.Lucida, true);
             }
         });
 
@@ -221,7 +227,7 @@ public class ReadActivity extends AppCompatActivity {
             @Override
             public void onClick(View v)
             {
-                ChangeFont(BaseSettingsFragment.FontStyle.Minion);
+                ChangeFont(BaseSettingsFragment.FontStyle.Minion, true);
             }
         });
 
@@ -230,7 +236,7 @@ public class ReadActivity extends AppCompatActivity {
             @Override
             public void onClick(View v)
             {
-                ChangeFont(BaseSettingsFragment.FontStyle.Open_Dyslexic);
+                ChangeFont(BaseSettingsFragment.FontStyle.Open_Dyslexic, true);
             }
         });
 
@@ -239,7 +245,7 @@ public class ReadActivity extends AppCompatActivity {
             @Override
             public void onClick(View v)
             {
-                ChangeFont(BaseSettingsFragment.FontStyle.Open_Sans);
+                ChangeFont(BaseSettingsFragment.FontStyle.Open_Sans, true);
             }
         });
 
@@ -248,7 +254,7 @@ public class ReadActivity extends AppCompatActivity {
             @Override
             public void onClick(View v)
             {
-                ChangeFont(BaseSettingsFragment.FontStyle.Roboto);
+                ChangeFont(BaseSettingsFragment.FontStyle.Roboto, true);
             }
         });
 
@@ -257,7 +263,7 @@ public class ReadActivity extends AppCompatActivity {
             @Override
             public void onClick(View v)
             {
-                ChangeFont(BaseSettingsFragment.FontStyle.Sans_Serif);
+                ChangeFont(BaseSettingsFragment.FontStyle.Sans_Serif, true);
             }
         });
 
@@ -266,7 +272,7 @@ public class ReadActivity extends AppCompatActivity {
             @Override
             public void onClick(View v)
             {
-                ChangeFont(BaseSettingsFragment.FontStyle.Ubuntu);
+                ChangeFont(BaseSettingsFragment.FontStyle.Ubuntu, true);
             }
         });
 
@@ -275,7 +281,7 @@ public class ReadActivity extends AppCompatActivity {
             @Override
             public void onClick(View v)
             {
-                ChangeFont(BaseSettingsFragment.FontStyle.Ubuntu_Condensed);
+                ChangeFont(BaseSettingsFragment.FontStyle.Ubuntu_Condensed, true);
             }
         });
 
@@ -284,9 +290,12 @@ public class ReadActivity extends AppCompatActivity {
             @Override
             public void onClick(View v)
             {
-                ChangeFont(BaseSettingsFragment.FontStyle.Verdanda);
+                ChangeFont(BaseSettingsFragment.FontStyle.Verdanda, true);
             }
         });
+
+        int FontType = Pref.getInt("ReadingFont", BaseSettingsFragment.FontStyle.Open_Sans.ordinal());
+        ChangeFont(BaseSettingsFragment.FontStyle.fromOrdinal(FontType), false);
 
         FontSettingsLayout.setVisibility(View.GONE);
 
@@ -385,6 +394,7 @@ public class ReadActivity extends AppCompatActivity {
                 if(FontSettingsLayout.getVisibility() == View.VISIBLE)
                 {
                     FontSettingsLayout.setVisibility(View.GONE);
+                    getWindow().setLocalFocus(true, true);
                 }
             }
         });
@@ -463,12 +473,10 @@ public class ReadActivity extends AppCompatActivity {
         }
     }
 
-    public void ChangeFont(BaseSettingsFragment.FontStyle CurrentStyle)
+    public void ChangeFont(BaseSettingsFragment.FontStyle CurrentStyle, boolean AlterFont)
     {
         SharedPreferences Pref = getSharedPreferences("Settings", MODE_PRIVATE);
         SharedPreferences.Editor PrefEditor = Pref.edit();
-
-        //PrefEditor.putInt("ReadingFont", CurrentStyle.ordinal());
 
         ArialBTN.setBackgroundColor(getResources().getColor(R.color.Invis));
         AtkinsonBTN.setBackgroundColor(getResources().getColor(R.color.Invis));
@@ -547,6 +555,13 @@ public class ReadActivity extends AppCompatActivity {
             case Verdanda:
                 VerdanaBTN.setBackgroundColor(getResources().getColor(R.color.ButtonItem));
                 break;
+        }
+
+        if(AlterFont)
+        {
+            PrefEditor.putInt("ReadingFont", CurrentStyle.ordinal());
+            ChapterFragment CurrentChapter = (ChapterFragment)vpAdapter.GetFragment(BookPager.getCurrentItem());
+            CurrentChapter.adapter.AlterFont(CurrentStyle);
         }
     }
 
@@ -652,7 +667,16 @@ public class ReadActivity extends AppCompatActivity {
 
     public void ShareBook()
     {
+        Intent myIntent = new Intent(Intent.ACTION_SEND);
 
+        myIntent.setType("text/plain");
+        String body = ReadBook.Title + "\n" + "https://www.royalroad.com/fiction/" + String.valueOf(ReadBook.ExternalID);
+        String sub = "Hi";
+
+        myIntent.putExtra(Intent.EXTRA_SUBJECT,sub);
+        myIntent.putExtra(Intent.EXTRA_TEXT,body);
+
+        startActivity(Intent.createChooser(myIntent, "Share Using"));
     }
 
     public void HideToolbars()
