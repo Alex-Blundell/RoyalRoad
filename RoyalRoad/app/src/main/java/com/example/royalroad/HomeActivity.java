@@ -25,6 +25,7 @@ import android.os.StrictMode;
 import android.os.strictmode.Violation;
 import android.provider.MediaStore;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
@@ -146,5 +147,17 @@ public class HomeActivity extends AppCompatActivity
 
             }
         });
+    }
+
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event)
+    {
+        if ((keyCode == KeyEvent.KEYCODE_BACK) && HomePager.getCurrentItem() != 0)
+        {
+            HomePager.setCurrentItem(0);
+            return true;
+        }
+
+        return super.onKeyDown(keyCode, event);
     }
 }

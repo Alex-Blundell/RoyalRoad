@@ -77,6 +77,7 @@ public class BookHomeFragment extends Fragment {
 
         TitleTXT.setText(ReadBook.Title);
         AuthorTXT.setText(ReadBook.Author);
+
         Description.setText(ReadBook.Description);
         Rating.setRating((float) ReadBook.Rating);
 

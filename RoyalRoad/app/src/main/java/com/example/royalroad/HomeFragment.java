@@ -4,6 +4,7 @@ import static android.app.Activity.RESULT_OK;
 import static android.content.Context.MODE_PRIVATE;
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
@@ -54,45 +55,54 @@ import org.jsoup.nodes.Document;
 import java.io.IOException;
 import java.sql.Ref;
 import java.util.ArrayList;
+import java.util.Collections;
 
 public class HomeFragment extends Fragment
 {
-    Button LoginBTN;
+    Button LastReadBTN;
     Button DiscoverBTN;
     Button LibraryBTN;
-    Button WriteBTN;
     Button ForumsBTN;
     Button FriendsBTN;
-    Button SettingsBTN;
+    Button AdvancedSearchBTN;
     ImageButton MailBTN;
     ImageButton NotificationsBTN;
 
     TextView UsernameTXT;
+    TextView LastReadTXT;
     ImageView AvatarImage;
     ImageView DarkBackground;
     ImageView DarkBackgroundAvatar;
     ImageView BackgroundAvatar;
+    ImageView LastReadCover;
 
     ShapeableImageView SelectBTN;
     ShapeableImageView CloseBTN;
+
+    RelativeLayout LastReadArea;
+
+    TextView LastReadTitle;
+    TextView LastReadAuthor;
 
     SearchView Searchbar;
 
     View Divider;
 
     Boolean IsDarkMode;
+    Boolean IsDownloadingAlready;
 
     FirebaseFirestore db;
     DBHandler SQLiteDB;
 
     int SELECT_PICTURE = 200;
     public static final String UPDATE_CHANNEL = "updatechannel";
-    String GROUP_KEY_STORY_NOTIFICATION = "com.android.example.STORY_NOTIFICATION";
 
     private boolean IsExpandedSearch = false;
 
     private SharedPreferences Pref;
     private SharedPreferences.Editor PrefEditor;
+
+    ArrayList<Book> HistoryBooks = new ArrayList<>();
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
@@ -115,13 +125,19 @@ public class HomeFragment extends Fragment
         PrefEditor = Pref.edit();
 
         IsDarkMode = Pref.getBoolean("AppTheme", false);
+        IsDownloadingAlready = Pref.getBoolean("DownloadingThemeSwitch", false);
+
+        LastReadTXT = view.findViewById(R.id.LastReadTXT);
+        LastReadArea = view.findViewById(R.id.LastReadArea);
+        LastReadBTN = view.findViewById(R.id.LastReadBTN);
+        LastReadCover = view.findViewById(R.id.LastReadCover);
+        LastReadTitle = view.findViewById(R.id.LastReadTitle);
+        LastReadAuthor = view.findViewById(R.id.LastReadAuthor);
 
         DiscoverBTN = view.findViewById(R.id.DiscoverBTN);
         LibraryBTN = view.findViewById(R.id.LibraryBTN);
-        WriteBTN = view.findViewById(R.id.WriteBTN);
         ForumsBTN = view.findViewById(R.id.ForumsBTN);
         FriendsBTN = view.findViewById(R.id.FriendsBTN);
-        SettingsBTN = view.findViewById(R.id.SettingsBTN);
 
         MailBTN = view.findViewById(R.id.MailBTN);
         NotificationsBTN = view.findViewById(R.id.NotificationBTN);
@@ -147,6 +163,20 @@ public class HomeFragment extends Fragment
 
         Searchbar = view.findViewById(R.id.HomeSearchbar);
 
+        AdvancedSearchBTN = view.findViewById(R.id.AdvancedSearchBTN);
+
+        AdvancedSearchBTN.setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View view)
+            {
+                Intent SearchResultsIntent = new Intent(getActivity(), SearchActivity.class);
+                SearchResultsIntent.putExtra("IsExpandedSearch", true);
+
+                startActivity(SearchResultsIntent);
+            }
+        });
+
         Searchbar.setIconifiedByDefault(false);
         Searchbar.setOnQueryTextListener(new SearchView.OnQueryTextListener()
         {
@@ -159,15 +189,7 @@ public class HomeFragment extends Fragment
                 Intent SearchResultsIntent = new Intent(getActivity(), SearchActivity.class);
 
                 SearchResultsIntent.putExtra("IsExpandedSearch", IsExpandedSearch);
-
-                if(IsExpandedSearch)
-                {
-
-                }
-                else
-                {
-                    SearchResultsIntent.putExtra("Title", s);
-                }
+                SearchResultsIntent.putExtra("Title", s);
 
                 startActivity(SearchResultsIntent);
                 return true;
@@ -218,14 +240,12 @@ public class HomeFragment extends Fragment
 
             if (!AvatarURL.isEmpty())
             {
-                StorageReference Reference = FirebaseStorage.getInstance().getReferenceFromUrl(AvatarURL);
-
                 Glide.with(this)
-                        .load(Reference)
+                        .load(AvatarURL)
                         .into(AvatarImage);
 
                 Glide.with(this)
-                        .load(Reference)
+                        .load(AvatarURL)
                         .into(BackgroundAvatar);
             }
             else
@@ -279,6 +299,8 @@ public class HomeFragment extends Fragment
 
         SwitchThemes(IsDarkMode);
 
+        GetLastRead();
+
         DiscoverBTN.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view)
@@ -293,14 +315,6 @@ public class HomeFragment extends Fragment
             public void onClick(View view) {
                 Intent LibraryIntent = new Intent(getActivity(), LibraryActivity.class);
                 startActivity(LibraryIntent);
-            }
-        });
-
-        WriteBTN.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent WriteIntent = new Intent(getActivity(), WriteActivity.class);
-                startActivity(WriteIntent);
             }
         });
 
@@ -320,27 +334,20 @@ public class HomeFragment extends Fragment
             }
         });
 
-        SettingsBTN.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view)
-            {
-                SharedPreferences.Editor PrefEditor = Pref.edit();
-
-                PrefEditor.putBoolean("IsLoggedIn", false);
-                PrefEditor.putInt("UserID", 0);
-
-                PrefEditor.apply();
-
-                Intent LoginIntent = new Intent(getActivity(), MainActivity.class);
-                startActivity(LoginIntent);
-
-                getActivity().finish();
-            }
-        });
-
         try
         {
-            CheckUpdates();
+            if(!IsDownloadingAlready)
+            {
+                CheckUpdates();
+            }
+            else
+            {
+                this.Pref = getActivity().getSharedPreferences("Settings", MODE_PRIVATE);
+                SharedPreferences.Editor PrefEditor = this.Pref.edit();
+
+                PrefEditor.putBoolean("DownloadingThemeSwitch", false);
+                PrefEditor.apply();
+            }
         }
         catch (InterruptedException e)
         {
@@ -444,6 +451,8 @@ public class HomeFragment extends Fragment
         boolean TempDarkMode = Pref.getBoolean("AppTheme", false);
 
         SwitchThemes(TempDarkMode);
+
+        GetLastRead();
     }
 
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -506,6 +515,81 @@ public class HomeFragment extends Fragment
                     }
                 }
             }
+        }
+    }
+
+    public void GetLastRead()
+    {
+        int LibraryCount = SQLiteDB.GetLibraryCount();
+
+        if(LibraryCount > 0)
+        {
+            for (int i = 0; i < LibraryCount; i++)
+            {
+                boolean BookExists = SQLiteDB.DoesBookExist(i + 1);
+
+                if(BookExists)
+                {
+                    Book CurrentBook = SQLiteDB.GetBook(i + 1);
+
+                    if (CurrentBook.HasRead)
+                    {
+                        HistoryBooks.add(CurrentBook);
+                    }
+                }
+            }
+
+            if(HistoryBooks.size() > 0)
+            {
+                Collections.sort(HistoryBooks, Collections.reverseOrder());
+
+                ConnectivityManager connectivityManager = (ConnectivityManager)getContext().getSystemService(Context.CONNECTIVITY_SERVICE);
+
+                boolean IsOnline = (connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_MOBILE).getState() == NetworkInfo.State.CONNECTED ||
+                        connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI).getState() == NetworkInfo.State.CONNECTED);
+
+                if(IsOnline)
+                {
+                    Glide.with(getContext())
+                            .load(HistoryBooks.get(0).GetCover())
+                            .into(LastReadCover);
+                }
+                else
+                {
+                    LastReadCover.setImageResource(R.drawable.default_cover);
+                }
+
+                LastReadTitle.setText(HistoryBooks.get(0).Title);
+                LastReadAuthor.setText("by " + HistoryBooks.get(0).Author);
+
+                LastReadBTN.setOnClickListener(new View.OnClickListener()
+                {
+                    @Override
+                    public void onClick(View view)
+                    {
+                        Intent ThisIntent = new Intent(getContext(), ReadActivity.class);
+                        ThisIntent.putExtra("Book", HistoryBooks.get(0));
+
+                        DBHandler SQLiteDB = new DBHandler(getContext());
+
+                        boolean HasDownloaded = SQLiteDB.GetLibraryBook(HistoryBooks.get(0).GetExternalID());
+                        ThisIntent.putExtra("HasDownloaded", HasDownloaded);
+
+                        SQLiteDB.close();
+                        startActivity(ThisIntent);
+                    }
+                });
+            }
+            else
+            {
+                LastReadTXT.setVisibility(View.INVISIBLE);
+                LastReadArea.setVisibility(View.INVISIBLE);
+            }
+        }
+        else
+        {
+            LastReadTXT.setVisibility(View.INVISIBLE);
+            LastReadArea.setVisibility(View.INVISIBLE);
         }
     }
 

@@ -27,11 +27,153 @@
         android:textAllCaps="false"
         />
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/MoreBookRV"
+    <ScrollView
+        android:id="@+id/Scoller"
+        android:layout_below="@id/DiscoverMoreToolbar"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_below="@id/DiscoverMoreToolbar"
-        android:smoothScrollbar="true"
-        />
+        >
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/MoreBookRV"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:smoothScrollbar="true"
+                />
+
+            <RelativeLayout
+                android:id="@+id/PagesLayout"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/MoreBookRV"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="25dp"
+                android:layout_marginBottom="25dp"
+                tools:ignore="NotSibling">
+
+                <Button
+                    android:id="@+id/FirstBTN"
+                    android:layout_width="40dp"
+                    android:layout_height="47.5dp"
+                    android:layout_marginRight="2.5dp"
+                    android:paddingLeft="0dp"
+                    android:paddingTop="0dp"
+                    android:paddingRight="0dp"
+                    android:paddingBottom="0dp"
+                    app:icon="@drawable/first_page"
+                    app:iconGravity="textStart"
+                    app:iconPadding="0dp" />
+
+                <Button
+                    android:id="@+id/PreviousBTN"
+                    android:layout_width="40dp"
+                    android:layout_height="47.5dp"
+                    android:layout_marginRight="2.5dp"
+                    android:layout_toRightOf="@id/FirstBTN"
+                    android:paddingLeft="0dp"
+                    android:paddingTop="0dp"
+                    android:paddingRight="0dp"
+                    android:paddingBottom="0dp"
+                    app:icon="@drawable/back"
+                    app:iconGravity="textStart"
+                    app:iconPadding="0dp" />
+
+                <Button
+                    android:id="@+id/OneBTN"
+                    android:layout_width="40dp"
+                    android:layout_height="47.5dp"
+                    android:layout_toRightOf="@id/PreviousBTN"
+                    android:paddingLeft="0dp"
+                    android:paddingTop="0dp"
+                    android:paddingRight="0dp"
+                    android:paddingBottom="0dp"
+                    android:text="1"
+                    android:layout_marginRight="2.5dp"
+                    />
+
+                <Button
+                    android:id="@+id/TwoBTN"
+                    android:layout_width="40dp"
+                    android:layout_height="47.5dp"
+                    android:layout_toRightOf="@id/OneBTN"
+                    android:text="2"
+                    android:paddingLeft="0dp"
+                    android:paddingTop="0dp"
+                    android:paddingRight="0dp"
+                    android:paddingBottom="0dp"
+                    android:layout_marginRight="2.5dp"
+                    />
+
+                <Button
+                    android:id="@+id/ThreeBTN"
+                    android:layout_width="40dp"
+                    android:layout_height="47.5dp"
+                    android:layout_toRightOf="@id/TwoBTN"
+                    android:text="3"
+                    android:paddingLeft="0dp"
+                    android:paddingTop="0dp"
+                    android:paddingRight="0dp"
+                    android:paddingBottom="0dp"
+                    android:layout_marginRight="2.5dp"
+                    />
+
+                <Button
+                    android:id="@+id/FourBTN"
+                    android:layout_width="40dp"
+                    android:layout_height="47.5dp"
+                    android:layout_toRightOf="@id/ThreeBTN"
+                    android:text="4"
+                    android:paddingLeft="0dp"
+                    android:paddingTop="0dp"
+                    android:paddingRight="0dp"
+                    android:paddingBottom="0dp"
+                    android:layout_marginRight="2.5dp"
+                    />
+
+                <Button
+                    android:id="@+id/FiveBTN"
+                    android:layout_width="40dp"
+                    android:layout_height="47.5dp"
+                    android:layout_toRightOf="@id/FourBTN"
+                    android:text="5"
+                    android:paddingLeft="0dp"
+                    android:paddingTop="0dp"
+                    android:paddingRight="0dp"
+                    android:paddingBottom="0dp"
+                    android:layout_marginRight="2.5dp"
+                    />
+
+                <Button
+                    android:id="@+id/NextBTN"
+                    android:layout_width="40dp"
+                    android:layout_height="47.5dp"
+                    android:layout_marginRight="2.5dp"
+                    android:layout_toRightOf="@id/FiveBTN"
+                    android:paddingLeft="0dp"
+                    android:paddingTop="0dp"
+                    android:paddingRight="0dp"
+                    android:paddingBottom="0dp"
+                    app:icon="@drawable/next"
+                    app:iconGravity="textStart"
+                    app:iconPadding="0dp" />
+
+                <Button
+                    android:id="@+id/LastBTN"
+                    android:layout_width="40dp"
+                    android:layout_height="47.5dp"
+                    android:layout_toRightOf="@id/NextBTN"
+                    android:paddingLeft="0dp"
+                    android:paddingTop="0dp"
+                    android:paddingRight="0dp"
+                    android:paddingBottom="0dp"
+                    app:icon="@drawable/last_page"
+                    app:iconGravity="textStart"
+                    app:iconPadding="0dp" />
+            </RelativeLayout>
+        </RelativeLayout>
+    </ScrollView>
 </RelativeLayout>

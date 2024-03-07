@@ -104,24 +104,6 @@ public class BookAdapter extends RecyclerView.Adapter<BookAdapter.bookviewholder
             holder.Description.setText(Data.get(Position).GetDescription());
         }
 
-        // Warnings First.
-        if(Data.get(Position).ContentWarnings != null)
-        {
-            if(Data.get(Position).ContentWarnings.size() > 0)
-            {
-                // Add Warnings.
-                String WarningsText = "";
-
-                for(Book.Warnings ThisWarning : Data.get(Position).ContentWarnings)
-                {
-                    WarningsText += ThisWarning.name();
-                }
-
-                Book.Details WarningsDetail = new Book.Details(WarningsText, holder.itemView.getResources().getColor(R.color.BlueBorder));
-                AllDetails.add(WarningsDetail);
-            }
-        }
-
         // Language Next.
         Book.Details LanguageDetail = new Book.Details("English", holder.itemView.getResources().getDrawable(R.drawable.earth),
                                           holder.itemView.getResources().getColor(R.color.BlueBorder), holder.itemView.getResources().getColor(R.color.DarkText));
@@ -272,6 +254,10 @@ public class BookAdapter extends RecyclerView.Adapter<BookAdapter.bookviewholder
 
                        holder.DeleteBTN.setVisibility(View.VISIBLE);
                        holder.DeleteBTN.setChecked(true);
+
+                       // Good Lord, thats a Terrifying line of Code.
+                       LibraryFragment CurrentFragment = ((LibraryFragment)((LibraryActivity)holder.itemView.getContext()).vpAdapter.GetFragment(((LibraryActivity)holder.itemView.getContext()).LibraryPager.getCurrentItem()));
+                       CurrentFragment.AddToDelete(holder.BoundBook);
                    }
                    else
                    {
@@ -280,6 +266,17 @@ public class BookAdapter extends RecyclerView.Adapter<BookAdapter.bookviewholder
 
                        holder.DeleteBTN.setVisibility(View.GONE);
                        holder.DeleteBTN.setChecked(false);
+
+                       // Good Lord, thats a Terrifying line of Code.
+                       LibraryFragment CurrentFragment = ((LibraryFragment)((LibraryActivity)holder.itemView.getContext()).vpAdapter.GetFragment(((LibraryActivity)holder.itemView.getContext()).LibraryPager.getCurrentItem()));
+                       CurrentFragment.RemoveFromDelete(holder.BoundBook);
+
+                       int DeleteCount = CurrentFragment.GetDeleteBooksCount();
+
+                       if(DeleteCount == 0)
+                       {
+                           CanDestroy = false;
+                       }
                    }
                 }
             }
@@ -299,8 +296,16 @@ public class BookAdapter extends RecyclerView.Adapter<BookAdapter.bookviewholder
                         holder.DeleteBTN.setVisibility(View.GONE);
                         holder.DeleteBTN.setChecked(false);
 
-                        CanDestroy = false;
+                        // Good Lord, thats a Terrifying line of Code.
+                        LibraryFragment CurrentFragment = ((LibraryFragment)((LibraryActivity)holder.itemView.getContext()).vpAdapter.GetFragment(((LibraryActivity)holder.itemView.getContext()).LibraryPager.getCurrentItem()));
+                        CurrentFragment.RemoveFromDelete(holder.BoundBook);
 
+                        int DeleteCount = CurrentFragment.GetDeleteBooksCount();
+
+                        if(DeleteCount == 0)
+                        {
+                            CanDestroy = false;
+                        }
                     }
                     else
                     {
@@ -311,9 +316,11 @@ public class BookAdapter extends RecyclerView.Adapter<BookAdapter.bookviewholder
                         holder.DeleteBTN.setChecked(true);
 
                         CanDestroy = true;
-                    }
 
-                    ((LibraryActivity)holder.itemView.getContext()).OpenDeletePrompt(CanDestroy);
+                        // Good Lord, thats a Terrifying line of Code.
+                        LibraryFragment CurrentFragment = ((LibraryFragment)((LibraryActivity)holder.itemView.getContext()).vpAdapter.GetFragment(((LibraryActivity)holder.itemView.getContext()).LibraryPager.getCurrentItem()));
+                        CurrentFragment.AddToDelete(holder.BoundBook);
+                    }
 
                     return true;
                 }

@@ -24,11 +24,24 @@
         app:iconSize="30dp"
         />
 
-    <androidx.appcompat.widget.SearchView
+    <android.widget.SearchView
         android:id="@+id/Searchbar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@id/SearchToolbar"
+        android:iconifiedByDefault="false"
+        android:layout_toLeftOf="@id/AdvancedSearchBTN"
+        />
+
+    <Button
+        android:id="@+id/AdvancedSearchBTN"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:layout_alignParentRight="true"
+        android:layout_marginRight="7.5dp"
+        android:layout_below="@id/SearchToolbar"
+        android:backgroundTint="@color/ButtonInner"
+        app:icon="@drawable/baseline_format_list_bulleted_24"
         />
     
     <com.google.android.material.divider.MaterialDivider
@@ -38,31 +51,741 @@
         android:layout_below="@id/Searchbar"
         />
 
-    <RelativeLayout
-        android:id="@+id/ExpandedSearchOptions"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+    <ScrollView
+        android:id="@+id/Scoller"
         android:layout_below="@id/SearchDividerTop"
-        >
-
-
-    </RelativeLayout>
-    
-    <com.google.android.material.divider.MaterialDivider
-        android:id="@+id/SearchDividerBottom"
         android:layout_width="match_parent"
-        android:layout_height="2dp"
-        android:layout_below="@id/ExpandedSearchOptions"
-        />
+        android:layout_height="match_parent">
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/SearchResultsRV"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="10dp"
-        android:layout_below="@id/SearchDividerBottom"
-        />
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical" >
 
-    
+            <RelativeLayout
+                android:id="@+id/ExpandedSearchOptions"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/SearchDividerTop"
+                tools:ignore="NotSibling">
 
+                <TextView
+                    android:id="@+id/KeywordTXT"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="20dp"
+                    android:layout_marginTop="10dp"
+                    android:text="Keyword"
+                    android:textStyle="bold" />
+
+                <EditText
+                    android:id="@+id/KeywordField"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="10dp"
+                    android:layout_marginTop="20dp"
+                    android:layout_marginRight="10dp"
+                    android:hint="Keyword (title or description)..."
+                    android:singleLine="true"
+                    android:textSize="15dp" />
+
+                <TextView
+                    android:id="@+id/AuthorTXT"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/KeywordField"
+                    android:layout_marginLeft="20dp"
+                    android:layout_marginTop="5dp"
+                    android:text="Author"
+                    android:textStyle="bold" />
+
+                <EditText
+                    android:id="@+id/AuthorField"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/KeywordField"
+                    android:layout_marginLeft="10dp"
+                    android:layout_marginTop="15dp"
+                    android:layout_marginRight="10dp"
+                    android:hint="Author..."
+                    android:singleLine="true"
+                    android:textSize="15sp" />
+
+                <TextView
+                    android:id="@+id/GenresTXT"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/AuthorField"
+                    android:layout_marginLeft="20dp"
+                    android:layout_marginTop="5dp"
+                    android:text="Genres"
+                    android:textStyle="bold" />
+
+                <Button
+                    android:id="@+id/GenreAction"
+                    android:layout_width="124dp"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/GenresTXT"
+                    android:layout_marginLeft="10dp"
+                    android:layout_marginTop="5dp"
+                    android:backgroundTint="@color/ButtonInner"
+                    android:paddingLeft="0dp"
+                    android:paddingTop="0dp"
+                    android:paddingRight="0dp"
+                    android:paddingBottom="0dp"
+                    android:text="Action"
+                    android:textSize="13sp" />
+
+                <Button
+                    android:id="@+id/GenreAdventure"
+                    android:layout_width="124dp"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/GenresTXT"
+                    android:layout_marginLeft="10dp"
+                    android:layout_marginTop="5dp"
+                    android:layout_toRightOf="@id/GenreAction"
+                    android:backgroundTint="@color/ButtonInner"
+                    android:paddingLeft="0dp"
+                    android:paddingTop="0dp"
+                    android:paddingRight="0dp"
+                    android:paddingBottom="0dp"
+                    android:text="Adventure"
+                    android:textSize="13sp" />
+
+                <Button
+                    android:id="@+id/GenreComedy"
+                    android:layout_width="124dp"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/GenresTXT"
+                    android:layout_marginLeft="10dp"
+                    android:layout_marginTop="5dp"
+                    android:layout_toRightOf="@id/GenreAdventure"
+                    android:backgroundTint="@color/ButtonInner"
+                    android:text="Comedy"
+                    android:textSize="13sp" />
+
+                <Button
+                    android:id="@+id/GenreContemporary"
+                    android:layout_width="124dp"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/GenreAction"
+                    android:layout_marginLeft="10dp"
+                    android:backgroundTint="@color/ButtonInner"
+                    android:paddingLeft="0dp"
+                    android:paddingTop="0dp"
+                    android:paddingRight="0dp"
+                    android:paddingBottom="0dp"
+                    android:text="Contemporary"
+                    android:textSize="13sp" />
+
+                <Button
+                    android:id="@+id/GenreDrama"
+                    android:layout_width="124dp"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/GenreAction"
+                    android:layout_marginLeft="10dp"
+                    android:layout_toRightOf="@id/GenreAction"
+                    android:backgroundTint="@color/ButtonInner"
+                    android:text="Drama"
+                    android:textSize="13sp" />
+
+                <Button
+                    android:id="@+id/GenreFantasy"
+                    android:layout_width="124dp"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/GenreAction"
+                    android:layout_marginLeft="10dp"
+                    android:layout_toRightOf="@id/GenreAdventure"
+                    android:backgroundTint="@color/ButtonInner"
+                    android:text="Fantasy"
+                    android:textSize="13sp" />
+
+                <Button
+                    android:id="@+id/GenreHistorical"
+                    android:layout_width="124dp"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/GenreContemporary"
+                    android:layout_marginLeft="10dp"
+                    android:backgroundTint="@color/ButtonInner"
+                    android:text="Historical"
+                    android:textSize="13sp" />
+
+                <Button
+                    android:id="@+id/GenreHorror"
+                    android:layout_width="124dp"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/GenreContemporary"
+                    android:layout_marginLeft="10dp"
+                    android:layout_toRightOf="@id/GenreAction"
+                    android:backgroundTint="@color/ButtonInner"
+                    android:text="Horror"
+                    android:textSize="13sp" />
+
+                <Button
+                    android:id="@+id/GenreMystery"
+                    android:layout_width="124dp"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/GenreContemporary"
+                    android:layout_marginLeft="10dp"
+                    android:layout_toRightOf="@id/GenreAdventure"
+                    android:backgroundTint="@color/ButtonInner"
+                    android:text="Mystery"
+                    android:textSize="13sp" />
+
+                <Button
+                    android:id="@+id/GenrePsychological"
+                    android:layout_width="124dp"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/GenreHistorical"
+                    android:layout_marginLeft="10dp"
+                    android:backgroundTint="@color/ButtonInner"
+                    android:paddingLeft="0dp"
+                    android:paddingTop="0dp"
+                    android:paddingRight="0dp"
+                    android:paddingBottom="0dp"
+                    android:text="Psychological"
+                    android:textSize="13sp" />
+
+                <Button
+                    android:id="@+id/GenreRomance"
+                    android:layout_width="124dp"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/GenreHistorical"
+                    android:layout_marginLeft="10dp"
+                    android:layout_toRightOf="@id/GenreAction"
+                    android:backgroundTint="@color/ButtonInner"
+                    android:text="Romance"
+                    android:textSize="13sp" />
+
+                <Button
+                    android:id="@+id/GenreSatire"
+                    android:layout_width="124dp"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/GenreHistorical"
+                    android:layout_marginLeft="10dp"
+                    android:layout_toRightOf="@id/GenreAdventure"
+                    android:backgroundTint="@color/ButtonInner"
+                    android:text="Satire"
+                    android:textSize="13sp" />
+
+                <Button
+                    android:id="@+id/GenreSciFi"
+                    android:layout_width="124dp"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/GenrePsychological"
+                    android:layout_marginLeft="10dp"
+                    android:backgroundTint="@color/ButtonInner"
+                    android:text="Sci-Fi"
+                    android:textSize="13sp" />
+
+                <Button
+                    android:id="@+id/GenreShortStory"
+                    android:layout_width="124dp"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/GenrePsychological"
+                    android:layout_marginLeft="10dp"
+                    android:layout_toRightOf="@id/GenreAction"
+                    android:backgroundTint="@color/ButtonInner"
+                    android:paddingLeft="0dp"
+                    android:paddingTop="0dp"
+                    android:paddingRight="0dp"
+                    android:paddingBottom="0dp"
+                    android:text="Short Story"
+                    android:textSize="13sp" />
+
+                <Button
+                    android:id="@+id/GenreTragedy"
+                    android:layout_width="124dp"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/GenrePsychological"
+                    android:layout_marginLeft="10dp"
+                    android:layout_toRightOf="@id/GenreAdventure"
+                    android:backgroundTint="@color/ButtonInner"
+                    android:text="Tragedy"
+                    android:textSize="13sp" />
+
+                <TextView
+                    android:id="@+id/AdditionalTagsTXT"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/GenreSciFi"
+                    android:layout_marginLeft="20dp"
+                    android:layout_marginTop="5dp"
+                    android:text="Aditional Tags"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/IncludeTagsTXT"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/AdditionalTagsTXT"
+                    android:layout_marginLeft="20dp"
+                    android:text="Only include matching all tags:"
+                    android:textStyle="bold" />
+
+                <Spinner
+                    android:id="@+id/IncludeTags"
+                    android:layout_width="match_parent"
+                    android:layout_height="30dp"
+                    android:layout_below="@id/IncludeTagsTXT"
+                    android:layout_marginLeft="15dp"
+                    android:layout_marginTop="5dp"
+                    android:layout_marginRight="15dp"
+                    android:entries="@array/TagsArray"
+                    android:spinnerMode="dropdown" />
+
+                <TextView
+                    android:id="@+id/ExcludeTagsTXT"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/IncludeTags"
+                    android:layout_marginLeft="20dp"
+                    android:layout_marginTop="5dp"
+                    android:text="Exclude matching any tags:"
+                    android:textStyle="bold" />
+
+                <Spinner
+                    android:id="@+id/ExcludeTags"
+                    android:layout_width="match_parent"
+                    android:layout_height="30dp"
+                    android:layout_below="@id/ExcludeTagsTXT"
+                    android:layout_marginLeft="15dp"
+                    android:layout_marginTop="5dp"
+                    android:layout_marginRight="15dp"
+                    android:entries="@array/TagsArray" />
+
+                <TextView
+                    android:id="@+id/WaringsTXT"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/ExcludeTags"
+                    android:layout_marginLeft="20dp"
+                    android:layout_marginTop="5dp"
+                    android:text="Content Warnings"
+                    android:textStyle="bold" />
+
+                <Button
+                    android:id="@+id/ProfanityWarning"
+                    android:layout_width="124dp"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/WaringsTXT"
+                    android:layout_marginLeft="10dp"
+                    android:layout_marginTop="5dp"
+                    android:backgroundTint="@color/ButtonInner"
+                    android:paddingLeft="0dp"
+                    android:paddingTop="0dp"
+                    android:paddingRight="0dp"
+                    android:paddingBottom="0dp"
+                    android:text="Profanity"
+                    android:textSize="13sp" />
+
+                <Button
+                    android:id="@+id/SexualWarning"
+                    android:layout_width="124dp"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/WaringsTXT"
+                    android:layout_marginLeft="10dp"
+                    android:layout_marginTop="5dp"
+                    android:layout_toRightOf="@id/GenreAction"
+                    android:backgroundTint="@color/ButtonInner"
+                    android:paddingLeft="0dp"
+                    android:paddingTop="0dp"
+                    android:paddingRight="0dp"
+                    android:paddingBottom="0dp"
+                    android:text="Sexual Content"
+                    android:textSize="13sp" />
+
+                <Button
+                    android:id="@+id/ViolenceWarning"
+                    android:layout_width="124dp"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/WaringsTXT"
+                    android:layout_marginLeft="10dp"
+                    android:layout_marginTop="5dp"
+                    android:layout_toRightOf="@id/GenreAdventure"
+                    android:backgroundTint="@color/ButtonInner"
+                    android:text="Graphic Violence"
+                    android:textSize="13sp" />
+
+                <Button
+                    android:id="@+id/SensitiveWarning"
+                    android:layout_width="124dp"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/ProfanityWarning"
+                    android:layout_marginLeft="10dp"
+                    android:backgroundTint="@color/ButtonInner"
+                    android:paddingLeft="0dp"
+                    android:paddingTop="0dp"
+                    android:paddingRight="0dp"
+                    android:paddingBottom="0dp"
+                    android:text="Sensitive Content"
+                    android:textSize="13sp" />
+
+                <Button
+                    android:id="@+id/AI_AssistedWaring"
+                    android:layout_width="124dp"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/SexualWarning"
+                    android:layout_marginLeft="10dp"
+                    android:layout_toRightOf="@id/GenreAction"
+                    android:backgroundTint="@color/ButtonInner"
+                    android:text="AI-Assisted Content"
+                    android:textSize="13sp"
+                    android:paddingLeft="5dp"
+                    android:paddingRight="5dp"
+                    />
+
+                <Button
+                    android:id="@+id/AI_GeneratedWaring"
+                    android:layout_width="124dp"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/ViolenceWarning"
+                    android:layout_marginLeft="10dp"
+                    android:layout_toRightOf="@id/GenreAdventure"
+                    android:backgroundTint="@color/ButtonInner"
+                    android:paddingLeft="5dp"
+                    android:paddingRight="5dp"
+                    android:text="AI-Generated Content"
+                    android:textSize="13sp" />
+
+                <TextView
+                    android:id="@+id/PageNumTXT"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/AI_GeneratedWaring"
+                    android:layout_marginLeft="20dp"
+                    android:layout_marginTop="5dp"
+                    android:text="Number of Pages"
+                    android:textStyle="bold" />
+
+                <SeekBar
+                    android:id="@+id/PageNum"
+                    android:layout_width="match_parent"
+                    android:layout_height="30dp"
+                    android:layout_below="@id/PageNumTXT"
+                    android:layout_marginLeft="15dp"
+                    android:layout_marginTop="5dp"
+                    android:layout_marginRight="15dp"
+                    android:max="20000"
+                    android:progress="0" />
+
+                <EditText
+                    android:id="@+id/PageNumMin"
+                    android:layout_width="75dp"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/PageNum"
+                    android:layout_marginLeft="20dp"
+                    android:ems="10"
+                    android:inputType="number"
+                    android:singleLine="true"
+                    android:text="0"
+                    android:textAlignment="center" />
+
+                <EditText
+                    android:id="@+id/PageNumMax"
+                    android:layout_width="75dp"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/PageNum"
+                    android:layout_alignParentRight="true"
+                    android:layout_marginRight="20dp"
+                    android:ems="10"
+                    android:inputType="number"
+                    android:text="20000"
+                    android:textAlignment="center"
+                    android:singleLine="true"
+                    />
+
+                <TextView
+                    android:id="@+id/RatingTXT"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/PageNumMin"
+                    android:layout_marginLeft="20dp"
+                    android:layout_marginTop="5dp"
+                    android:text="Rating"
+                    android:textStyle="bold" />
+
+                <SeekBar
+                    android:id="@+id/RatingNum"
+                    android:layout_width="match_parent"
+                    android:layout_height="30dp"
+                    android:layout_below="@id/RatingTXT"
+                    android:layout_marginLeft="15dp"
+                    android:layout_marginTop="5dp"
+                    android:layout_marginRight="15dp"
+                    android:max="5" />
+
+                <EditText
+                    android:id="@+id/RatingNumMin"
+                    android:layout_width="75dp"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/RatingNum"
+                    android:layout_marginLeft="20dp"
+                    android:ems="10"
+                    android:inputType="number"
+                    android:text="0"
+                    android:textAlignment="center"
+                    android:singleLine="true"
+                    />
+
+                <EditText
+                    android:id="@+id/RatingNumMax"
+                    android:layout_width="75dp"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/RatingNum"
+                    android:layout_alignParentRight="true"
+                    android:layout_marginRight="20dp"
+                    android:ems="10"
+                    android:inputType="number"
+                    android:text="5"
+                    android:textAlignment="center"
+                    android:singleLine="true"
+                    />
+
+                <TextView
+                    android:id="@+id/StatusTXT"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/RatingNumMax"
+                    android:layout_marginLeft="20dp"
+                    android:text="Status:"
+                    android:textStyle="bold" />
+
+                <Spinner
+                    android:id="@+id/StatusDropdown"
+                    android:layout_width="match_parent"
+                    android:layout_height="30dp"
+                    android:layout_below="@id/StatusTXT"
+                    android:layout_marginLeft="15dp"
+                    android:layout_marginTop="5dp"
+                    android:layout_marginRight="15dp"
+                    android:entries="@array/StatusArray" />
+
+                <TextView
+                    android:id="@+id/OrderByTXT"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/StatusDropdown"
+                    android:layout_marginLeft="20dp"
+                    android:layout_marginTop="5dp"
+                    android:text="Order By"
+                    android:textStyle="bold" />
+
+                <LinearLayout
+                    android:id="@+id/OrderByLinearLayout"
+                    android:layout_height="wrap_content"
+                    android:layout_width="match_parent"
+                    android:layout_below="@id/OrderByTXT"
+                    android:orientation="horizontal">
+
+                    <Spinner
+                        android:id="@+id/OrderByDropdown"
+                        android:layout_width="match_parent"
+                        android:layout_height="30dp"
+                        android:layout_alignParentLeft="true"
+                        android:layout_marginLeft="10dp"
+                        android:layout_toLeftOf="@id/LibraryBTN"
+                        android:layout_weight="1"
+                        android:entries="@array/OrderByArray"
+                        android:textColor="@color/DarkText" />
+
+                    <Spinner
+                        android:id="@+id/AscendingDropdown"
+                        android:layout_width="match_parent"
+                        android:layout_height="30dp"
+                        android:layout_alignParentRight="true"
+                        android:layout_marginLeft="10dp"
+                        android:layout_marginRight="10dp"
+                        android:layout_weight="1"
+                        android:entries="@array/OrderByDescendingArray"
+                        android:textColor="@color/DarkText" />
+
+                </LinearLayout>
+
+                <TextView
+                    android:id="@+id/TypeTXT"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/OrderByLinearLayout"
+                    android:layout_marginLeft="20dp"
+                    android:layout_marginTop="5dp"
+                    android:text="Type"
+                    android:textStyle="bold"
+                    />
+
+                <Spinner
+                    android:id="@+id/TypeDropdown"
+                    android:layout_width="match_parent"
+                    android:layout_height="30dp"
+                    android:layout_below="@id/TypeTXT"
+                    android:layout_marginLeft="15dp"
+                    android:layout_marginTop="5dp"
+                    android:layout_marginRight="15dp"
+                    android:entries="@array/TypeArray" />
+
+                <Button
+                    android:id="@+id/SearchBTN"
+                    android:layout_width="match_parent"
+                    android:layout_height="75dp"
+                    android:layout_below="@id/TypeDropdown"
+                    android:layout_marginStart="20dp"
+                    android:layout_marginLeft="15dp"
+                    android:layout_marginTop="20dp"
+                    android:layout_marginEnd="20dp"
+                    android:layout_marginRight="15dp"
+                    android:layout_marginBottom="20dp"
+                    android:backgroundTint="@color/ButtonInner"
+                    android:text="Search"
+                    android:textSize="13sp" />
+
+            </RelativeLayout>
+
+            <com.google.android.material.divider.MaterialDivider
+                android:id="@+id/SearchDividerBottom"
+                android:layout_width="match_parent"
+                android:layout_height="2dp"
+                android:layout_below="@id/ExpandedSearchOptions"
+                tools:ignore="NotSibling" />
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/SearchResultsRV"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:layout_below="@id/SearchDividerBottom"
+                >
+
+            </androidx.recyclerview.widget.RecyclerView>
+
+            <RelativeLayout
+                android:id="@+id/SearchPagesLayout"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/SearchResultsRV"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="25dp"
+                android:layout_marginBottom="25dp"
+                >
+
+                <Button
+                    android:id="@+id/FirstBTN"
+                    android:layout_width="40dp"
+                    android:layout_height="47.5dp"
+                    android:layout_marginRight="2.5dp"
+                    android:paddingLeft="0dp"
+                    android:paddingTop="0dp"
+                    android:paddingRight="0dp"
+                    android:paddingBottom="0dp"
+                    app:icon="@drawable/first_page"
+                    app:iconGravity="textStart"
+                    app:iconPadding="0dp" />
+
+                <Button
+                    android:id="@+id/PreviousBTN"
+                    android:layout_width="40dp"
+                    android:layout_height="47.5dp"
+                    android:layout_marginRight="2.5dp"
+                    android:layout_toRightOf="@id/FirstBTN"
+                    android:paddingLeft="0dp"
+                    android:paddingTop="0dp"
+                    android:paddingRight="0dp"
+                    android:paddingBottom="0dp"
+                    app:icon="@drawable/back"
+                    app:iconGravity="textStart"
+                    app:iconPadding="0dp" />
+
+                <Button
+                    android:id="@+id/OneBTN"
+                    android:layout_width="40dp"
+                    android:layout_height="47.5dp"
+                    android:layout_toRightOf="@id/PreviousBTN"
+                    android:paddingLeft="0dp"
+                    android:paddingTop="0dp"
+                    android:paddingRight="0dp"
+                    android:paddingBottom="0dp"
+                    android:text="1"
+                    android:layout_marginRight="2.5dp"
+                    />
+
+                <Button
+                    android:id="@+id/TwoBTN"
+                    android:layout_width="40dp"
+                    android:layout_height="47.5dp"
+                    android:layout_toRightOf="@id/OneBTN"
+                    android:text="2"
+                    android:paddingLeft="0dp"
+                    android:paddingTop="0dp"
+                    android:paddingRight="0dp"
+                    android:paddingBottom="0dp"
+                    android:layout_marginRight="2.5dp"
+                    />
+
+                <Button
+                    android:id="@+id/ThreeBTN"
+                    android:layout_width="40dp"
+                    android:layout_height="47.5dp"
+                    android:layout_toRightOf="@id/TwoBTN"
+                    android:text="3"
+                    android:paddingLeft="0dp"
+                    android:paddingTop="0dp"
+                    android:paddingRight="0dp"
+                    android:paddingBottom="0dp"
+                    android:layout_marginRight="2.5dp"
+                    />
+
+                <Button
+                    android:id="@+id/FourBTN"
+                    android:layout_width="40dp"
+                    android:layout_height="47.5dp"
+                    android:layout_toRightOf="@id/ThreeBTN"
+                    android:text="4"
+                    android:paddingLeft="0dp"
+                    android:paddingTop="0dp"
+                    android:paddingRight="0dp"
+                    android:paddingBottom="0dp"
+                    android:layout_marginRight="2.5dp"
+                    />
+
+                <Button
+                    android:id="@+id/FiveBTN"
+                    android:layout_width="40dp"
+                    android:layout_height="47.5dp"
+                    android:layout_toRightOf="@id/FourBTN"
+                    android:text="5"
+                    android:paddingLeft="0dp"
+                    android:paddingTop="0dp"
+                    android:paddingRight="0dp"
+                    android:paddingBottom="0dp"
+                    android:layout_marginRight="2.5dp"
+                    />
+
+                <Button
+                    android:id="@+id/NextBTN"
+                    android:layout_width="40dp"
+                    android:layout_height="47.5dp"
+                    android:layout_marginRight="2.5dp"
+                    android:layout_toRightOf="@id/FiveBTN"
+                    android:paddingLeft="0dp"
+                    android:paddingTop="0dp"
+                    android:paddingRight="0dp"
+                    android:paddingBottom="0dp"
+                    app:icon="@drawable/next"
+                    app:iconGravity="textStart"
+                    app:iconPadding="0dp" />
+
+                <Button
+                    android:id="@+id/LastBTN"
+                    android:layout_width="40dp"
+                    android:layout_height="47.5dp"
+                    android:layout_toRightOf="@id/NextBTN"
+                    android:paddingLeft="0dp"
+                    android:paddingTop="0dp"
+                    android:paddingRight="0dp"
+                    android:paddingBottom="0dp"
+                    app:icon="@drawable/last_page"
+                    app:iconGravity="textStart"
+                    app:iconPadding="0dp" />
+            </RelativeLayout>
+        </RelativeLayout>
+    </ScrollView>
 </RelativeLayout>

@@ -37,11 +37,15 @@ public class ParagraphLineAdapter extends RecyclerView.Adapter<ParagraphLineAdap
 {
     ArrayList<Book.Paragraph> Data;
     ArrayList<ParagraphLineViewHolder> LineHolders;
+    int ChapterID;
 
-    public ParagraphLineAdapter(ArrayList<Book.Paragraph> data)
+    SharedPreferences Pref;
+
+    public ParagraphLineAdapter(ArrayList<Book.Paragraph> data, int ChapterID)
     {
         this.Data = data;
         LineHolders = new ArrayList<>();
+        this.ChapterID = ChapterID;
     }
 
     @NonNull
@@ -55,7 +59,9 @@ public class ParagraphLineAdapter extends RecyclerView.Adapter<ParagraphLineAdap
     @Override
     public void onBindViewHolder(@NonNull ParagraphLineViewHolder holder, int position)
     {
-        SharedPreferences Pref = holder.itemView.getContext().getSharedPreferences("Settings", Context.MODE_PRIVATE);
+        Log.println(Log.INFO, "Hi", "Chapter: " + this.ChapterID + " Paragraph: " + Data.get(position).ParagraphID);
+
+        Pref = holder.itemView.getContext().getSharedPreferences("Settings", Context.MODE_PRIVATE);
         boolean IsDarkMode = Pref.getBoolean("ReadingTheme", false);
 
         if(IsDarkMode)
@@ -240,73 +246,91 @@ public class ParagraphLineAdapter extends RecyclerView.Adapter<ParagraphLineAdap
 
             String Paragraph = Data.get(position).Content;
 
-            int DeleteOffset = 0;
+            if(Paragraph.contains("<RR_APP_PARAGRAPH_ALIGN_CENTER>"))
+            {
+                Paragraph = Paragraph.replace("<RR_APP_PARAGRAPH_ALIGN_CENTER>", "");
+                holder.Line.setTextAlignment(View.TEXT_ALIGNMENT_CENTER);
+            }
+            else if(Paragraph.contains("<RR_APP_PARAGRAPH_ALIGN_LEFT>"))
+            {
+                Paragraph = Paragraph.replace("<RR_APP_PARAGRAPH_ALIGN_LEFT>", "");
+                holder.Line.setTextAlignment(View.TEXT_ALIGNMENT_TEXT_START);
+            }
+            else if(Paragraph.contains("<RR_APP_PARAGRAPH_ALIGN_RIGHT>"))
+            {
+                Paragraph = Paragraph.replace("<RR_APP_PARAGRAPH_ALIGN_RIGHT>", "");
+                holder.Line.setTextAlignment(View.TEXT_ALIGNMENT_TEXT_END);
+            }
+            else if(Paragraph.contains("<RR_APP_PARAGRAPH_UNDERLINE>"))
+            {
+                Paragraph = Paragraph.replace("<RR_APP_PARAGRAPH_UNDERLINE>", "");
+            }
+
+            //Paragraph = Paragraph.replace("<strong><em>", "");
+            //Paragraph = Paragraph.replace("</em></strong>", "");
 
             Spannable AlteredParagraph = new SpannableStringBuilder(Paragraph);
 
-            if(Paragraph.contains("<em>"))
+            if(AlteredParagraph.toString().contains("<strong><em>"))
             {
-                Pattern ItalicPattern = Pattern.compile("<em>");
-                Matcher ItalicMatcher = ItalicPattern.matcher(Paragraph);
+                Pattern ItalicBoldPattern = Pattern.compile("<strong><em>");
+                Matcher ItalicBoldMatcher = ItalicBoldPattern.matcher(AlteredParagraph.toString());
 
-                int IndexOffset = 0;
-
-                while(ItalicMatcher.find())
+                while(ItalicBoldMatcher.find())
                 {
-                    int Index = Paragraph.indexOf("<em>", IndexOffset);
-                    int EndIndex = Paragraph.indexOf("</em>", Index);
+                    int Index = AlteredParagraph.toString().indexOf("<strong><em>");
+                    int EndIndex = AlteredParagraph.toString().indexOf("</em></strong>");
 
-                    ((SpannableStringBuilder) AlteredParagraph).delete(Index - DeleteOffset, Index - DeleteOffset + 4);
-                    DeleteOffset += 4;
+                    ((SpannableStringBuilder) AlteredParagraph).delete(Index, Index + 12);
+                    EndIndex -= 12;
 
-                    ((SpannableStringBuilder) AlteredParagraph).delete(EndIndex - DeleteOffset, EndIndex - DeleteOffset + 5);
+                    ((SpannableStringBuilder) AlteredParagraph).delete(EndIndex, EndIndex + 14);
 
-                    StyleSpan ItalicSpan = new StyleSpan(Typeface.ITALIC);
+                    StyleSpan ItalicSpan = new StyleSpan(Typeface.BOLD_ITALIC);
 
-                    if(Index > 4)
-                    {
-                        AlteredParagraph.setSpan(ItalicSpan, Index - DeleteOffset + 4, EndIndex - DeleteOffset, Spannable.SPAN_INCLUSIVE_EXCLUSIVE);
-                    }
-                    else
-                    {
-                        AlteredParagraph.setSpan(ItalicSpan, Index, EndIndex - DeleteOffset, Spannable.SPAN_INCLUSIVE_EXCLUSIVE);
-                    }
-
-                    DeleteOffset += 5;
-                    IndexOffset = EndIndex;
+                    AlteredParagraph.setSpan(ItalicSpan, Index, EndIndex, Spannable.SPAN_INCLUSIVE_EXCLUSIVE);
                 }
             }
 
-            if(Paragraph.contains("<strong>"))
+            if(AlteredParagraph.toString().contains("<em>"))
+            {
+                Pattern ItalicPattern = Pattern.compile("<em>");
+                Matcher ItalicMatcher = ItalicPattern.matcher(AlteredParagraph.toString());
+
+                while(ItalicMatcher.find())
+                {
+                    int Index = AlteredParagraph.toString().indexOf("<em>");
+                    int EndIndex = AlteredParagraph.toString().indexOf("</em>");
+
+                    ((SpannableStringBuilder) AlteredParagraph).delete(Index, Index + 4);
+                    EndIndex -= 4;
+
+                    ((SpannableStringBuilder) AlteredParagraph).delete(EndIndex, EndIndex + 5);
+
+                    StyleSpan ItalicSpan = new StyleSpan(Typeface.ITALIC);
+
+                    AlteredParagraph.setSpan(ItalicSpan, Index, EndIndex, Spannable.SPAN_INCLUSIVE_EXCLUSIVE);
+                }
+            }
+
+            if(AlteredParagraph.toString().contains("<strong>"))
             {
                 Pattern BoldPattern = Pattern.compile("<strong>");
-                Matcher BoldMatcher = BoldPattern.matcher(Paragraph);
-
-                int IndexOffset = 0;
+                Matcher BoldMatcher = BoldPattern.matcher(AlteredParagraph.toString());
 
                 while(BoldMatcher.find())
                 {
-                    int Index = Paragraph.indexOf("<strong>", IndexOffset);
-                    int EndIndex = Paragraph.indexOf("</strong>", Index);
+                    int Index = AlteredParagraph.toString().indexOf("<strong>");
+                    int EndIndex = AlteredParagraph.toString().indexOf("</strong>");
 
-                    ((SpannableStringBuilder) AlteredParagraph).delete(Index - DeleteOffset, Index - DeleteOffset + 8);
-                    DeleteOffset += 8;
+                    ((SpannableStringBuilder) AlteredParagraph).delete(Index, Index + 8);
+                    EndIndex -= 8;
 
-                    ((SpannableStringBuilder) AlteredParagraph).delete(EndIndex - DeleteOffset, EndIndex - DeleteOffset + 9);
+                    ((SpannableStringBuilder) AlteredParagraph).delete(EndIndex, EndIndex + 9);
 
-                    StyleSpan BoldSpan = new StyleSpan(Typeface.BOLD);
+                    StyleSpan ItalicSpan = new StyleSpan(Typeface.BOLD);
 
-                    if(Index > 8)
-                    {
-                        AlteredParagraph.setSpan(BoldSpan, Index - DeleteOffset + 8, EndIndex - DeleteOffset, Spannable.SPAN_INCLUSIVE_EXCLUSIVE);
-                    }
-                    else
-                    {
-                        AlteredParagraph.setSpan(BoldSpan, Index, EndIndex - DeleteOffset, Spannable.SPAN_INCLUSIVE_EXCLUSIVE);
-                    }
-
-                    DeleteOffset += 9;
-                    IndexOffset = EndIndex;
+                    AlteredParagraph.setSpan(ItalicSpan, Index, EndIndex, Spannable.SPAN_INCLUSIVE_EXCLUSIVE);
                 }
             }
 
@@ -409,6 +433,15 @@ public class ParagraphLineAdapter extends RecyclerView.Adapter<ParagraphLineAdap
         for(ParagraphLineViewHolder holder : LineHolders)
         {
             holder.Line.setTypeface(Font);
+        }
+    }
+
+    public void SetFontSize()
+    {
+        for (ParagraphLineViewHolder CurrentHolder: LineHolders)
+        {
+            int FontSize = Pref.getInt("FontSize", 14);
+            CurrentHolder.Line.setTextSize(FontSize);
         }
     }
 

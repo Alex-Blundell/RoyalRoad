@@ -5,6 +5,7 @@ import static android.content.Context.MODE_PRIVATE;
 import android.accounts.Account;
 import android.annotation.SuppressLint;
 import android.content.ContentResolver;
+import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.res.ColorStateList;
 import android.content.res.Resources;
@@ -44,6 +45,7 @@ import android.widget.TextView;
 
 import org.w3c.dom.Text;
 
+import java.io.File;
 import java.util.ArrayList;
 
 public class BaseSettingsFragment extends Fragment
@@ -56,6 +58,9 @@ public class BaseSettingsFragment extends Fragment
     Spinner ReadingFontDropdown;
 
     Button AccountInfoBTN;
+    Button ClearHistoryBTN;
+    Button ClearCacheBTN;
+    Button ClearOfflineUpdatesBTN;
 
     SeekBar BrightnessSlider;
     SeekBar FontSizeSlider;
@@ -74,6 +79,8 @@ public class BaseSettingsFragment extends Fragment
     View NotificationDivider;
     View SettingsDivider;
     View AppSettingsDivider;
+
+    private Window window;
 
     public enum FontStyle
     {
@@ -134,6 +141,10 @@ public class BaseSettingsFragment extends Fragment
         NextBTN = (ImageView) view.findViewById(R.id.NextBTN);
         NextNotificationsBTN = (ImageView) view.findViewById(R.id.NextNotificationsBTN);
 
+        ClearHistoryBTN = view.findViewById(R.id.ClearHistoryBTN);
+        ClearCacheBTN = view.findViewById(R.id.ClearCacheBTN);
+        ClearOfflineUpdatesBTN = view.findViewById(R.id.ClearUpdatesBTN);
+
         ArrayAdapter<CharSequence> ThemeAdapter = ArrayAdapter.createFromResource(getActivity(), R.array.ThemeArray, android.R.layout.simple_spinner_item);
         ThemeAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 
@@ -181,6 +192,37 @@ public class BaseSettingsFragment extends Fragment
 
         AppFontDropdown.setSelection(SelectedAppFont);
         ReadingFontDropdown.setSelection(SelectedReadingFont);
+
+        ClearHistoryBTN.setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View view)
+            {
+                DBHandler SQLiteDB = new DBHandler(getActivity());
+                SQLiteDB.ClearHistory();
+                SQLiteDB.close();
+            }
+        });
+
+        ClearCacheBTN.setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View view)
+            {
+                DeleteCache(getActivity().getApplicationContext());
+            }
+        });
+
+        ClearOfflineUpdatesBTN.setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View view)
+            {
+                DBHandler SQLiteDB = new DBHandler(getActivity());
+                SQLiteDB.ClearOfflineUpdates();
+                SQLiteDB.close();
+            }
+        });
 
         for(int i = 0; i < ChangeTexts.size(); i++)
         {
@@ -251,18 +293,26 @@ public class BaseSettingsFragment extends Fragment
                 if(i == 0)
                 {
                     PrefEditor.putBoolean("AppTheme", false);
-                    PrefEditor.apply();
-                    SwitchTheme(false);
+                    if(AppCompatDelegate.getDefaultNightMode() != AppCompatDelegate.MODE_NIGHT_NO)
+                    {
+                        PrefEditor.putBoolean("DownloadingThemeSwitch", true);
+                    }
 
-                    //((SettingsActivity)getActivity()).SwitchTheme(false);
+                    PrefEditor.apply();
+
+                    SwitchTheme(false);
                 }
                 else if(i == 1)
                 {
                     PrefEditor.putBoolean("AppTheme", true);
-                    PrefEditor.apply();
-                    SwitchTheme(true);
+                    if(AppCompatDelegate.getDefaultNightMode() != AppCompatDelegate.MODE_NIGHT_YES)
+                    {
+                        PrefEditor.putBoolean("DownloadingThemeSwitch", true);
+                    }
 
-                    //((SettingsActivity)getActivity()).SwitchTheme(true);
+                    PrefEditor.apply();
+
+                    SwitchTheme(true);
                 }
             }
 
@@ -364,6 +414,60 @@ public class BaseSettingsFragment extends Fragment
         FontSize = Pref.getInt("FontSize", 14);
         FontSizeSlider.setProgress(FontSize - 10);
 
+        window = ((HomeActivity)getContext()).getWindow();
+
+        final int[] Brightness = { 0 };
+
+        BrightnessSlider.setMax(100);
+        BrightnessSlider.setKeyProgressIncrement(1);
+
+        try
+        {
+            Brightness[0] = System.getInt(getContext().getContentResolver(), System.SCREEN_BRIGHTNESS);
+        }
+        catch (Settings.SettingNotFoundException e)
+        {
+            throw new RuntimeException(e);
+        }
+
+        int Percentage = (int) (((float) Brightness[0] / 255) * 100);
+
+        Log.println(Log.INFO, "Hi", "Brightness: " + String.valueOf(Brightness[0]));
+        Log.println(Log.INFO, "Hi", "Percentage: " + String.valueOf(Percentage));
+
+        BrightnessSlider.setProgress(Percentage);
+        BrightnessSlider.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener()
+        {
+            public void onStopTrackingTouch(SeekBar seekBar)
+            {
+                System.putInt(getContext().getContentResolver(), System.SCREEN_BRIGHTNESS, Brightness[0]);
+
+                LayoutParams layoutpars = window.getAttributes();
+                layoutpars.screenBrightness = Brightness[0] / (float)255;
+
+                window.setAttributes(layoutpars);
+            }
+
+            public void onStartTrackingTouch(SeekBar seekBar)
+            {
+
+            }
+
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser)
+            {
+                if(progress <= 7)
+                {
+                    Brightness[0] = 20;
+                }
+                else
+                {
+
+                    int ReturnedBrightness = ((int) ((float) (progress / 100) * 255 ));
+                    Brightness[0] = ReturnedBrightness;
+                }
+            }
+        });
+
         FontSizeSlider.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
@@ -441,6 +545,43 @@ public class BaseSettingsFragment extends Fragment
 
             NextBTN.setImageTintList(ColorStateList.valueOf(getResources().getColor(R.color.black)));
             NextNotificationsBTN.setImageTintList(ColorStateList.valueOf(getResources().getColor(R.color.black)));
+        }
+    }
+
+    public static void DeleteCache(Context context)
+    {
+        try
+        {
+            File CacheDirectory = context.getCacheDir();
+            DeleteDirectory(CacheDirectory);
+        }
+        catch (Exception e)
+        {
+
+        }
+    }
+    public static boolean DeleteDirectory(File Directory)
+    {
+        if (Directory != null && Directory.isDirectory())
+        {
+            String[] children = Directory.list();
+            for (int i = 0; i < children.length; i++)
+            {
+                boolean Success = DeleteDirectory(new File(Directory, children[i]));
+                if (!Success)
+                {
+                    return false;
+                }
+            }
+            return Directory.delete();
+        }
+        else if(Directory!= null && Directory.isFile())
+        {
+            return Directory.delete();
+        }
+        else
+        {
+            return false;
         }
     }
 }

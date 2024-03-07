@@ -7,7 +7,8 @@
         android:icon="@drawable/sync"
         android:orderInCategory="1"
         android:title="Sync"
-        app:showAsAction="always" />
+        app:showAsAction="always"
+        android:iconTint="@color/ToolbarItem"/>
 
 
     <item
@@ -15,7 +16,8 @@
         android:icon="@drawable/filter"
         android:orderInCategory="2"
         android:title="History"
-        app:showAsAction="always" />
+        app:showAsAction="always"
+        android:iconTint="@color/ToolbarItem"/>
 
     <item
         android:id="@+id/AlphabetaicalItem"
@@ -23,8 +25,8 @@
         android:title="History"
         android:icon="@drawable/alphabet_sort"
         app:showAsAction="always"
+        android:iconTint="@color/ToolbarItem"
         />
-
 
     <item
         android:id="@+id/SearchItem"

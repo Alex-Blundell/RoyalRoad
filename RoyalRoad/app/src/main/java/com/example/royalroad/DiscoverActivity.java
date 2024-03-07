@@ -17,6 +17,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.SearchView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -26,11 +27,13 @@ import com.google.firebase.firestore.DocumentSnapshot;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
@@ -67,6 +70,9 @@ public class DiscoverActivity extends AppCompatActivity {
     Button MorePopularThisWeek;
     Button MoreBestCompleted;
     Button MoreBestOngoing;
+    Button AdvancedSearchBTN;
+
+    SearchView Searchbar;
 
     @SuppressLint("ResourceAsColor")
     @Override
@@ -74,35 +80,57 @@ public class DiscoverActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_discover);
 
+        Searchbar = findViewById(R.id.Searchbar);
+        AdvancedSearchBTN = findViewById(R.id.AdvancedSearchBTN);
+
+        AdvancedSearchBTN.setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View view)
+            {
+                Intent SearchResultsIntent = new Intent(DiscoverActivity.this, SearchActivity.class);
+                SearchResultsIntent.putExtra("IsExpandedSearch", true);
+
+                startActivity(SearchResultsIntent);
+            }
+        });
+
+        Searchbar.setIconifiedByDefault(false);
+        Searchbar.setOnQueryTextListener(new SearchView.OnQueryTextListener()
+        {
+            @Override
+            public boolean onQueryTextSubmit(String s)
+            {
+                Searchbar.setQuery("", false);
+                Searchbar.clearFocus();
+
+                Intent SearchResultsIntent = new Intent(DiscoverActivity.this, SearchActivity.class);
+
+                SearchResultsIntent.putExtra("IsExpandedSearch", false);
+                SearchResultsIntent.putExtra("Title", s);
+
+                startActivity(SearchResultsIntent);
+                return true;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String s)
+            {
+                return false;
+            }
+        });
+
         Book DebugBook = new Book();
 
-        DebugBook.SetExternalID(0);
         DebugBook.SetType(Book.BookType.Original);
 
-        DebugBook.SetTitle("Debug Book");
-        DebugBook.SetAuthor("Debug Book");
-        DebugBook.SetDescription("Debug Book");
-
-        DebugBook.SetCover("https://www.royalroad.com/dist/img/nocover-new-min.png");
+        DebugBook.SetDescription("");
 
         DebugBook.SetAllChapters(new ArrayList<>());
-
-        DebugBook.SetPageCount(100);
-        DebugBook.SetFollowerCount(100);
-        DebugBook.SetFavouriteCount(100);
 
         DebugBook.SetWarnings(new ArrayList<>());
         DebugBook.SetGenres(new ArrayList<>());
         DebugBook.SetTags(new ArrayList<>());
-
-        DebugBook.SetRating(2.5);
-
-        DebugBook.SetCreatedDateTime(new Date());
-        DebugBook.SetLastUpdatedDateTime(new Date());
-        DebugBook.SetDownloadedDateTime(new Date());
-
-        DebugBook.SetHasRead(false);
-        DebugBook.SetLastReadChapter(0);
 
         LatestUpdatesRV = findViewById(R.id.LatestUpdatesList);
         RisingStarsRV = findViewById(R.id.RisingStartsList);
@@ -319,7 +347,7 @@ public class DiscoverActivity extends AppCompatActivity {
                     }
 
                     Elements NewsElements = Doc.getElementsByClass("promotion");
-                    Elements BooksElements = Doc.getElementsByClass("portlet light");
+                    Elements BooksElements = Doc.getElementsByClass("portlet-body");
 
                     // News Carousel.
                     BackgroundURLs = new String[NewsElements.size()];
@@ -341,62 +369,62 @@ public class DiscoverActivity extends AppCompatActivity {
                     }
 
                     NewsElements.clear();
-                    for (int i = 0; i < BooksElements.size(); i++)
+                    int Index = 0;
+                    for (Element CurrentList : BooksElements)
                     {
-                        if (i != 2)
+                        Elements ListElements = BooksElements.get(Index).getElementsByClass("mt-list-item");
+
+                        for (int j = 0; j < ListElements.size(); j++)
                         {
-                            Elements ListElements = BooksElements.get(i).getElementsByClass("mt-list-item no-border inline-block");
+                            int ExternalID = Integer.parseInt(ListElements.get(j).getElementsByAttribute("href").get(1).attr("href").split("/")[2]);
 
-                            for (int j = 0; j < ListElements.size(); j++)
+                            if (Index == 0)
                             {
-                                int ExternalID = Integer.parseInt(ListElements.get(j).getElementsByClass("font-red").get(0).attr("href").split("/")[2]);
-
-                                if (i == 0)
+                                try
                                 {
-                                    try
-                                    {
-                                        NewLatestUpdates[j] = new Book().CreateBook(getApplicationContext(), ExternalID, false, false, false);
-                                    }
-                                    catch (InterruptedException e)
-                                    {
-                                        throw new RuntimeException(e);
-                                    }
+                                    NewLatestUpdates[j] = new Book().CreateBook(getApplicationContext(), ExternalID, false, false, false);
                                 }
-                                else if (i == 1)
+                                catch (InterruptedException e)
                                 {
-                                    try
-                                    {
-                                        NewRisingStars[j] = new Book().CreateBook(getApplicationContext(), ExternalID, false, false, false);
-                                    }
-                                    catch (InterruptedException e)
-                                    {
-                                        throw new RuntimeException(e);
-                                    }
-                                }
-                                else if (i == 3)
-                                {
-                                    try
-                                    {
-                                        NewBestCompleted[j] = new Book().CreateBook(getApplicationContext(), ExternalID, false, false, false);
-                                    } catch (InterruptedException e)
-                                    {
-                                        throw new RuntimeException(e);
-                                    }
-                                }
-                                else if (i == 4)
-                                {
-                                    try
-                                    {
-                                        NewBestOngoing[j] = new Book().CreateBook(getApplicationContext(), ExternalID, false, false, false);
-                                    }
-                                    catch (InterruptedException e)
-                                    {
-                                        throw new RuntimeException(e);
-                                    }
+                                    throw new RuntimeException(e);
                                 }
                             }
-                            ListElements.clear();
+                            else if (Index == 1)
+                            {
+                                try
+                                {
+                                    NewRisingStars[j] = new Book().CreateBook(getApplicationContext(), ExternalID, false, false, false);
+                                }
+                                catch (InterruptedException e)
+                                {
+                                    throw new RuntimeException(e);
+                                }
+                            }
+                            else if (Index <= 3)
+                            {
+                                try
+                                {
+                                    NewBestCompleted[j] = new Book().CreateBook(getApplicationContext(), ExternalID, false, false, false);
+                                } catch (InterruptedException e)
+                                {
+                                    throw new RuntimeException(e);
+                                }
+                            }
+                            else if (Index <= 4)
+                            {
+                                try
+                                {
+                                    NewBestOngoing[j] = new Book().CreateBook(getApplicationContext(), ExternalID, false, false, false);
+                                }
+                                catch (InterruptedException e)
+                                {
+                                    throw new RuntimeException(e);
+                                }
+                            }
                         }
+                        ListElements.clear();
+
+                        Index++;
                     }
 
                     BooksElements.clear();
@@ -481,7 +509,7 @@ public class DiscoverActivity extends AppCompatActivity {
 
                     for(Book ThisBook : NewBestCompleted)
                     {
-                        while(!ThisBook.IsCompleted)
+                        while(!ThisBook.IsCompleted && BestCompletedAdapter.getItemCount() == 10)
                         {
                             try
                             {
@@ -493,8 +521,15 @@ public class DiscoverActivity extends AppCompatActivity {
                             }
                         }
 
-                        BestCompletedAdapter.Data.set(Index, ThisBook);
-                        BestCompletedAdapter.notifyItemChanged(Index);
+                        int finalIndex = Index;
+                        BestCompletedRV.post(new Runnable() {
+                            @Override
+                            public void run()
+                            {
+                                BestCompletedAdapter.Data.set(finalIndex, ThisBook);
+                                BestCompletedAdapter.notifyItemChanged(finalIndex);
+                            }
+                        });
 
                         Index++;
                     }

@@ -4,6 +4,7 @@ import static android.content.Context.MODE_PRIVATE;
 
 import android.annotation.SuppressLint;
 import android.content.SharedPreferences;
+import android.os.Build;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -12,23 +13,37 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.webkit.JavascriptInterface;
+import android.webkit.ValueCallback;
+import android.webkit.WebView;
+import android.webkit.WebViewClient;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.example.royalroad.LibraryActivity.LibraryType;
 
+import org.checkerframework.checker.units.qual.Current;
+
 import java.lang.reflect.Array;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Calendar;
 import java.util.Collections;
+import java.util.Comparator;
+import java.util.Objects;
 
 public class LibraryFragment extends Fragment
 {
-    ArrayList<Book> BookList = new ArrayList<>();
+    public ArrayList<Book> BookList = new ArrayList<>();
     LibraryType Type;
 
     private RecyclerView LibraryRecyclerview;
+
+
     private TextView NoBookTXT;
 
     LibraryActivity libraryActivity;
@@ -36,9 +51,21 @@ public class LibraryFragment extends Fragment
     public BookAdapter bookAdapter;
     private boolean IsDarkMode;
 
+
+
     boolean DeleteMode;
 
     int ContinueIndex = 0;
+
+    ArrayList<Book> DeleteBooks;
+
+
+    @Override
+    public void onResume()
+    {
+        super.onResume();
+        ((LibraryActivity)getActivity()).UpdateTabName(Type);
+    }
 
     public LibraryFragment(LibraryType thisType)
     {
@@ -55,6 +82,8 @@ public class LibraryFragment extends Fragment
     {
         setRetainInstance(true);
         super.onCreate(savedInstanceState);
+
+        DeleteBooks = new ArrayList<>();
     }
 
     @Override
@@ -73,12 +102,18 @@ public class LibraryFragment extends Fragment
         LibraryRecyclerview = view.findViewById(R.id.LibraryRecyclerview);
         NoBookTXT = view.findViewById(R.id.NoBooksTXT);
 
+
+
+        libraryActivity.DeleteArea.setVisibility(View.GONE);
+
         InitializeLibrary(' ');
         SwitchTheme(IsDarkMode);
 
         DeleteMode = false;
+
     }
 
+    @SuppressLint("JavascriptInterface")
     public void InitializeLibrary(char RestrictedLetter)
     {
         SharedPreferences Pref = getActivity().getSharedPreferences("Settings", MODE_PRIVATE);
@@ -97,38 +132,97 @@ public class LibraryFragment extends Fragment
         {
             NoBookTXT.setVisibility(View.GONE);
 
+            int LibraryExcess = 0;
+
             for(int i = 0; i < LibraryCount; i++)
             {
-                Book NewBook = SQLiteDB.GetBook(i + 1);
-                boolean AddBook = true;
+                boolean BookExists = SQLiteDB.DoesBookExist(i + 1);
 
-                if(NewBook == null)
+                if(BookExists)
                 {
-                    AddBook = false;
-                }
+                    Book NewBook = SQLiteDB.GetBook(i + 1 + LibraryExcess);
+                    boolean AddBook = true;
 
-                if(RestrictedLetter != ' ')
-                {
-                    if(NewBook.Title.charAt(0) != RestrictedLetter)
+                    if(NewBook == null)
                     {
                         AddBook = false;
                     }
+
+                    if(RestrictedLetter != ' ')
+                    {
+                        if(RestrictedLetter == '1')
+                        {
+                            Log.println(Log.INFO, "Hi", "Restricting by Numbers ( Hopefully )");
+
+                            if(NewBook.Title.charAt(0) == '0')
+                            {
+                                AddBook = true;
+                            }
+                            else if(NewBook.Title.charAt(0) == '1')
+                            {
+                                AddBook = true;
+                            }
+                            else if(NewBook.Title.charAt(0) == '2')
+                            {
+                                AddBook = true;
+                            }
+                            else if(NewBook.Title.charAt(0) == '3')
+                            {
+                                AddBook = true;
+                            }
+                            else if(NewBook.Title.charAt(0) == '4')
+                            {
+                                AddBook = true;
+                            }
+                            else if(NewBook.Title.charAt(0) == '5')
+                            {
+                                AddBook = true;
+                            }
+                            else if(NewBook.Title.charAt(0) == '6')
+                            {
+                                AddBook = true;
+                            }
+                            else if(NewBook.Title.charAt(0) == '7')
+                            {
+                                AddBook = true;
+                            }
+                            else if(NewBook.Title.charAt(0) == '8')
+                            {
+                                AddBook = true;
+                            }
+                            else if(NewBook.Title.charAt(0) == '9')
+                            {
+                                AddBook = true;
+                            }
+                            else
+                            {
+                                AddBook = false;
+                            }
+                        }
+                        else
+                        {
+                            if(NewBook.Title.charAt(0) != RestrictedLetter)
+                            {
+                                AddBook = false;
+                            }
+                        }
+                    }
+
+                    if(AddBook)
+                    {
+                        if(Type == LibraryType.History && NewBook.HasRead)
+                        {
+                            BookList.add(NewBook);
+                        }
+                        if(Type == LibraryType.Downloaded)
+                        {
+                            BookList.add(NewBook);
+                        }
+                    }
                 }
-
-                if(AddBook)
+                else
                 {
-                    if(Type == LibraryType.History && NewBook.HasRead)
-                    {
-                        BookList.add(NewBook);
-                    }
-                    if(Type == LibraryType.Downloaded)
-                    {
-                        BookList.add(NewBook);
-                    }
-                    if(Type == LibraryType.Read_Later)
-                    {
-
-                    }
+                    LibraryExcess++;
                 }
             }
         }
@@ -139,17 +233,12 @@ public class LibraryFragment extends Fragment
 
         if(Type == LibraryType.History)
         {
+            Collections.sort(BookList, Collections.reverseOrder());
             libraryActivity.HistoryCount = BookList.size();
-
-            if(libraryActivity.HistoryCount > 0)
-                libraryActivity.BottomTabs.getTabAt(0).setText("History" + " ( " + BookList.size() + " )");
         }
         else if(Type == LibraryType.Downloaded)
         {
             libraryActivity.DownloadedCount = BookList.size();
-
-            if(libraryActivity.DownloadedCount > 0)
-                libraryActivity.BottomTabs.getTabAt(1).setText("Downloaded" + " ( " + BookList.size() + " )");
 
             ArrayList<Book> AlteredBookList = new ArrayList<>();
             ArrayList<Book> CorrectedBookList = new ArrayList<>();
@@ -182,24 +271,13 @@ public class LibraryFragment extends Fragment
             CorrectedBookList.addAll(BookList);
             BookList = CorrectedBookList;
         }
-        else if(Type == LibraryType.Read_Later)
-        {
-            libraryActivity.ReadLaterCount = BookList.size();
-
-            if(libraryActivity.ReadLaterCount > 0)
-                libraryActivity.BottomTabs.getTabAt(2).setText("Read Later" + " ( " + BookList.size() + " )");
-
-        }
         else if(Type == LibraryType.Folders)
         {
 
         }
 
-        if(!BookList.isEmpty())
-        {
-            bookAdapter = new BookAdapter(BookList);
-            LibraryRecyclerview.setAdapter(bookAdapter);
-        }
+        bookAdapter = new BookAdapter(BookList);
+        LibraryRecyclerview.setAdapter(bookAdapter);
 
         if(ContinueIndex != 0)
         {
@@ -230,16 +308,53 @@ public class LibraryFragment extends Fragment
         InitializeLibrary(RestricLetter);
     }
 
-    public void OpenDeleteMenu(boolean Delete)
+    public void AddToDelete(Book DeleteBook)
     {
-        if(Delete)
+        if(DeleteBooks.size() == 0)
         {
-
+            libraryActivity.DeleteArea.setVisibility(View.VISIBLE);
         }
-        else
+
+        DeleteBooks.add(DeleteBook);
+    }
+
+    public void RemoveFromDelete(Book RemoveBook)
+    {
+        if(DeleteBooks.size() == 0)
         {
-
+            libraryActivity.DeleteArea.setVisibility(View.GONE);
         }
+
+        DeleteBooks.remove(RemoveBook);
+    }
+
+    public int GetDeleteBooksCount()
+    {
+        return DeleteBooks.size();
+    }
+
+    public void DeleteBooks()
+    {
+        DBHandler SQLiteDB = new DBHandler(getContext());
+
+        for(int i = 0; i < DeleteBooks.size(); i++)
+        {
+            if(Type == LibraryType.History)
+            {
+                // Delete From History.
+                SQLiteDB.DeleteHistoryBook(DeleteBooks.get(i).InternalID);
+            }
+            else if(Type == LibraryType.Downloaded)
+            {
+                // Delete From Downloaded.
+                SQLiteDB.DeleteBook(DeleteBooks.get(i).ExternalID);
+            }
+        }
+
+        libraryActivity.DeleteArea.setVisibility(View.GONE);
+
+        SQLiteDB.close();
+        InitializeLibrary(' ');
     }
 
     @SuppressLint("ResourceAsColor")
@@ -248,10 +363,12 @@ public class LibraryFragment extends Fragment
         if(DarkMode)
         {
             LibraryRecyclerview.setBackgroundColor(getResources().getColor(R.color.DarkOuter));
+            NoBookTXT.setTextColor(getResources().getColor(R.color.DarkText));
         }
         else
         {
             LibraryRecyclerview.setBackgroundColor(getResources().getColor(R.color.LightOuter));
+            NoBookTXT.setTextColor(getResources().getColor(R.color.black));
         }
     }
 }

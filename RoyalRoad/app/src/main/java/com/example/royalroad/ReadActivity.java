@@ -2,6 +2,7 @@ package com.example.royalroad;
 
 import androidx.annotation.ColorInt;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.content.res.AppCompatResources;
 import androidx.appcompat.widget.DrawableUtils;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.graphics.drawable.DrawableCompat;
@@ -24,9 +25,13 @@ import android.view.ContextMenu;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.FrameLayout;
+import android.widget.ListView;
 import android.widget.RelativeLayout;
+import android.widget.SeekBar;
 
 import com.google.android.material.tabs.TabLayout;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -34,6 +39,7 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import org.checkerframework.checker.units.qual.Current;
 
 import java.lang.reflect.Field;
+import java.util.ArrayList;
 
 public class ReadActivity extends AppCompatActivity {
 
@@ -69,14 +75,23 @@ public class ReadActivity extends AppCompatActivity {
     Button UbuntuCondesnedBTN;
     Button VerdanaBTN;
 
+    SeekBar ReadingFontSizeSlider;
+
     public RelativeLayout ParagraphSettings;
     public RelativeLayout BrightnessSettings;
 
     public TabLayout FontSettingsTabs;
     private boolean IsDarkMode;
 
+    private boolean ShowChapterList = false;
+
+    ArrayList<String> ChapterListItems = new ArrayList<String>();
+
+    ListView ChapterList;
+
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(Bundle savedInstanceState)
+    {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_read);
 
@@ -90,10 +105,18 @@ public class ReadActivity extends AppCompatActivity {
         ChapterCount = findViewById(R.id.ChapterCount);
 
         ToolbarAppeared = true;
+        ShowChapterList = false;
 
         BottomToolbar = (Toolbar) findViewById(R.id.BookBottomToolbar);
 
+        ChapterList = findViewById(R.id.ChapterList);
+
+        ChapterListItems.add("Home");
+
         SharedPreferences Pref = getSharedPreferences("Settings", MODE_PRIVATE);
+        SharedPreferences.Editor PrefEditor = Pref.edit();
+
+        int FontSize = Pref.getInt("FontSize", 14);
 
         IsDarkMode = Pref.getBoolean("ReadingTheme", true);
 
@@ -117,11 +140,39 @@ public class ReadActivity extends AppCompatActivity {
         UbuntuCondesnedBTN = findViewById(R.id.UbuntuCondensedBTN);
         VerdanaBTN = findViewById(R.id.VerdanaBTN);
 
+        ReadingFontSizeSlider = findViewById(R.id.FontSizeSlider);
+        ReadingFontSizeSlider.setProgress(FontSize - 10);
+
+        ReadingFontSizeSlider.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int i, boolean b)
+            {
+                int FontSize = i + 10;
+
+                PrefEditor.putInt("FontSize", FontSize);
+                PrefEditor.apply();
+
+                ChapterFragment CurrentChapter = (ChapterFragment)vpAdapter.GetFragment(BookPager.getCurrentItem());
+                CurrentChapter.adapter.SetFontSize();
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+
+            }
+        });
+
         FontSettings.setVisibility(View.VISIBLE);
 
         SwitchThemes(IsDarkMode);
 
-        FontSettingsTabs.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
+        FontSettingsTabs.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener()
+        {
             @Override
             public void onTabSelected(TabLayout.Tab tab)
             {
@@ -442,6 +493,48 @@ public class ReadActivity extends AppCompatActivity {
                 SQLiteDB.close();
             }
         }
+
+        for(int i = 0; i < ReadBook.Chapters.size(); i++)
+        {
+            ChapterListItems.add(ReadBook.Chapters.get(i).Name);
+        }
+
+        ArrayAdapter<String> ChapterAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, ChapterListItems);
+        ChapterList.setAdapter(ChapterAdapter);
+
+        ChapterList.setOnItemClickListener(new AdapterView.OnItemClickListener()
+        {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l)
+            {
+                BookPager.setCurrentItem(i);
+
+                ShowChapterList = false;
+                ChapterList.setVisibility(View.GONE);
+            }
+        });
+
+        ChapterCount.setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View view)
+            {
+                if(ShowChapterList)
+                {
+                    ShowChapterList = false;
+                    ChapterList.setVisibility(View.GONE);
+                }
+                else
+                {
+                    ShowChapterList = true;
+                    ChapterList.setVisibility(View.VISIBLE);
+                }
+            }
+        });
+
+        DBHandler SQLiteDB = new DBHandler(this);
+        SQLiteDB.UpdateLastReadDateTime(ReadBook.GetExternalID());
+        SQLiteDB.close();
     }
 
     @Override
@@ -472,7 +565,10 @@ public class ReadActivity extends AppCompatActivity {
             VerdanaBTN.setTextColor(getResources().getColor(R.color.DarkText));
 
             BackBTN.setTextColor(getResources().getColor(R.color.ToolbarItem));
+
             ChapterCount.setTextColor(getResources().getColor(R.color.ToolbarItem));
+
+            ChapterList.setBackgroundColor(getResources().getColor(R.color.DarkOuter));
         }
         else
         {

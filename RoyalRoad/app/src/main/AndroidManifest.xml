@@ -21,7 +21,8 @@
         tools:targetApi="23">
         <activity
             android:name=".ProfileActivity"
-            android:exported="false">
+            android:exported="false"
+            tools:ignore="AppLinkUrlError">
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
 
@@ -29,9 +30,9 @@
                 <category android:name="android.intent.category.BROWSABLE" />
 
                 <data
-                    android:scheme="http"
                     android:host="www.royalroad.com"
-                    android:pathPrefix="/profile" />
+                    android:pathPrefix="/profile"
+                    android:scheme="http" />
             </intent-filter>
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
@@ -40,9 +41,9 @@
                 <category android:name="android.intent.category.BROWSABLE" />
 
                 <data
-                    android:scheme="http"
                     android:host="www.royalroad.com"
-                    android:pathPrefix="/fiction" />
+                    android:pathPrefix="/fiction"
+                    android:scheme="http" />
             </intent-filter>
         </activity>
         <activity
@@ -59,12 +60,9 @@
             android:exported="false" />
         <activity
             android:name=".ReadActivity"
-            android:exported="false"></activity>
-        <activity
-            android:name=".WriteActivity"
             android:exported="false" />
         <activity
-            android:name=".SettingsActivity"
+            android:name=".WriteActivity"
             android:exported="false" />
         <activity
             android:name=".FriendsActivity"

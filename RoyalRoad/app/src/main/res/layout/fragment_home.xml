@@ -9,7 +9,19 @@
     <SearchView
         android:id="@+id/HomeSearchbar"
         android:layout_width="match_parent"
-        android:layout_height="40dp"
+        android:layout_height="50dp"
+        android:iconifiedByDefault="false"
+        android:layout_toLeftOf="@id/AdvancedSearchBTN"
+        />
+
+    <Button
+        android:id="@+id/AdvancedSearchBTN"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:layout_alignParentRight="true"
+        android:layout_marginRight="7.5dp"
+        android:backgroundTint="@color/ButtonInner"
+        app:icon="@drawable/baseline_format_list_bulleted_24"
         />
 
     <View
@@ -20,85 +32,105 @@
         android:layout_below="@id/HomeSearchbar"
         />
 
-    <Button
-        android:id="@+id/DiscoverBTN"
-        android:layout_width="match_parent"
-        android:layout_height="160dp"
-        android:layout_below="@id/WriteBTN"
-        android:layout_marginLeft="20dp"
-        android:layout_marginTop="0dp"
-        android:layout_marginRight="20dp"
-        android:backgroundTint="@color/ButtonInner"
-        android:drawableLeft="@drawable/discover_icon"
-        android:text="Discover"
-        android:textColor="@color/DarkText"
-        app:strokeColor="@color/ButtonBorder"
-        app:strokeWidth="4dp"
-        android:textAllCaps="false"
-        />
-
     <TextView
         android:id="@+id/LastReadTXT"
         android:text="Last Read"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@id/ProfileImage"
-        android:layout_marginTop="5dp"
+        android:layout_marginTop="34dp"
         android:layout_marginLeft="40dp"
         android:textSize="20sp"
         android:textStyle="bold"
         />
 
-    <Button
-        android:id="@+id/WriteBTN"
+    <RelativeLayout
+        android:id="@+id/LastReadArea"
         android:layout_width="match_parent"
-        android:layout_height="140dp"
+        android:layout_height="160dp"
         android:layout_below="@id/LastReadTXT"
         android:layout_marginLeft="20dp"
         android:layout_marginRight="20dp"
-        android:backgroundTint="@color/ButtonInner"
-        android:drawableLeft="@drawable/write_icon"
-        android:text="Last Read"
-        android:textColor="@color/DarkText"
-        app:strokeColor="@color/ButtonBorder"
-        app:strokeWidth="4dp"
-        />
+        >
+
+        <Button
+            android:id="@+id/LastReadBTN"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:backgroundTint="@color/DarkOuter"
+            android:insetTop="0dp"
+            android:insetBottom="0dp"
+            app:strokeColor="@color/DarkBorder"
+            app:strokeWidth="2dp"
+            />
+
+        <ImageView
+            android:id="@+id/LastReadCover"
+            android:layout_width="100dp"
+            android:layout_height="match_parent"
+            android:layout_marginTop="15dp"
+            android:layout_marginBottom="15dp"
+            android:layout_marginLeft="15dp"
+            android:translationZ="10dp"
+            />
+
+        <TextView
+            android:id="@+id/LastReadTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="20dp"
+            android:layout_marginTop="30dp"
+            android:layout_toRightOf="@id/LastReadCover"
+            android:textStyle="bold"
+            android:translationZ="10dp"
+            />
+
+        <TextView
+            android:id="@+id/LastReadAuthor"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_toRightOf="@id/LastReadCover"
+            android:layout_marginLeft="20dp"
+            android:layout_below="@id/LastReadTitle"
+            android:translationZ="10dp"
+            />
+    </RelativeLayout>
 
     <LinearLayout
         android:id="@+id/LibraryLinearLayout"
         android:layout_height="wrap_content"
         android:layout_width="match_parent"
-        android:layout_below="@id/DiscoverBTN"
-        android:layout_marginTop="10dp">
+        android:layout_below="@id/LastReadArea"
+        android:layout_marginTop="115dp">
+
+        <Button
+            android:id="@+id/DiscoverBTN"
+            android:layout_width="match_parent"
+            android:layout_height="100dp"
+            android:layout_marginLeft="10dp"
+            android:layout_alignParentLeft="true"
+            android:backgroundTint="@color/ButtonInner"
+            android:text="Discover"
+            android:textColor="@color/DarkText"
+            app:icon="@drawable/discover_icon"
+            app:iconSize="40dp"
+            app:strokeColor="@color/ButtonBorder"
+            app:strokeWidth="4dp"
+            android:layout_toLeftOf="@id/LibraryBTN"
+            android:layout_weight="1"
+            android:textAllCaps="false"
+            />
 
         <Button
             android:id="@+id/LibraryBTN"
             android:layout_width="match_parent"
             android:layout_height="100dp"
             android:layout_marginLeft="10dp"
-            android:layout_alignParentLeft="true"
+            android:layout_marginRight="10dp"
             android:backgroundTint="@color/ButtonInner"
             android:text="Library"
             android:textColor="@color/DarkText"
             app:icon="@drawable/book"
-            app:iconSize="40dp"
-            app:strokeColor="@color/ButtonBorder"
-            app:strokeWidth="4dp"
-            android:layout_toLeftOf="@id/ForumsBTN"
-            android:layout_weight="1"
-            android:textAllCaps="false"
-            />
-
-        <Button
-            android:id="@+id/ForumsBTN"
-            android:layout_width="match_parent"
-            android:layout_height="100dp"
-            android:layout_marginLeft="10dp"
-            android:layout_marginRight="10dp"
-            android:backgroundTint="@color/ButtonInner"
-            android:text="Forums"
-            android:textColor="@color/DarkText"
-            app:icon="@drawable/forum_icon"
             app:iconSize="40dp"
             app:strokeColor="@color/ButtonBorder"
             app:strokeWidth="4dp"
@@ -124,23 +156,23 @@
             android:backgroundTint="@color/ButtonInner"
             android:text="Friends"
             android:textColor="@color/DarkText"
-            app:icon="@drawable/book"
+            app:icon="@drawable/friends_icon"
             app:iconSize="40dp"
             app:strokeColor="@color/ButtonBorder"
             app:strokeWidth="4dp"
-            android:layout_toLeftOf="@id/ForumsBTN"
+            android:layout_toLeftOf="@id/DiscoverBTN"
             android:layout_weight="1"
             android:textAllCaps="false"
             />
 
         <Button
-            android:id="@+id/SettingsBTN"
+            android:id="@+id/ForumsBTN"
             android:layout_width="match_parent"
             android:layout_height="100dp"
             android:layout_marginLeft="10dp"
             android:layout_marginRight="10dp"
             android:backgroundTint="@color/ButtonInner"
-            android:text="Unknown"
+            android:text="Forums"
             android:textColor="@color/DarkText"
             app:icon="@drawable/forum_icon"
             app:iconSize="40dp"
@@ -159,7 +191,7 @@
         android:text="@string/Username"
         android:layout_toRightOf="@id/ProfileImage"
         android:layout_below="@id/HomeSearchbar"
-        android:layout_marginTop="30dp"
+        android:layout_marginTop="40dp"
         android:layout_marginLeft="25dp"
         android:textSize="16dp"
         />
@@ -170,7 +202,7 @@
         android:layout_height="120dp"
         android:layout_below="@id/HomeSearchbar"
         android:layout_marginLeft="25dp"
-        android:layout_marginTop="10dp"
+        android:layout_marginTop="20dp"
         android:scaleType="centerCrop"
         android:src="@drawable/default_profile"
         app:strokeColor="@color/DarkBorder"
@@ -188,6 +220,7 @@
         android:scaleY="1.5"
         app:srcCompat="@drawable/notifications"
         android:layout_below="@id/HomeSearchbar"
+        android:layout_marginTop="20dp"
         />
 
     <ImageButton
@@ -200,7 +233,9 @@
         android:background="@color/Invis"
         android:scaleX="1.5"
         android:scaleY="1.5"
-        app:srcCompat="@drawable/message" />
+        app:srcCompat="@drawable/message"
+        android:layout_marginTop="20dp"
+        />
 
     <ImageView
         android:id="@+id/DarkBackground"
@@ -260,5 +295,4 @@
         android:visibility="gone"
         app:shapeAppearanceOverlay="@style/ShapeAppearanceOverlay.Material3.Button"
         app:srcCompat="@drawable/insert_photo_icon" />
-
 </RelativeLayout>

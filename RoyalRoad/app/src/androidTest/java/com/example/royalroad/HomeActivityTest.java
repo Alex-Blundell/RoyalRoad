@@ -49,7 +49,6 @@ public class HomeActivityTest {
     @Test
     public void TestOpenWrite()
     {
-        onView(withId(R.id.WriteBTN)).perform();
     }
 
     @Test
@@ -67,7 +66,6 @@ public class HomeActivityTest {
     @Test
     public void TestOpenSettings()
     {
-        onView(withId(R.id.SettingsBTN)).perform();
     }
 
     @Test

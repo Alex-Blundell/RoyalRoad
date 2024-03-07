@@ -2,7 +2,6 @@ package com.example.royalroad;
 
 import static android.content.Context.MODE_PRIVATE;
 
-import android.app.Activity;
 import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
@@ -15,33 +14,24 @@ import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
-import android.media.Rating;
-import android.os.Looper;
 import android.util.Log;
 import android.widget.Toast;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.app.NotificationCompat;
 
-import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QuerySnapshot;
 
-import org.checkerframework.checker.units.qual.Current;
-import org.checkerframework.common.returnsreceiver.qual.This;
-import org.jsoup.select.Evaluator;
-
-import java.lang.reflect.Type;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.GregorianCalendar;
+import java.util.Locale;
 
 public class DBHandler extends SQLiteOpenHelper
 {
@@ -77,6 +67,7 @@ public class DBHandler extends SQLiteOpenHelper
     public static final String CREATED_DATE_TIME = "CreatedDateTime";
     public static final String UPDATED_DATE_TIME = "UpdatedDateTime";
     public static final String DOWNLOADED_DATE_TIME = "DownloadedDateTime";
+    public static final String LAST_READ_DATE_TIME = "LastReadDateTime";
     public static final String HAS_READ = "HasRead";
     public static final String LAST_READ_CHAPTER = "LastReadChapter";
     public static final String PROFILE_ID = "ProfileID";
@@ -95,8 +86,10 @@ public class DBHandler extends SQLiteOpenHelper
     // Warnings Columns.
     public static final String WARNING_PROFANITY = "Profanity";
     public static final String WARNING_SEXUAL_CONTENT = "SexualContent";
-    public static final String WARNING_GORE = "Gore";
-    public static final String WARNING_TRAUMATISING = "TraumatisingContent";
+    public static final String WARNING_GRAPHIC_VIOLENCE = "GraphicViolence";
+    public static final String WARNING_SENSITIVE_CONTENT = "SensitiveContent";
+    public static final String WARNING_AI_ASSISTED_CONTENT = "AIAssistedContent";
+    public static final String WARNING_AI_GENERATED_CONTENT = "AIGeneratedContent";
 
     // Chapter Columns.
     public static final String CHAPTER_ID = "ChapterID";
@@ -108,14 +101,9 @@ public class DBHandler extends SQLiteOpenHelper
     public static final String CHAPTER_PARAGRAPH_ID = "ParagraphID";
     public static final String CHAPTER_PARAGRAPH_CONTENT = "ParagraphContent";
 
-    // History Library Columns.
-    public static final String HAS_DOWNLOADED = "HasDownloaded";
-    public static final String LAST_READ_DATETIME = "LastReadDatetime";
-
     NotificationManager NotifyManager;
 
     public static final String DOWNLOAD_CHANNEL = "downloadchannel";
-    String GROUP_KEY_STORY_NOTIFICATION = "com.android.example.STORY_NOTIFICATION";
 
     public DBHandler(@Nullable Context context)
     {
@@ -144,6 +132,7 @@ public class DBHandler extends SQLiteOpenHelper
                 CREATED_DATE_TIME + " TEXT NOT NULL, " +
                 UPDATED_DATE_TIME + " TEXT, " +
                 DOWNLOADED_DATE_TIME + " TEXT NOT NULL, " +
+                LAST_READ_DATE_TIME + " TEXT, " +
                 HAS_READ + " INTEGER DEFAULT 0, " +
                 LAST_READ_CHAPTER + " INTEGER DEFAULT 0, " +
                 PROFILE_ID + " INTEGER DEFAULT 0, " +
@@ -175,8 +164,10 @@ public class DBHandler extends SQLiteOpenHelper
                 " (" + BOOK_ID + " INTEGER PRIMARY KEY, " +
                 WARNING_PROFANITY + " INTEGER DEFAULT 0, " +
                 WARNING_SEXUAL_CONTENT + " INTEGER DEFAULT 0, " +
-                WARNING_GORE + " INTEGER DEFAULT 0, " +
-                WARNING_TRAUMATISING + " INTEGER DEFAULT 0, " +
+                WARNING_GRAPHIC_VIOLENCE + " INTEGER DEFAULT 0, " +
+                WARNING_SENSITIVE_CONTENT + " INTEGER DEFAULT 0, " +
+                WARNING_AI_ASSISTED_CONTENT + " INTEGER DEFAULT 0, " +
+                WARNING_AI_GENERATED_CONTENT + " INTEGER DEFAULT 0, " +
                 "FOREIGN KEY (" + BOOK_ID + ") REFERENCES " + LIBRARY_TABLE_NAME +"("+ ID +"));";
 
         SQLiteDB.execSQL(CreateWarnings);
@@ -202,29 +193,6 @@ public class DBHandler extends SQLiteOpenHelper
                 "FOREIGN KEY (" + CHAPTER_ID + ") REFERENCES " + CHAPTERS_TABLE_NAME +"("+ CHAPTER_ID +"));";
 
         SQLiteDB.execSQL(CreateChapterParagraph);
-
-        // History_Library Database.
-        String CreateHistoryLibrary = "CREATE TABLE " + HISTORY_LIBRARY_TABLE_NAME +
-                " (" + ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
-                EXTERNAL_ID + " INTEGER NOT NULL, " +
-                TYPE + " INTEGER NOT NULL, " +
-                TITLE + " TEXT NOT NULL, " +
-                AUTHOR + " TEXT NOT NULL, " +
-                DESCRIPTION + " TEXT NOT NULL, " +
-                COVER_URL + " TEXT DEFAULT ''," +
-                CHAPTER_COUNT + " INTEGER NOT NULL, " +
-                PAGE_COUNT + " INTEGER NOT NULL, " +
-                FOLLOWERS + " NOT NULL, " +
-                FAVOURITES + " INTEGER NOT NULL, " +
-                RATING + " NUMERIC DEFAULT 0 NOT NULL, " +
-                CREATED_DATE_TIME + " TEXT NOT NULL, " +
-                LAST_READ_DATETIME + " TEXT NOT NULL, " +
-                UPDATED_DATE_TIME + " TEXT, " +
-                HAS_READ + " INTEGER DEFAULT 0, " +
-                HAS_DOWNLOADED + " INTEGER DEFAULT 0, " +
-                LAST_READ_CHAPTER + " INTEGER DEFAULT 0);";
-
-        SQLiteDB.execSQL(CreateHistoryLibrary);
     }
 
     @Override
@@ -256,10 +224,6 @@ public class DBHandler extends SQLiteOpenHelper
         String DropChapterParagraphQuery = "DROP TABLE IF EXISTS " + CHAPTER_PARAGRAPHS_TABLE_NAME;
         SQLiteDB.execSQL(DropChapterParagraphQuery);
 
-        // Drop History_Library Table.
-        String DropHistoryLibraryQuery = "DROP TABLE IF EXISTS " + HISTORY_LIBRARY_TABLE_NAME;
-        SQLiteDB.execSQL(DropHistoryLibraryQuery);
-
         // Recreate Tables.
         onCreate(SQLiteDB);
     }
@@ -272,7 +236,7 @@ public class DBHandler extends SQLiteOpenHelper
 
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O)
         {
-            NotificationChannel DownloadChannel = new NotificationChannel(DOWNLOAD_CHANNEL, "Download Channel", NotificationManager.IMPORTANCE_DEFAULT);
+            NotificationChannel DownloadChannel = new NotificationChannel(DOWNLOAD_CHANNEL, "Download Channel", NotificationManager.IMPORTANCE_HIGH);
             NotifyManager.createNotificationChannel(DownloadChannel);
         }
 
@@ -302,9 +266,13 @@ public class DBHandler extends SQLiteOpenHelper
             LibraryCV.put(FAVOURITES, NewBook.Favourites);
             LibraryCV.put(RATING, NewBook.Rating);
 
-            LibraryCV.put(CREATED_DATE_TIME, NewBook.CreatedDatetime.toString());
-            LibraryCV.put(UPDATED_DATE_TIME, NewBook.LastUpdatedDatetime.toString());
-            LibraryCV.put(DOWNLOADED_DATE_TIME, NewBook.DownloadedDatetime.toString());
+            String FormattedCreated = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss", Locale.getDefault()).format(NewBook.CreatedDatetime.getTime());
+            String FormattedUpdated = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss", Locale.getDefault()).format(NewBook.LastUpdatedDatetime.getTime());
+            String FormattedDownloaded = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss", Locale.getDefault()).format(new Date());
+
+            LibraryCV.put(CREATED_DATE_TIME, FormattedCreated);
+            LibraryCV.put(UPDATED_DATE_TIME, FormattedUpdated);
+            LibraryCV.put(DOWNLOADED_DATE_TIME, FormattedDownloaded);
 
             if(NewBook.HasRead)
             {
@@ -432,12 +400,20 @@ public class DBHandler extends SQLiteOpenHelper
                             WarningsCV.put(WARNING_SEXUAL_CONTENT, 1);
                             break;
 
-                        case Gore:
-                            WarningsCV.put(WARNING_GORE, 1);
+                        case Graphic_Violence:
+                            WarningsCV.put(WARNING_GRAPHIC_VIOLENCE, 1);
                             break;
 
-                        case Traumatising_Content:
-                            WarningsCV.put(WARNING_TRAUMATISING, 1);
+                        case Sensitive_Content:
+                            WarningsCV.put(WARNING_SENSITIVE_CONTENT, 1);
+                            break;
+
+                        case AI_Assisted_Content:
+                            WarningsCV.put(WARNING_AI_ASSISTED_CONTENT, 1);
+                            break;
+
+                        case AI_Generated_Content:
+                            WarningsCV.put(WARNING_AI_GENERATED_CONTENT, 1);
                             break;
                     }
                 }
@@ -540,12 +516,10 @@ public class DBHandler extends SQLiteOpenHelper
                     .setSmallIcon(R.mipmap.icon)
                     .setContentTitle(NewBook.Title)
                     .setContentText("Story Downloaded")
-                    .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+                    .setPriority(NotificationCompat.PRIORITY_MAX)
                     .setCategory(Notification.CATEGORY_MESSAGE)
                     .setContentIntent(ReadPendingIntent)
                     .setWhen(System.currentTimeMillis())
-                    .setGroup(GROUP_KEY_STORY_NOTIFICATION)
-                    .setGroupSummary(true)
                     .build();
 
             NotifyManager.notify(NewBook.ExternalID, DownloadedNotification);
@@ -555,6 +529,108 @@ public class DBHandler extends SQLiteOpenHelper
     public void AddToHistory(Book AddBook)
     {
 
+    }
+
+    public void ClearHistory()
+    {
+        SQLiteDatabase db = this.getWritableDatabase();
+        int LibraryCount = GetLibraryCount();
+
+        if(LibraryCount > 0)
+        {
+            for(int i = 0; i < LibraryCount; i++)
+            {
+                Book NewBook = GetBook(i + 1);
+
+                if(NewBook.HasRead)
+                {
+                    ContentValues HasReadCV = new ContentValues();
+                    HasReadCV.put(HAS_READ, 0);
+                    HasReadCV.put(LAST_READ_CHAPTER, 0);
+                    HasReadCV.put(LAST_READ_DATE_TIME, (String)null);
+
+                    db.update(LIBRARY_TABLE_NAME, HasReadCV, EXTERNAL_ID + " = " + NewBook.ExternalID, null);
+
+                    for(int j = 0; j < NewBook.Chapters.size(); j++)
+                    {
+                        ContentValues ChapterProgressCV = new ContentValues();
+                        ChapterProgressCV.put(CHAPTER_PROGRESS, 0);
+
+                        db.update(CHAPTERS_TABLE_NAME, ChapterProgressCV, BOOK_ID + " = " + NewBook.InternalID, null);
+                    }
+                }
+            }
+        }
+    }
+
+    public void DeleteHistoryBook(int InternalID)
+    {
+        SQLiteDatabase db = this.getWritableDatabase();
+        Book NewBook = GetBook(InternalID);
+
+        if(NewBook.HasRead)
+        {
+            ContentValues HasReadCV = new ContentValues();
+            HasReadCV.put(HAS_READ, 0);
+            HasReadCV.put(LAST_READ_CHAPTER, 0);
+            HasReadCV.put(LAST_READ_DATE_TIME, (String)null);
+
+            db.update(LIBRARY_TABLE_NAME, HasReadCV, EXTERNAL_ID + " = " + NewBook.ExternalID, null);
+
+            for(int j = 0; j < NewBook.Chapters.size(); j++)
+            {
+                ContentValues ChapterProgressCV = new ContentValues();
+                ChapterProgressCV.put(CHAPTER_PROGRESS, 0);
+
+                db.update(CHAPTERS_TABLE_NAME, ChapterProgressCV, BOOK_ID + " = " + NewBook.InternalID, null);
+            }
+        }
+    }
+
+    public void ClearOfflineUpdates()
+    {
+        SQLiteDatabase db = this.getWritableDatabase();
+        int LibraryCount = GetLibraryCount();
+
+        if(LibraryCount > 0)
+        {
+            for(int i = 0; i < LibraryCount; i++)
+            {
+                Book NewBook = GetBook(i + 1);
+
+                if(NewBook.HasUnreadUpdate)
+                {
+                    ContentValues OfflineUpdatesCV = new ContentValues();
+                    OfflineUpdatesCV.put(HAS_UNREAD_UPDATE, 0);
+
+                    db.update(LIBRARY_TABLE_NAME, OfflineUpdatesCV, EXTERNAL_ID + " = " + NewBook.ExternalID, null);
+                }
+            }
+        }
+    }
+
+    public boolean DoesBookExist(int InternalID)
+    {
+        boolean Exists = false;
+
+        Book NewBook = new Book();
+
+        String Query = "SELECT * FROM " + LIBRARY_TABLE_NAME + " WHERE " + ID + " = " + InternalID;
+        SQLiteDatabase db = this.getReadableDatabase();
+
+        Cursor cursor = null;
+
+        if (db != null)
+        {
+            cursor = db.rawQuery(Query, null);
+
+            if(cursor.getCount() != 0)
+            {
+                Exists = true;
+            }
+        }
+
+        return Exists;
     }
 
     public Book GetBook(int InternalID)
@@ -644,7 +720,27 @@ public class DBHandler extends SQLiteOpenHelper
                     //NewBook.LastUpdatedDatetime = Double.parseDouble(cursor.getString(14));
                     //NewBook.DownloadedDatetime = Double.parseDouble(cursor.getString(15));
 
-                    int HasReadCaster = Integer.parseInt(cursor.getString(16));
+                    String FormattedDateTime = cursor.getString(16);
+
+                    if(FormattedDateTime != null)
+                    {
+                        NewBook.LastReadDateTime = Calendar.getInstance();
+
+                        String Date = FormattedDateTime.split(" ")[0];
+                        String Time = FormattedDateTime.split(" ")[1];
+
+                        int Day = Integer.parseInt(Date.split("-")[0]);
+                        int Month = Integer.parseInt(Date.split("-")[1]);
+                        int Year = Integer.parseInt(Date.split("-")[2]);
+
+                        int Hour = Integer.parseInt(Time.split(":")[0]);
+                        int Minute = Integer.parseInt(Time.split(":")[1]);
+                        int Seconds = Integer.parseInt(Time.split(":")[2]);
+
+                        NewBook.LastReadDateTime.set(Year, Month, Day, Hour, Minute, Seconds);
+                    }
+
+                    int HasReadCaster = Integer.parseInt(cursor.getString(17));
 
                     if(HasReadCaster == 0)
                     {
@@ -655,10 +751,10 @@ public class DBHandler extends SQLiteOpenHelper
                         NewBook.SetHasRead(true);
                     }
 
-                    NewBook.SetLastReadChapter(Integer.parseInt(cursor.getString(17)));
-                    NewBook.ProfileID = Integer.parseInt(cursor.getString(18));
+                    NewBook.SetLastReadChapter(Integer.parseInt(cursor.getString(18)));
+                    NewBook.ProfileID = Integer.parseInt(cursor.getString(19));
 
-                    int HasUnreadUpdate = Integer.parseInt(cursor.getString(19));
+                    int HasUnreadUpdate = Integer.parseInt(cursor.getString(20));
 
                     if(HasUnreadUpdate == 0)
                     {
@@ -780,6 +876,25 @@ public class DBHandler extends SQLiteOpenHelper
         SQLiteDatabase db = this.getReadableDatabase();
 
         String Query = "SELECT " + CHAPTER_COUNT + " FROM " + LIBRARY_TABLE_NAME + " WHERE " + EXTERNAL_ID + " = " + ID;
+        Cursor cursor = null;
+
+        if(db != null)
+        {
+            cursor = db.rawQuery(Query, null);
+        }
+
+        cursor.moveToFirst();
+        int ChapterCount = cursor.getInt(0);
+
+        cursor.close();
+        return ChapterCount;
+    }
+
+    public int GetChapterCount(int InternalID)
+    {
+        SQLiteDatabase db = this.getReadableDatabase();
+
+        String Query = "SELECT " + CHAPTER_COUNT + " FROM " + LIBRARY_TABLE_NAME + " WHERE " + ID + " = " + InternalID;
         Cursor cursor = null;
 
         if(db != null)
@@ -973,8 +1088,6 @@ public class DBHandler extends SQLiteOpenHelper
 
         ContentValues RatingCV = new ContentValues();
         RatingCV.put(RATING, NewRating);
-
-        db.update(LIBRARY_TABLE_NAME, RatingCV, EXTERNAL_ID + " = " + ExternalID, null);
     }
 
     public void UpdateLastUpdateDateTime(int ExternalID, GregorianCalendar NewDateTime)
@@ -993,7 +1106,55 @@ public class DBHandler extends SQLiteOpenHelper
     }
     public void AddChapter(int BookID, Book.Chapter NewChapter)
     {
-        // Send Chapter Update Notification.
+        int CurrentID = NewChapter.ID + 1;
+        long Result;
+
+        SQLiteDatabase db = DBHandler.this.getWritableDatabase();
+
+        Log.println(Log.INFO, "Hi", "Adding Chapter ID: " + CurrentID + ", Title: " + NewChapter.Name +". To DB.");
+
+        ContentValues ChapterCV = new ContentValues();
+
+        ChapterCV.put(BOOK_ID, BookID);
+        ChapterCV.put(CHAPTER_ID, NewChapter.ID);
+        ChapterCV.put(CHAPTER_NAME, NewChapter.Name);
+        ChapterCV.put(CHAPTER_URL, NewChapter.URL);
+        ChapterCV.put(CHAPTER_PROGRESS, NewChapter.ChapterProgress);
+
+        Result = db.insertOrThrow(CHAPTERS_TABLE_NAME, null, ChapterCV);
+
+        ChapterCV.clear();
+
+        db.beginTransaction();
+        try
+        {
+            for (Book.Paragraph ThisParagraph : NewChapter.Content)
+            {
+                ContentValues ParagraphCV = new ContentValues();
+
+                ParagraphCV.put(BOOK_ID, BookID);
+                ParagraphCV.put(CHAPTER_ID, NewChapter.ID);
+                ParagraphCV.put(CHAPTER_PARAGRAPH_ID, ThisParagraph.ParagraphID);
+                ParagraphCV.put(CHAPTER_PARAGRAPH_CONTENT, ThisParagraph.Content);
+
+                Result = db.insertOrThrow(CHAPTER_PARAGRAPHS_TABLE_NAME, null, ParagraphCV);
+
+                ParagraphCV.clear();
+            }
+
+            db.setTransactionSuccessful();
+        }
+        finally
+        {
+            db.endTransaction();
+        }
+
+        int NewCount = GetChapterCount(BookID);
+
+        ContentValues ChapterCountCV = new ContentValues();
+        ChapterCountCV.put(CHAPTER_COUNT, NewCount);
+
+        db.update(LIBRARY_TABLE_NAME, ChapterCountCV, ID + " = " + BookID, null);
     }
 
     public void UpdateTags(int ExternalID, ArrayList<Book.Tags> NewTags)
@@ -1019,6 +1180,18 @@ public class DBHandler extends SQLiteOpenHelper
         {
             db.execSQL("UPDATE " + LIBRARY_TABLE_NAME + " SET " + HAS_READ +" = '0' WHERE " + EXTERNAL_ID + " = " + ExternalID);
         }
+    }
+
+    public void UpdateLastReadDateTime(int ExternalID)
+    {
+        SQLiteDatabase db = this.getWritableDatabase();
+
+        String Formatted = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss", Locale.getDefault()).format(new Date());
+
+        ContentValues LastReadDateTimeCV = new ContentValues();
+        LastReadDateTimeCV.put(LAST_READ_DATE_TIME, Formatted);
+
+        db.update(LIBRARY_TABLE_NAME, LastReadDateTimeCV, EXTERNAL_ID + " = " + ExternalID, null);
     }
 
     public void UpdateLastReadChapter(int ExternalID, int ChapterID)
@@ -1107,7 +1280,8 @@ public class DBHandler extends SQLiteOpenHelper
     public void DeleteChapter(int BookID, int ChapterID)
     {
         SQLiteDatabase db = this.getWritableDatabase();
-        db.delete(CHAPTERS_TABLE_NAME, BOOK_ID + " = " + BookID + " AND " +
-                CHAPTER_ID +  " = " + ChapterID, null);
+
+        db.delete(CHAPTERS_TABLE_NAME, BOOK_ID + " = " + BookID + " AND " + CHAPTER_ID +  " = " + ChapterID, null);
+        db.delete(CHAPTER_PARAGRAPHS_TABLE_NAME, BOOK_ID + " = " + BookID  + " AND " + CHAPTER_ID +  " = " + ChapterID, null);
     }
 }

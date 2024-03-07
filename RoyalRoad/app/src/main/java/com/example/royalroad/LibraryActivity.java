@@ -1,5 +1,6 @@
 package com.example.royalroad;
 
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.app.NotificationCompat;
@@ -9,6 +10,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewpager.widget.ViewPager;
 import androidx.viewpager2.widget.ViewPager2;
 
+import android.annotation.SuppressLint;
 import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
@@ -17,14 +19,20 @@ import android.app.TaskStackBuilder;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.ColorStateList;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Debug;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.webkit.JavascriptInterface;
+import android.webkit.ValueCallback;
+import android.webkit.WebView;
+import android.webkit.WebViewClient;
 import android.widget.Button;
 import android.widget.ListView;
+import android.widget.RelativeLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -37,6 +45,7 @@ import org.checkerframework.common.subtyping.qual.Bottom;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.ExecutionException;
@@ -54,9 +63,11 @@ public class LibraryActivity extends AppCompatActivity {
     public int ReadLaterCount;
     public int DownloadManagerCount;
 
-    private ViewPager2 LibraryPager;
+    public ViewPager2 LibraryPager;
     private boolean IsDarkMode;
-    VPAdapter vpAdapter;
+    public VPAdapter vpAdapter;
+
+    public RelativeLayout DeleteArea;
 
     ScrollView AlphabetLayout;
 
@@ -69,6 +80,7 @@ public class LibraryActivity extends AppCompatActivity {
     Button CloseBTN;
     Button AllBTN;
     Button NumberBTN;
+    Button DeleteBTN;
 
     Button ABTN;
     Button BBTN;
@@ -97,6 +109,8 @@ public class LibraryActivity extends AppCompatActivity {
     Button YBTN;
     Button ZBTN;
 
+    WebView LibraryWebView;
+
     public enum LibraryType
     {
         History,
@@ -105,6 +119,10 @@ public class LibraryActivity extends AppCompatActivity {
         Folders
     }
 
+    ArrayList<Integer> ReadLaterBooks;
+    ArrayList<Book> BookList;
+
+    @SuppressLint("JavascriptInterface")
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
@@ -118,6 +136,99 @@ public class LibraryActivity extends AppCompatActivity {
         CloseBTN = findViewById(R.id.CloseBTN);
         AllBTN = findViewById(R.id.AllBTN);
         NumberBTN = findViewById(R.id.NumbersBTN);
+
+        DeleteBTN = findViewById(R.id.DeleteBTN);
+
+        LibraryWebView = findViewById(R.id.LibraryWebView);
+
+        ReadLaterBooks = new ArrayList<>();
+
+        String URL = "https://www.royalroad.com/my/readlater";
+
+        LibraryWebView.addJavascriptInterface(this, "Android");
+        LibraryWebView.getSettings().setJavaScriptEnabled(true);
+
+        String ReadLaterJScript = "javascript: (function() { " +
+                    "   for (let i = 0; i < document.getElementsByClassName(\"fiction-list-item\").length; i++)" +
+                    "   {" +
+                    "       if (!document.getElementsByClassName(\"fiction-list-item\").item(i).classList.contains(\"text-center\"))" +
+                    "       {" +
+                    "           var URL = document.getElementsByClassName(\"fiction-list-item\").item(i).children.item(1).children.item(0).children.item(0).getAttribute(\"href\");" +
+                    "           Android.SendFictionID(URL);" +
+                    "       }" +
+                    "   }" +
+                    "})" +
+                    "()";
+
+        LibraryWebView.setWebViewClient(new WebViewClient()
+        {
+            @Override
+            public void onPageFinished(WebView view, String url)
+            {
+                super.onPageFinished(view, url);
+
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT)
+                {
+                    LibraryWebView.evaluateJavascript(ReadLaterJScript, new ValueCallback< String >()
+                    {
+                        @Override
+                        public void onReceiveValue(String value)
+                        {
+                            ReadLaterCount = ReadLaterBooks.size();
+                            BookList = new ArrayList<>();
+
+                            for (int i = 0; i < ReadLaterCount; i++)
+                            {
+                                try
+                                {
+                                    BookList.add(new Book().CreateBook(getApplicationContext(), ReadLaterBooks.get(i), false, false, false));
+                                }
+                                catch (InterruptedException e)
+                                {
+                                    throw new RuntimeException(e);
+                                }
+                            }
+
+                            Thread ResultsFinished = new Thread(new Runnable()
+                            {
+                                @Override
+                                public void run()
+                                {
+                                    for (int i = 0; i < ReadLaterBooks.size(); i++)
+                                    {
+                                        while (BookList.get(i) == null || !BookList.get(i).IsCompleted)
+                                        {
+                                            try
+                                            {
+                                                Thread.sleep(10);
+                                            }
+                                            catch (InterruptedException e)
+                                            {
+                                                throw new RuntimeException(e);
+                                            }
+                                        }
+                                    }
+                                }
+                            });
+
+                            ResultsFinished.start();
+                            try
+                            {
+                                ResultsFinished.join();
+                            }
+                            catch (InterruptedException e)
+                            {
+                                throw new RuntimeException(e);
+                            }
+
+                            LibraryWebView.setVisibility(View.GONE);
+                        }
+                    });
+                }
+            }
+        });
+
+        LibraryWebView.loadUrl(URL);
 
         AllBTN.setOnClickListener(new View.OnClickListener()
         {
@@ -165,6 +276,8 @@ public class LibraryActivity extends AppCompatActivity {
         ZBTN = findViewById(R.id.ZBTN);
 
         BackBTN = findViewById(R.id.BackBTN);
+
+        DeleteArea = findViewById(R.id.DeleteArea);
 
         ABTN.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -416,33 +529,23 @@ public class LibraryActivity extends AppCompatActivity {
             }
         });
 
-        SharedPreferences Pref = getSharedPreferences("Settings", MODE_PRIVATE);
-        IsDarkMode = Pref.getBoolean("AppTheme", false);
-
-        BottomTabs = (TabLayout) findViewById(R.id.TabLayout);
-
-        LibraryPager = findViewById(R.id.LibraryPager);
-        vpAdapter = new VPAdapter(getSupportFragmentManager(), getLifecycle());
-
-        vpAdapter.AddFragment(new LibraryFragment(LibraryType.History));
-        vpAdapter.AddFragment(new LibraryFragment(LibraryType.Downloaded));
-        vpAdapter.AddFragment(new LibraryFragment(LibraryType.Read_Later));
-        vpAdapter.AddFragment(new LibraryFragment(LibraryType.Folders));
-
-        LibraryPager.setAdapter(vpAdapter);
-        LibraryPager.setOffscreenPageLimit(4);
-        LibraryPager.setCurrentItem(0);
-
-        LibraryPager.registerOnPageChangeCallback(new ViewPager2.OnPageChangeCallback()
+        DeleteBTN.setOnClickListener(new View.OnClickListener()
         {
             @Override
-            public void onPageSelected(int position)
+            public void onClick(View view)
             {
-                BottomTabs.selectTab(BottomTabs.getTabAt(position));
+                LibraryFragment CurrentFragment = (LibraryFragment)vpAdapter.GetFragment(LibraryPager.getCurrentItem());
+                CurrentFragment.DeleteBooks();
             }
         });
 
-        ReduceDragSensitivity(3);
+        SharedPreferences Pref = getSharedPreferences("Settings", MODE_PRIVATE);
+        IsDarkMode = Pref.getBoolean("AppTheme", false);
+
+        BottomTabs = findViewById(R.id.TabLayout);
+
+        LibraryPager = findViewById(R.id.LibraryPager);
+        vpAdapter = new VPAdapter(getSupportFragmentManager(), getLifecycle());
 
         BottomTabs.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener()
         {
@@ -465,7 +568,30 @@ public class LibraryActivity extends AppCompatActivity {
             }
         });
 
-        TopToolbar = (Toolbar) findViewById(R.id.TopToolbar);
+        LibraryPager.setOffscreenPageLimit(4);
+
+        vpAdapter.AddFragment(new LibraryFragment(LibraryType.History));
+        vpAdapter.AddFragment(new LibraryFragment(LibraryType.Downloaded));
+        vpAdapter.AddFragment(new LibraryFragment(LibraryType.Read_Later));
+        vpAdapter.AddFragment(new LibraryFolderFragment());
+
+        ((LibraryFragment)vpAdapter.GetFragment(2)).BookList = BookList;
+
+        LibraryPager.setAdapter(vpAdapter);
+
+        LibraryPager.registerOnPageChangeCallback(new ViewPager2.OnPageChangeCallback()
+        {
+            @Override
+            public void onPageSelected(int position)
+            {
+                BottomTabs.selectTab(BottomTabs.getTabAt(position));
+            }
+        });
+
+
+        ReduceDragSensitivity(3);
+
+        TopToolbar = findViewById(R.id.TopToolbar);
         TopToolbar.inflateMenu(R.menu.librarytoptoolbar);
         TopToolbar.setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener() {
             @Override
@@ -498,6 +624,13 @@ public class LibraryActivity extends AppCompatActivity {
         });
 
         AlphabetLayout = (ScrollView) findViewById(R.id.AlphabeticalLayout);
+
+        // READ LATER STUFF.
+
+        UpdateTabName(LibraryType.History);
+        UpdateTabName(LibraryType.Downloaded);
+        UpdateTabName(LibraryType.Read_Later);
+        UpdateTabName(LibraryType.Folders);
     }
 
     private void ReduceDragSensitivity(int Sensitivity)
@@ -694,7 +827,6 @@ public class LibraryActivity extends AppCompatActivity {
                 */
 
                 // Check to See if Chapters Have Changed.
-
                 if(CurrentBook.Chapters.size() != CompareBook.Chapters.size())
                 {
                     if(!HasUpdated)
@@ -722,6 +854,8 @@ public class LibraryActivity extends AppCompatActivity {
                 {
                     for(String UpdateKey : UpdatedNames)
                     {
+                        Log.println(Log.INFO, "Hi", "ID: " + CompareBook.InternalID + ", Key: " + UpdateKey);
+
                         switch(UpdateKey)
                         {
                             case "Type":
@@ -754,9 +888,16 @@ public class LibraryActivity extends AppCompatActivity {
                                 break;
 
                             case "ChapterAdded":
-                                for(int i = CurrentBook.Chapters.size(); i < CompareBook.Chapters.size(); i++)
+                                int Difference = CompareBook.Chapters.size() - CurrentBook.Chapters.size();
+
+                                for(int i = 0; i < Difference; i++)
                                 {
-                                    SQLiteDB.AddChapter(CompareBook.InternalID, CompareBook.Chapters.get(i));
+                                    int ID = CurrentBook.Chapters.size() + i;
+
+                                    Book.Chapter NewChapter = new Book().CreateChapter(CurrentBook.ExternalID, ID, true);
+                                    Log.println(Log.INFO, "Hi", "Content Test: " + NewChapter.Content.get(0).Content);
+
+                                    SQLiteDB.AddChapter(CurrentBook.InternalID, NewChapter);
                                 }
                                 break;
 
@@ -796,12 +937,10 @@ public class LibraryActivity extends AppCompatActivity {
                             .setSmallIcon(R.mipmap.icon)
                             .setContentTitle(CompareBook.Title)
                             .setContentText("Story Updated")
-                            .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+                            .setPriority(NotificationCompat.PRIORITY_MAX)
                             .setCategory(Notification.CATEGORY_MESSAGE)
                             .setContentIntent(ReadPendingIntent)
                             .setWhen(System.currentTimeMillis())
-                            .setGroup(GROUP_KEY_STORY_NOTIFICATION)
-                            .setGroupSummary(true)
                             .build();
 
                     NotifyManager.notify(CompareBook.ExternalID, DownloadedNotification);
@@ -823,30 +962,53 @@ public class LibraryActivity extends AppCompatActivity {
         Toast.makeText(this, "Sync Completed", Toast.LENGTH_SHORT).show();
     }
 
+    @JavascriptInterface
+    public void SendFictionID(String ID)
+    {
+        String SplitID = ID.split("/")[2];
+        int FictionID = Integer.parseInt(SplitID);
+
+        ReadLaterBooks.add(FictionID);
+        Log.println(Log.INFO, "Hi", "Fiction: " + FictionID);
+    }
+
     @Override
     protected void onResume()
     {
         super.onResume();
 
+        UpdateTabName(LibraryType.History);
+        UpdateTabName(LibraryType.Downloaded);
+        UpdateTabName(LibraryType.Read_Later);
+        UpdateTabName(LibraryType.Folders);
+
         if(RenewLibraries)
         {
             for(int i = 0; i < 4; i++)
             {
-                LibraryFragment SelectedFragment = (LibraryFragment)vpAdapter.GetFragment(i);
-
-                if(i == LibraryPager.getCurrentItem())
+                if(i != 3)
                 {
-                    SelectedFragment.RenewLibrary(true);
+                    LibraryFragment SelectedFragment = (LibraryFragment)vpAdapter.GetFragment(i);
+
+                    if(i == LibraryPager.getCurrentItem())
+                    {
+                        SelectedFragment.RenewLibrary(true);
+                    }
+                    else
+                    {
+                        SelectedFragment.RenewLibrary(false);
+                    }
                 }
                 else
                 {
-                    SelectedFragment.RenewLibrary(false);
+                    LibraryFolderFragment SelectedFragment = (LibraryFolderFragment)vpAdapter.GetFragment(i);
                 }
             }
         }
         else
         {
             RenewLibraries = true;
+
         }
     }
 
@@ -887,8 +1049,10 @@ public class LibraryActivity extends AppCompatActivity {
             IsRestricted = true;
         }
 
-        // Empty Library.
-        // Only Fill Library with Books Begining with any numbers.
+        Log.println(Log.INFO, "Hi", "Restricting By Numbers");
+
+        LibraryFragment CurrentFragment = (LibraryFragment)vpAdapter.GetFragment(LibraryPager.getCurrentItem());
+        CurrentFragment.RestrictLibrary('1');
     }
 
     public void UnRestrictByLetter()
@@ -909,13 +1073,46 @@ public class LibraryActivity extends AppCompatActivity {
 
     public void SendToSettings()
     {
-        Intent SettingsIntent = new Intent(LibraryActivity.this, SettingsActivity.class);
-        startActivity(SettingsIntent);
+        finish();
+        // Show the Settings Fragment.
     }
 
     public void OpenDeletePrompt(boolean Open)
     {
         LibraryFragment CurrentFragment = (LibraryFragment)vpAdapter.GetFragment(LibraryPager.getCurrentItem());
-        CurrentFragment.OpenDeleteMenu(Open);
+    }
+
+    @Override
+    protected void onStart()
+    {
+        super.onStart();
+    }
+
+    public void UpdateTabName(LibraryType Type)
+    {
+        if(Type == LibraryType.History)
+        {
+            BottomTabs.getTabAt(0).setText("History ( " + HistoryCount + " )");
+        }
+        else if(Type == LibraryType.Downloaded)
+        {
+            if(DownloadedCount == 0)
+            {
+                DBHandler SQLiteDB = new DBHandler(this);
+
+                if(SQLiteDB.GetLibraryCount() > 0)
+                    DownloadedCount = SQLiteDB.GetLibraryCount();
+            }
+
+            BottomTabs.getTabAt(1).setText("Downloaded ( " + DownloadedCount + " )");
+        }
+        else if(Type == LibraryType.Read_Later)
+        {
+            BottomTabs.getTabAt(2).setText("Read Later" + " ( " + ReadLaterCount + " )");
+        }
+        else if(Type == LibraryType.Folders)
+        {
+            //BottomTabs.getTabAt(3).setText("Folders" + " ( " + HistoryCount + " )");
+        }
     }
 }

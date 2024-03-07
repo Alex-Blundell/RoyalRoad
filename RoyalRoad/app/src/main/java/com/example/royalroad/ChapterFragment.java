@@ -91,8 +91,7 @@ public class ChapterFragment extends Fragment
         else
         {
             int CurrentFragmentID = readActivity.BookPager.getCurrentItem();
-            CurrentChapter = new Book().CreateChapter(readActivity.ReadBook.ExternalID, CurrentFragmentID);
-
+            CurrentChapter = new Book().CreateChapter(readActivity.ReadBook.ExternalID, CurrentFragmentID, false);
             Thread ChapterThread = new Thread(new Runnable() {
                 @Override
                 public void run()
@@ -138,10 +137,8 @@ public class ChapterFragment extends Fragment
             }
         });
 
-
         for(Book.Paragraph ThisParagraph : CurrentChapter.Content)
         {
-
             if(!ThisParagraph.Content.isEmpty() && ThisParagraph.Content.length() > 1)
             {
                 boolean IsAllSpaces = false;
@@ -186,7 +183,7 @@ public class ChapterFragment extends Fragment
         StoryRV.setLayoutManager(LayoutManager);
         StoryRV.setHasFixedSize(true);
 
-        adapter = new ParagraphLineAdapter(CurrentChapter.Content);
+        adapter = new ParagraphLineAdapter(CurrentChapter.Content, CurrentChapter.ID);
         StoryRV.setAdapter(adapter);
 
         Log.println(Log.INFO, "Hi", String.valueOf(CurrentChapter.ChapterProgress));

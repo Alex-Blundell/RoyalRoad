@@ -48,4 +48,7 @@
     <color name="Darker">#E0181818</color>
 
     <color name="ButtonItem">#FF008C7B</color>
+
+    <color name="GenreInclude">#339933</color>
+    <color name="GenreExclude">#993333</color>
 </resources>

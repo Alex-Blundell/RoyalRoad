@@ -1,28 +1,22 @@
 package com.example.royalroad;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.graphics.Color;
 import android.graphics.drawable.Drawable;
-import android.text.SpannableStringBuilder;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
 
-import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.android.gms.tasks.Task;
 import com.google.firebase.annotations.concurrent.Background;
 import com.google.firebase.firestore.DocumentReference;
-import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QuerySnapshot;
 
-import org.checkerframework.checker.units.qual.Current;
-import org.checkerframework.common.returnsreceiver.qual.This;
+import org.htmlcleaner.CleanerProperties;
+import org.htmlcleaner.HtmlCleaner;
 import org.jsoup.Connection;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -33,15 +27,16 @@ import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Date;
-import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
-public class Book implements Serializable
+public class Book implements Serializable, Comparable<Book>
 {
+    @Override
+    public int compareTo(Book book) {
+        return LastReadDateTime.compareTo(book.LastReadDateTime);
+    }
+
     public enum BookType
     {
         Original,
@@ -122,8 +117,10 @@ public class Book implements Serializable
     {
         Profanity,
         Sexual_Content,
-        Gore,
-        Traumatising_Content
+        Graphic_Violence,
+        Sensitive_Content,
+        AI_Assisted_Content,
+        AI_Generated_Content
     }
 
     public static class Review implements Serializable
@@ -203,9 +200,10 @@ public class Book implements Serializable
     public int Followers;
     public int Favourites;
     public double Rating;
-    public Date CreatedDatetime;
-    public Date LastUpdatedDatetime;
-    public Date DownloadedDatetime;
+    public Calendar CreatedDatetime;
+    public Calendar LastUpdatedDatetime;
+    public Calendar DownloadedDatetime;
+    public Calendar LastReadDateTime;
     public ArrayList<Chapter> Chapters;
     public ArrayList<Tags> TagsList;
     public ArrayList<Warnings> ContentWarnings;
@@ -222,19 +220,7 @@ public class Book implements Serializable
 
     private boolean DeleteCharacters;
 
-    private String[] RemoveTags = new String[] {
-            "</em>",
-            "<em>",
-            "</strong>",
-            "<strong>",
-            " &nbsp;"
-    };
-
-    private String[] ReplaceTags = new String[]
-    {
-        "<p style=\"text-align: center\">",
-    };
-
+    private String[][] HTMLEntities = new String[10][10];
 
     public Book()
     {
@@ -242,7 +228,8 @@ public class Book implements Serializable
     }
 
     @Background
-    public Book CreateBook(Context context, long ExternalID, boolean GetChapterContent, boolean AddToDB, boolean AddToFirebase) throws InterruptedException {
+    public Book CreateBook(Context context, long ExternalID, boolean GetChapterContent, boolean AddToDB, boolean AddToFirebase) throws InterruptedException
+    {
         Book NewBook = new Book();
         Thread BookThread = new Thread(new Runnable()
         {
@@ -288,14 +275,9 @@ public class Book implements Serializable
 
                     NewBook.SetRating(CreateRating());
 
-                    // DateTimes.
-                    NewBook.SetCreatedDateTime(Calendar.getInstance().getTime());
-                    NewBook.SetLastUpdatedDateTime(Calendar.getInstance().getTime());
-                    NewBook.SetDownloadedDateTime(Calendar.getInstance().getTime());
-
                     if (GetChapterContent)
                     {
-                        NewBook.SetAllChapters(CreateChapters());
+                        NewBook.SetAllChapters(CreateChapters(NewBook));
                     }
                     else
                     {
@@ -319,7 +301,7 @@ public class Book implements Serializable
                         NewBook.SetAllChapters(AllChapters);
                     }
 
-                    Log.println(Log.INFO, "Hi", "Setting HasRead and LastReadChapter to 0");
+                    NewBook.SetDownloadedDateTime(Calendar.getInstance());
 
                     NewBook.SetHasRead(false);
                     NewBook.SetLastReadChapter(0);
@@ -339,7 +321,6 @@ public class Book implements Serializable
 
                         SharedPreferences Pref = context.getSharedPreferences("Settings", Context.MODE_PRIVATE);
                         int UserID = Pref.getInt("UserID", 1);
-
 
                         FirebaseFirestore finalFireDB = FireDB;
                         FireDB.collection("User_Books")
@@ -384,7 +365,6 @@ public class Book implements Serializable
                                     }
                                 });
 
-
                         FireDB = null;
                     }
 
@@ -392,7 +372,7 @@ public class Book implements Serializable
                 }
                 catch (IOException e)
                 {
-                    throw new RuntimeException(e);
+
                 }
             }
         });
@@ -432,7 +412,18 @@ public class Book implements Serializable
 
     private String CreateDescription()
     {
-        return this.StoryDoc.selectFirst(".description").text();
+        String NewDescriptionWorker = "";
+
+        int Children = StoryDoc.getElementsByClass("hidden-content").first().childrenSize();
+
+        for(int i = 0; i < Children; i++)
+        {
+            NewDescriptionWorker += StoryDoc.getElementsByClass("hidden-content").first().child(i).text() + "\n\n";
+        }
+
+        //return this.StoryDoc.selectFirst(".description").text(); // OLD SCRIPT.
+
+        return  NewDescriptionWorker;
     }
 
     private String[] CreateTitleAuthor()
@@ -454,12 +445,13 @@ public class Book implements Serializable
         return TitleAuthor;
     }
 
-    private ArrayList<Book.Chapter> CreateChapters() throws IOException
+    private ArrayList<Book.Chapter> CreateChapters(Book ReferenceBook) throws IOException
     {
         Log.println(Log.INFO, "Hi", "Getting Chapters");
 
         ArrayList<Book.Chapter> AllChapters = new ArrayList<>();
         Elements ChapterLinks = StoryDoc.select("td:not([class]) a");
+        Elements TimeLinks = StoryDoc.select("td.text-right");
 
         int[] ChapterIndex = {0};
 
@@ -469,13 +461,50 @@ public class Book implements Serializable
 
             Book.Chapter NewChapter = new Book.Chapter();
 
+            String DateTime = TimeLinks.get(ChapterIndex[0]).getElementsByTag("time").get(0).attr("datetime");
+            String Date = DateTime.split("T")[0];
+            String Time = DateTime.split("T")[1];
+
+            int Day = Integer.parseInt(Date.split("-")[2]);
+            int Month = Integer.parseInt(Date.split("-")[1]);
+            int Year = Integer.parseInt(Date.split("-")[0]);
+
+            int Hour = Integer.parseInt(Time.split(":")[0]);
+            int Minute = Integer.parseInt(Time.split(":")[1]);
+            String SecondsString = Time.split(":")[2];
+
+            SecondsString = SecondsString.split("\\.")[0];
+
+            int Seconds = Integer.parseInt(SecondsString);
+
+            Calendar ChapterDateTime = Calendar.getInstance();
+            ChapterDateTime.set(Year, Month, Day, Hour, Minute, Seconds);
+
+            if(ChapterIndex[0] == 0)
+            {
+                ReferenceBook.SetCreatedDateTime(ChapterDateTime);
+                Log.println(Log.INFO, "Hi", "Created Date Time: " + ChapterDateTime.getTime().toString());
+            }
+            else
+            {
+                ReferenceBook.SetLastUpdatedDateTime(ChapterDateTime);
+            }
+
             NewChapter.ID = ChapterIndex[0];
             NewChapter.Name = Link.text();
             NewChapter.URL = Link.attr("abs:href");
             NewChapter.ChapterProgress = 0;
 
-            String RawChapter = ChapterContent.select(".chapter-content").first().toString();
+            String RawChapter = "";
+            int ChapterBreaks = ChapterContent.select(".chapter-content").first().childrenSize();
+
+            for(int i = 0; i < ChapterBreaks; i++)
+            {
+                RawChapter += ChapterContent.select(".chapter-content").first().child(i).toString() + "~RR_PARAGRAPH_BREAK~";
+            }
+
             NewChapter.Content = CleanChapter(RawChapter);
+            RawChapter = null;
 
             int ChapterID = ChapterIndex[0] + 1;
 
@@ -494,243 +523,63 @@ public class Book implements Serializable
 
     public ArrayList<Paragraph> CleanChapter(String RawChapter)
     {
-        ArrayList<Paragraph> Content = new ArrayList<>();
-        String[] Paragraphs;
+        // Replacement Tags.
+        RawChapter = RawChapter.replace("<em><em>", "<em>");
+        RawChapter = RawChapter.replace("</em></em>", "</em>");
 
-        int ParagraphID = 0;
+        RawChapter = RawChapter.replace("</em><em>", "");
+        RawChapter = RawChapter.replace("</strong><strong>", "");
 
-        // A Fix that seems to happen in some stories where they have two break tags next to each other.
-        RawChapter = RawChapter.replace("<br><br>", "<br>");
+        RawChapter = RawChapter.replace("<em></em>", "");
 
-        // This is a Fix for something that happens sometimes in the HTML Code, the Break comes before the end of a Bold or Italic Line.
         RawChapter = RawChapter.replace("<br></strong>", "</strong><br>");
         RawChapter = RawChapter.replace("<br></em>", "</em><br>");
 
-        // Replacing HTML Tags that break a Text into seperate Paragraphs.
-        RawChapter = RawChapter.replace("</p>", "<RR_APP_PARAGRAPH_BREAK>");
-        RawChapter = RawChapter.replace("<br>", "<RR_APP_PARAGRAPH_BREAK>");
+        RawChapter = RawChapter.replace("<em>", "~RR_APP_ITALIC~");
+        RawChapter = RawChapter.replace("</em>", "~RR_APP_ITALIC_END~");
 
-        // Split Chapter into Seperate Paragraphs.
-        Paragraphs = RawChapter.split("<RR_APP_PARAGRAPH_BREAK>");
+        RawChapter = RawChapter.replace("<strong>", "~RR_APP_BOLD~");
+        RawChapter = RawChapter.replace("</strong>", "~RR_APP_BOLD_END~");
 
-        for(int i = 0; i < Paragraphs.length; i++)
+        RawChapter = RawChapter.replace("<u>", "~RR_APP_UNDERLINE~");
+        RawChapter = RawChapter.replace("</u>", "~RR_APP_UNDERLINE_END~");
+
+        RawChapter = RawChapter.replace("<hr>", "~RR_APP_CHAPTER_SPLIT~");
+        RawChapter = RawChapter.replace("<img src=", "~RR_APP_CHAPTER_IMAGE~");
+
+        RawChapter = RawChapter.replace("&nbsp;", "");
+        RawChapter = RawChapter.replace("&amp;", "&");
+        RawChapter = RawChapter.replace("&gt;", ">");
+        RawChapter = RawChapter.replace("&lt;", "<");
+        RawChapter = RawChapter.replace("&iexcl;", "¡");
+        RawChapter = RawChapter.replace("&cent;", "¢");
+
+        //RawChapter = RawChapter.replace("style=\"text-align: center\"", "~RR_APP_PARAGRAPH_ALIGN_CENTER~");
+        //RawChapter = RawChapter.replace("style=\"text-align: left\"", "~RR_APP_PARAGRAPH_ALIGN_LEFT~");
+        //RawChapter = RawChapter.replace("style=\"text-align: right\"", "~RR_APP_PARAGRAPH_ALIGN_RIGHT~");
+        //RawChapter = RawChapter.replace("style=\"text-align: justify\"", "~RR_APP_PARAGRAPH_ALIGN_JUSTIFY~");
+
+        HtmlCleaner ChapterCleaner = new HtmlCleaner();
+        String CleanedChapter = ChapterCleaner.clean(RawChapter).getText().toString();
+        ChapterCleaner = null;
+
+        String[] ParagraphContents = CleanedChapter.split("~RR_PARAGRAPH_BREAK~");
+
+        ArrayList<Paragraph> ChapterParagraphs = new ArrayList<>();
+
+        for(int i = 0; i < ParagraphContents.length; i++)
         {
-            Paragraph ThisParagraph = new Paragraph();
+            Paragraph CurrentParagraph = new Paragraph();
 
-            ThisParagraph.ParagraphID = ParagraphID;
-            String AlteredParagraph = Paragraphs[i];
+            CurrentParagraph.ParagraphID = i;
+            CurrentParagraph.Content = ParagraphContents[i];
 
-            AlteredParagraph = AlteredParagraph.replace("&nbsp;", "");
-            AlteredParagraph = AlteredParagraph.replace("&amp;", "&");
-            AlteredParagraph = AlteredParagraph.replace("<em></em>", "");
-            AlteredParagraph = AlteredParagraph.replace("<em> </em>", "");
-
-            AlteredParagraph = AlteredParagraph.replace("<p style=\"text-align: center\">", "<RR_APP_PARAGRAPH_ALIGN_CENTER>");
-            AlteredParagraph = AlteredParagraph.replace("<p style=\"text-align: left\">", "<RR_APP_PARAGRAPH_ALIGN_LEFT>");
-            AlteredParagraph = AlteredParagraph.replace("<p style=\"text-align: right\">", "<RR_APP_PARAGRAPH_ALIGN_RIGHT>");
-            AlteredParagraph = AlteredParagraph.replace("<p style=\"text-align: justify\">", "<RR_APP_PARAGRAPH_ALIGN_JUSTIFY>");
-            AlteredParagraph = AlteredParagraph.replace("<span style=\"text-decoration: underline\">", "<RR_APP_PARAGRAPH_UNDERLINE>");
-
-            DeleteCharacters = false;
-            StringBuilder NewParagraph = new StringBuilder(AlteredParagraph);
-            ArrayList<Integer> DeltedIndexes = new ArrayList<Integer>();
-
-            for(int j = 0; j < AlteredParagraph.length(); j++)
-            {
-                if(AlteredParagraph.charAt(j) == '<')
-                {
-                    DeleteCharacters = true;
-                }
-
-                if(DeleteCharacters)
-                {
-                    boolean ProtectedTag = false;
-
-                    if(AlteredParagraph.length() > j + 1 && AlteredParagraph.charAt(j) == '<')
-                    {
-                        if(AlteredParagraph.charAt(j + 1) == 'e')
-                        {
-                            if(AlteredParagraph.charAt( j + 2) == 'm') // Protecting Italics.
-                            {
-                                ProtectedTag = true;
-                                DeleteCharacters = false;
-                            }
-                        }
-                        else if(AlteredParagraph.charAt(j + 1) == '/' && j != 0)
-                        {
-                            if(AlteredParagraph.charAt(j + 2) == 'e')
-                            {
-                                if(AlteredParagraph.charAt(j + 3) == 'm') // Protecting End Italics.
-                                {
-                                    ProtectedTag = true;
-                                    DeleteCharacters = false;
-                                }
-                            }
-                            else if(AlteredParagraph.charAt(j + 2) == 's')
-                            {
-                                if(AlteredParagraph.charAt(j + 3) == 't')
-                                {
-                                    if(AlteredParagraph.charAt(j + 4) == 'r')
-                                    {
-                                        if(AlteredParagraph.charAt(j + 5) == 'o')
-                                        {
-                                            if(AlteredParagraph.charAt(j + 6) == 'n')
-                                            {
-                                                if(AlteredParagraph.charAt(j + 7) == 'g')
-                                                {
-                                                    if(AlteredParagraph.charAt(j + 8) == '>') // Protecting End Bold.
-                                                    {
-                                                        ProtectedTag = true;
-                                                        DeleteCharacters = false;
-                                                    }
-                                                }
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                        else if(AlteredParagraph.charAt(j + 1) == 'i')
-                        {
-                            if(AlteredParagraph.charAt(j + 2) == 'm')
-                            {
-                                if(AlteredParagraph.charAt(j + 3) == 'g') // Protecting Image Tag.
-                                {
-                                    ProtectedTag = true;
-                                    DeleteCharacters = false;
-                                }
-                            }
-                        }
-                        else if(AlteredParagraph.charAt(j + 1) == 's')
-                        {
-                            if(AlteredParagraph.charAt(j + 2) == 't')
-                            {
-                                if(AlteredParagraph.charAt(j + 3) == 'r')
-                                {
-                                    if(AlteredParagraph.charAt(j + 4) == 'o')
-                                    {
-                                        if(AlteredParagraph.charAt(j + 5) == 'n')
-                                        {
-                                            if(AlteredParagraph.charAt(j + 6) == 'g')
-                                            {
-                                                if(AlteredParagraph.charAt(j + 7) == '>') // Protecting Bold Tag.
-                                                {
-                                                    ProtectedTag = true;
-                                                    DeleteCharacters = false;
-                                                }
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                        else if(AlteredParagraph.charAt(j + 1) == 'h')
-                        {
-                            if(AlteredParagraph.charAt(j + 2) == 'r')
-                            {
-                                if(AlteredParagraph.charAt(j + 3) == '>')
-                                {
-                                    ProtectedTag = true;
-                                    DeleteCharacters = false;
-                                }
-                            }
-                        }
-                        else if(AlteredParagraph.charAt(j + 1) == 'b')
-                        {
-                            if(AlteredParagraph.charAt(j + 2) == 'r')
-                            {
-                                if(AlteredParagraph.charAt( j + 3) == '>')
-                                {
-                                    ProtectedTag = true;
-                                    DeleteCharacters = true;
-                                }
-                            }
-                        }
-                        else if(AlteredParagraph.charAt(j + 1) == 'R')
-                        {
-                            if(AlteredParagraph.charAt(j + 2) == 'R')
-                            {
-                                if(AlteredParagraph.charAt(j + 3) == '_')
-                                {
-                                    if(AlteredParagraph.charAt(j + 4) == 'A')
-                                    {
-                                        if(AlteredParagraph.charAt(j + 5) == 'P')
-                                        {
-                                            if(AlteredParagraph.charAt(j + 6) == 'P')
-                                            {
-                                                ProtectedTag = true;
-                                                DeleteCharacters = false;
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-
-                    if(!ProtectedTag)
-                    {
-                        DeltedIndexes.add(j);
-
-                        if(AlteredParagraph.charAt(j) == '>')
-                        {
-                            DeleteCharacters = false;
-                        }
-                    }
-                }
-            }
-
-            int DeleteCounter = 0;
-
-            for(int Index : DeltedIndexes)
-            {
-                Index -= DeleteCounter;
-                NewParagraph.deleteCharAt(Index);
-
-                DeleteCounter++;
-            }
-
-            for(int j = NewParagraph.length() - 1; j > 0; j--)
-            {
-                if(Character.isWhitespace(NewParagraph.charAt(j)) || NewParagraph.charAt(j) == ' ')
-                {
-                    NewParagraph.deleteCharAt(j);
-                }
-                else
-                {
-                    break;
-                }
-            }
-
-            int DeleteOffset = 0;
-            for(int j = 0; j < NewParagraph.toString().length(); j++)
-            {
-                if(Character.isWhitespace(NewParagraph.charAt(j)) || NewParagraph.charAt(j) == ' ')
-                {
-                    NewParagraph.deleteCharAt(j - DeleteOffset);
-                    DeleteOffset++;
-                }
-                else
-                {
-                    break;
-                }
-            }
-
-            if(!NewParagraph.toString().isEmpty())
-            {
-                if(NewParagraph.charAt(0) == ' ')
-                {
-                    NewParagraph.delete(0, 1);
-                }
-
-                ThisParagraph.Content = NewParagraph.toString();
-                Content.add(ThisParagraph);
-
-                ParagraphID++;
-            }
+            ChapterParagraphs.add(CurrentParagraph);
         }
 
-        return Content;
+        ParagraphContents = null;
+
+        return ChapterParagraphs;
     }
 
     private ArrayList<Book.Warnings> CreateWarnings()
@@ -740,27 +589,39 @@ public class Book implements Serializable
         Elements WarningElements = StoryDoc.getElementsByClass("text-center font-red-sunglo");
         ArrayList<Book.Warnings> BookWarnings = new ArrayList<>();
 
-        if (WarningElements.size() > 0) {
-            if (WarningElements.get(0).getElementsByClass("list-inline").get(0).childrenSize() > 1) {
-                for (int i = 0; i < WarningElements.get(0).getElementsByClass("list-inline").get(0).childrenSize(); i++) {
+        if (WarningElements.size() > 0)
+        {
+            if (WarningElements.get(0).getElementsByClass("list-inline").get(0).childrenSize() > 1)
+            {
+                for (int i = 0; i < WarningElements.get(0).getElementsByClass("list-inline").get(0).childrenSize(); i++)
+                {
                     String Warning = WarningElements.get(0).getElementsByClass("list-inline").get(0).child(i).toString();
                     Warning = Warning.substring(4, Warning.length() - 5);
 
-                    switch (Warning) {
-                        case "Gore":
-                            BookWarnings.add(Book.Warnings.Gore);
-                            break;
-
+                    switch (Warning)
+                    {
                         case "Profanity":
                             BookWarnings.add(Book.Warnings.Profanity);
                             break;
 
-                        case "Traumatising content":
-                            BookWarnings.add(Book.Warnings.Traumatising_Content);
-                            break;
-
                         case "Sexual Content":
                             BookWarnings.add(Book.Warnings.Sexual_Content);
+                            break;
+
+                        case "Graphic Violence":
+                            BookWarnings.add(Book.Warnings.Graphic_Violence);
+                            break;
+
+                        case "Sensitive Content":
+                            BookWarnings.add(Book.Warnings.Sensitive_Content);
+                            break;
+
+                        case " AI-Assisted Content":
+                            BookWarnings.add(Warnings.AI_Assisted_Content);
+                            break;
+
+                        case "AI-Generated Content":
+                            BookWarnings.add(Warnings.AI_Generated_Content);
                             break;
                     }
                 }
@@ -1099,7 +960,7 @@ public class Book implements Serializable
         return Counts;
     }
 
-    public Chapter CreateChapter(int ExternalID, int ChapterID)
+    public Chapter CreateChapter(int ExternalID, int ChapterID, boolean GetContent)
     {
         Chapter NewChapter = new Chapter();
 
@@ -1123,10 +984,22 @@ public class Book implements Serializable
                             NewChapter.Name = Link.text();
                             NewChapter.URL = Link.attr("abs:href");
                             NewChapter.ChapterProgress = 0;
+
+                            if(GetContent)
+                            {
+                                Document ChapterContent = Jsoup.connect(Link.attr("abs:href")).get();
+
+                                String RawChapter = ChapterContent.select(".chapter-content").first().toString();
+                                NewChapter.Content = CleanChapter(RawChapter);
+
+                                ChapterContent = null;
+                            }
                         }
 
                         Index++;
                     }
+
+                    ChapterLinks.clear();
                 }
                 catch (IOException e)
                 {
@@ -1261,32 +1134,32 @@ public class Book implements Serializable
         this.Rating = rating;
     }
 
-    public Date GetCreatedDateTime()
+    public Calendar GetCreatedDateTime()
     {
         return this.CreatedDatetime;
     }
 
-    public void SetCreatedDateTime(Date DateTime)
+    public void SetCreatedDateTime(Calendar DateTime)
     {
         this.CreatedDatetime = DateTime;
     }
 
-    public Date GetLastUpdatedDateTime()
+    public Calendar GetLastUpdatedDateTime()
     {
         return this.LastUpdatedDatetime;
     }
 
-    public void SetLastUpdatedDateTime(Date DateTime)
+    public void SetLastUpdatedDateTime(Calendar DateTime)
     {
         this.LastUpdatedDatetime = DateTime;
     }
 
-    public Date GetDownloadedDateTime()
+    public Calendar GetDownloadedDateTime()
     {
         return this.DownloadedDatetime;
     }
 
-    public void SetDownloadedDateTime(Date DateTime)
+    public void SetDownloadedDateTime(Calendar DateTime)
     {
         this.DownloadedDatetime = DateTime;
     }

@@ -215,6 +215,17 @@
         android:text="Clear Offline Updates"
         android:backgroundTint="@color/ButtonInner"/>
 
+    <Button
+        android:id="@+id/LogoutBTN"
+        android:layout_width="150dp"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:text="Logout"
+        android:backgroundTint="@color/ButtonInner"
+        android:layout_alignParentBottom="true"
+        android:layout_marginBottom="15dp"
+        />
+
     <TextView
         android:id="@+id/LanguageTXT"
         android:layout_width="wrap_content"
@@ -253,7 +264,7 @@
         android:id="@+id/AppThemeDropdown"
         android:layout_width="180dp"
         android:layout_height="wrap_content"
-        android:layout_toRightOf="@id/AppThemeTXT"
+        android:layout_toRightOf="@id/FontSizeTXT"
         android:layout_below="@id/AppSettingsDivider"
         android:layout_marginTop="20dp"
         android:layout_marginLeft="100dp"
@@ -289,7 +300,7 @@
         android:layout_marginTop="20dp"
         android:layout_marginRight="10dp"
         android:layout_toRightOf="@+id/FontSizeTXT"
-        android:max="255" />
+        android:max="100" />
 
     <Spinner
         android:id="@+id/AppFontDropdown"

@@ -15,6 +15,33 @@
         android:theme="?actionBarTheme"
         />
 
+    <RelativeLayout
+        android:id="@+id/DeleteArea"
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:layout_below="@id/TopToolbar"
+        >
+
+        <ImageView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="#CC000000"
+            />
+
+        <Button
+            android:id="@+id/DeleteBTN"
+            android:layout_width="50dp"
+            android:layout_height="match_parent"
+            android:background="@color/Invis"
+            android:insetTop="0dp"
+            android:insetBottom="0dp"
+            app:icon="@drawable/delete"
+            app:iconPadding="0dp"
+            app:iconTint="@color/ToolbarItem"
+            />
+
+    </RelativeLayout>
+
     <Button
         android:id="@+id/BackBTN"
         android:layout_width="150dp"
@@ -661,9 +688,10 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_above="@id/TabLayout"
-        android:layout_below="@id/TopToolbar"
+        android:layout_below="@id/DeleteArea"
         android:layout_marginTop="0dp"
-        android:layout_marginBottom="0dp"/>
+        android:layout_marginBottom="0dp"
+        />
 
     <com.google.android.material.tabs.TabLayout
         android:id="@+id/TabLayout"
@@ -672,6 +700,7 @@
         android:layout_alignParentBottom="true"
         android:background="@color/ToolbarBlue"
         app:tabIndicatorColor="@color/ToolbarItem"
+        app:tabMode="scrollable"
         app:tabTextColor="@color/ToolbarItem"
         app:tabTextAppearance="@style/MyCustomTextAppearance"
         >
@@ -697,4 +726,11 @@
             android:layout_height="wrap_content"
             android:text="Folders" />
     </com.google.android.material.tabs.TabLayout>
+
+    <WebView
+        android:id="@+id/LibraryWebView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:translationZ="-10dp"
+        />
 </RelativeLayout>

@@ -21,6 +21,17 @@
                 android:id="@+id/Searchbar"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
+                android:layout_toLeftOf="@id/AdvancedSearchBTN"
+                />
+
+            <Button
+                android:id="@+id/AdvancedSearchBTN"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:layout_alignParentRight="true"
+                android:layout_marginRight="7.5dp"
+                android:backgroundTint="@color/ButtonInner"
+                app:icon="@drawable/baseline_format_list_bulleted_24"
                 />
 
             <com.google.android.material.tabs.TabLayout
@@ -313,7 +324,7 @@
                 android:layout_below="@id/MoreBestCompletedBTN"
                 android:layout_marginLeft="50dp"
                 android:layout_marginTop="25dp"
-                android:text="Best Completed"
+                android:text="Best Ongoing"
                 android:textSize="18sp"
                 />
 
